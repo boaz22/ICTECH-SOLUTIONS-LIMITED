@@ -1,0 +1,49 @@
+# ICTECH Solutions - Git Ignore File
+
+# Configuration files (should not be committed)
+includes/config.php
+
+# Uploads
+uploads/*
+!uploads/.gitkeep
+
+# Environment
+.env
+.env.local
+
+# IDE
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Logs
+*.log
+error_log
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Database backups
+*.sql
+!database/schema.sql
+
+# Composer
+vendor/
+composer.lock
+
+# Node (if using npm/webpack)
+node_modules/
+package-lock.json
+
+# Build files
+dist/
+build/
