@@ -25,10 +25,10 @@ $pageTitle = h($course['title']);
 
 // Get related courses
 $relatedCourses = $db->getAll(
-    "SELECT c.*, cat.name as category_name 
-     FROM courses c 
-     LEFT JOIN categories cat ON c.category_id = cat.id 
-     WHERE c.status = 'published' AND c.category_id = ? AND c.id != ? 
+    "SELECT c.*, cat.name as category_name
+     FROM courses c
+     LEFT JOIN categories cat ON c.category_id = cat.id
+     WHERE c.status = 'published' AND c.category_id = ? AND c.id != ?
      LIMIT 3",
     [$course['category_id'], $courseId]
 );
@@ -87,7 +87,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                         <p><?php echo nl2br(h($course['description'])); ?></p>
                     </div>
                 </div>
-                
+
                 <!-- Learning Objectives -->
                 <?php if ($course['objectives']): ?>
                     <div class="card mb-4">
@@ -96,9 +96,9 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                         </div>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
-                                <?php 
+                                <?php
                                 $objectives = array_filter(array_map('trim', explode("\n", $course['objectives'])));
-                                foreach ($objectives as $objective): 
+                                foreach ($objectives as $objective):
                                 ?>
                                     <li class="list-group-item">
                                         <i class="fas fa-check text-success me-2"></i> <?php echo h($objective); ?>
@@ -108,7 +108,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                         </div>
                     </div>
                 <?php endif; ?>
-                
+
                 <!-- Requirements -->
                 <?php if ($course['requirements']): ?>
                     <div class="card mb-4">
@@ -117,9 +117,9 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                         </div>
                         <div class="card-body">
                             <ul class="list-group list-group-flush">
-                                <?php 
+                                <?php
                                 $requirements = array_filter(array_map('trim', explode("\n", $course['requirements'])));
-                                foreach ($requirements as $requirement): 
+                                foreach ($requirements as $requirement):
                                 ?>
                                     <li class="list-group-item">
                                         <i class="fas fa-arrow-right me-2 text-secondary"></i> <?php echo h($requirement); ?>
@@ -130,7 +130,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                     </div>
                 <?php endif; ?>
             </div>
-            
+
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Enrollment Card -->
@@ -147,9 +147,9 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                                 <strong><?php echo h($course['category_name']); ?></strong>
                             </div>
                         </div>
-                        
+
                         <hr>
-                        
+
                         <!-- Enrollment Button -->
                         <?php if ($isEnrolledInCourse): ?>
                             <div class="alert alert-success mb-3">
@@ -164,7 +164,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                                     <strong class="d-block mb-2">Price: <?php echo formatCurrency($course['price']); ?></strong>
                                 </div>
                             </div>
-                            
+
                             <?php if ($isLoggedIn): ?>
                                 <form method="POST" action="student/my-courses.php">
                                     <input type="hidden" name="action" value="enroll">
@@ -197,29 +197,29 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
             <div class="section-header">
                 <h3>Related Courses</h3>
             </div>
-            
+
             <div class="row">
                 <?php foreach ($relatedCourses as $related): ?>
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="course-card">
                             <div class="course-image">
                                 <?php if ($related['image']): ?>
-                                    <img src="<?php echo SITE_URL . 'uploads/' . h($related['image']); ?>" alt="<?php echo h($related['title']); ?>">
+                                    <img src="<?php echo SITE_URL . 'assets/images/' . h($related['image']); ?>" alt="<?php echo h($related['title']); ?>">
                                 <?php else: ?>
                                     <i class="fas fa-book"></i>
                                 <?php endif; ?>
                             </div>
-                            
+
                             <div class="course-info">
                                 <div class="course-category"><?php echo h($related['category_name']); ?></div>
                                 <h5 class="course-title"><?php echo h($related['title']); ?></h5>
                                 <p class="course-description"><?php echo truncateText($related['description'], 80); ?></p>
-                                
+
                                 <div class="course-meta">
                                     <span class="course-duration"><?php echo h($related['duration']); ?></span>
                                     <span class="course-price"><?php echo formatCurrency($related['price']); ?></span>
                                 </div>
-                                
+
                                 <div class="course-footer">
                                     <a href="course-details.php?id=<?php echo $related['id']; ?>" class="btn btn-outline-primary btn-sm">
                                         View

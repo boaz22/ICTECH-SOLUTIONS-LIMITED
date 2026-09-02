@@ -9,7 +9,7 @@
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
 define('DB_PASS', ''); // Default XAMPP has empty password
-define('DB_NAME', 'ictech_training');
+define('DB_NAME', 'ictech_solutions_limited');
 
 // Site Configuration
 define('SITE_URL', 'http://localhost/ICTECH/');
@@ -19,6 +19,7 @@ define('SITE_DESCRIPTION', 'Professional Technology Training and Development Pla
 // Security
 define('JWT_SECRET', 'your-secret-key-change-this-in-production');
 define('SESSION_NAME', 'ictech_session');
+define('SESSION_TIMEOUT', 1800); // 30 minutes of inactivity
 
 // M-Pesa Configuration (Get from Safaricom Daraja API)
 // Register at: https://developer.safaricom.co.ke/

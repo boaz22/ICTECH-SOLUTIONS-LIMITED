@@ -8,7 +8,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 
 // Require login
-Auth::requireLogin();
+Auth::requireStudent();
 
 $currentUser = Auth::getCurrentUser();
 $currentPage = basename($_SERVER['PHP_SELF']);
@@ -20,7 +20,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo SITE_DESCRIPTION; ?>">
     <title><?php echo isset($pageTitle) ? h($pageTitle) . ' - ' . SITE_NAME : SITE_NAME; ?></title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
@@ -35,51 +35,51 @@ $currentPage = basename($_SERVER['PHP_SELF']);
         <nav class="bg-primary p-3 text-white" style="width: 250px; position: relative;">
             <div class="mb-4">
                 <h5 class="mb-3">
-                    <i class="fas fa-laptop-code"></i> ICTECH
+                    <img src="<?php echo SITE_URL; ?>assets/images/ictech-logo-transparent.png" alt="ICTECH Solutions Limited" class="site-logo site-logo-sidebar">
                 </h5>
                 <div class="text-light" style="font-size: 0.9rem;">
                     <div class="fw-bold"><?php echo h($currentUser['name']); ?></div>
                     <small class="text-light-50"><?php echo h($currentUser['email']); ?></small>
                 </div>
             </div>
-            
+
             <hr class="bg-light-50">
-            
+
             <ul class="list-unstyled">
                 <li class="mb-2">
-                    <a href="<?php echo SITE_URL; ?>student/dashboard.php" 
+                    <a href="<?php echo SITE_URL; ?>student/dashboard.php"
                        class="text-light text-decoration-none <?php echo $currentPage === 'dashboard.php' ? 'active' : ''; ?>">
                         <i class="fas fa-tachometer-alt me-2"></i> Dashboard
                     </a>
                 </li>
                 <li class="mb-2">
-                    <a href="<?php echo SITE_URL; ?>student/my-courses.php" 
+                    <a href="<?php echo SITE_URL; ?>student/my-courses.php"
                        class="text-light text-decoration-none <?php echo $currentPage === 'my-courses.php' ? 'active' : ''; ?>">
                         <i class="fas fa-graduation-cap me-2"></i> My Courses
                     </a>
                 </li>
                 <li class="mb-2">
-                    <a href="<?php echo SITE_URL; ?>student/payments.php" 
+                    <a href="<?php echo SITE_URL; ?>student/payments.php"
                        class="text-light text-decoration-none <?php echo $currentPage === 'payments.php' ? 'active' : ''; ?>">
                         <i class="fas fa-credit-card me-2"></i> Payments
                     </a>
                 </li>
                 <li class="mb-2">
-                    <a href="<?php echo SITE_URL; ?>student/profile.php" 
+                    <a href="<?php echo SITE_URL; ?>student/profile.php"
                        class="text-light text-decoration-none <?php echo $currentPage === 'profile.php' ? 'active' : ''; ?>">
                         <i class="fas fa-user me-2"></i> Profile
                     </a>
                 </li>
-                
+
                 <li class="mb-2">
                     <a href="<?php echo SITE_URL; ?>courses.php" class="text-light text-decoration-none">
                         <i class="fas fa-book me-2"></i> Browse Courses
                     </a>
                 </li>
             </ul>
-            
+
             <hr class="bg-light-50">
-            
+
             <ul class="list-unstyled">
                 <li class="mb-2">
                     <a href="<?php echo SITE_URL; ?>logout.php" class="text-light text-decoration-none">
@@ -88,7 +88,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                 </li>
             </ul>
         </nav>
-        
+
         <!-- Main Content -->
         <div class="flex-grow-1">
             <!-- Top Navigation -->
@@ -111,6 +111,6 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                     </div>
                 </div>
             </nav>
-            
+
             <!-- Page Content -->
             <main class="p-4">

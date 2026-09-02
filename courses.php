@@ -21,7 +21,7 @@ $offset = ($page - 1) * $perPage;
 // Get courses
 $db = Database::getInstance();
 $courses = getPublishedCourses($perPage, $offset, $categoryId, $search);
-$totalCourses = $db->count('courses', 
+$totalCourses = $db->count('courses',
     $categoryId ? "status = 'published' AND category_id = $categoryId" : "status = 'published'");
 $totalPages = ceil($totalCourses / $perPage);
 
@@ -30,7 +30,7 @@ $categories = getCategories();
 ?>
 
 <!-- Header -->
-<section class="bg-primary text-white py-5">
+<section class="bg-primary text-white py-5 courses-page-header">
     <div class="container">
         <h1>Our Professional Courses</h1>
         <p>Discover industry-relevant training programs designed for your success</p>
@@ -42,13 +42,13 @@ $categories = getCategories();
     <div class="container">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-lg-3 mb-4">
+            <div class="col-lg-3 mb-4 courses-sidebar">
                 <!-- Search -->
                 <div class="card mb-4">
                     <div class="card-body">
                         <h5 class="card-title">Search Courses</h5>
                         <form method="GET" action="">
-                            <input type="text" name="search" class="form-control mb-3" 
+                            <input type="text" name="search" class="form-control mb-3"
                                    placeholder="Search courses..." value="<?php echo h($search ?? ''); ?>">
                             <button type="submit" class="btn btn-primary w-100">
                                 <i class="fas fa-search"></i> Search
@@ -56,7 +56,7 @@ $categories = getCategories();
                         </form>
                     </div>
                 </div>
-                
+
                 <!-- Categories Filter -->
                 <div class="card mb-4">
                     <div class="card-body">
@@ -66,7 +66,7 @@ $categories = getCategories();
                                 All Categories
                             </a>
                             <?php foreach ($categories as $cat): ?>
-                                <a href="courses.php?category=<?php echo $cat['id']; ?>" 
+                                <a href="courses.php?category=<?php echo $cat['id']; ?>"
                                    class="list-group-item list-group-item-action <?php echo $categoryId === $cat['id'] ? 'active' : ''; ?>">
                                     <?php echo h($cat['name']); ?>
                                 </a>
@@ -74,7 +74,7 @@ $categories = getCategories();
                         </div>
                     </div>
                 </div>
-                
+
                 <!-- Filter Info -->
                 <div class="card bg-light">
                     <div class="card-body">
@@ -86,7 +86,7 @@ $categories = getCategories();
                     </div>
                 </div>
             </div>
-            
+
             <!-- Courses Grid -->
             <div class="col-lg-9">
                 <?php if (!empty($courses)): ?>
@@ -96,24 +96,24 @@ $categories = getCategories();
                                 <div class="course-card">
                                     <div class="course-image">
                                         <?php if ($course['image']): ?>
-                                            <img src="<?php echo SITE_URL . 'uploads/' . h($course['image']); ?>" alt="<?php echo h($course['title']); ?>">
+                                            <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>" alt="<?php echo h($course['title']); ?>">
                                         <?php else: ?>
                                             <i class="fas fa-book"></i>
                                         <?php endif; ?>
                                     </div>
-                                    
+
                                     <div class="course-info">
                                         <div class="course-category"><?php echo h($course['category_name']); ?></div>
                                         <h5 class="course-title"><?php echo h($course['title']); ?></h5>
                                         <p class="course-description"><?php echo truncateText($course['description'], 80); ?></p>
-                                        
+
                                         <div class="course-meta">
                                             <span class="course-duration">
                                                 <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
                                             </span>
                                             <span class="course-price"><?php echo formatCurrency($course['price']); ?></span>
                                         </div>
-                                        
+
                                         <div class="course-footer">
                                             <a href="course-details.php?id=<?php echo $course['id']; ?>" class="btn btn-outline-primary btn-sm">
                                                 Details
@@ -135,7 +135,7 @@ $categories = getCategories();
                             </div>
                         <?php endforeach; ?>
                     </div>
-                    
+
                     <!-- Pagination -->
                     <?php if ($totalPages > 1): ?>
                         <nav aria-label="Page navigation" class="mt-4">
@@ -152,7 +152,7 @@ $categories = getCategories();
                                         </a>
                                     </li>
                                 <?php endif; ?>
-                                
+
                                 <?php for ($i = max(1, $page - 2); $i <= min($totalPages, $page + 2); $i++): ?>
                                     <li class="page-item <?php echo $i === $page ? 'active' : ''; ?>">
                                         <a class="page-link" href="courses.php?page=<?php echo $i; ?><?php echo $categoryId ? '&category=' . $categoryId : ''; ?><?php echo $search ? '&search=' . urlencode($search) : ''; ?>">
@@ -160,7 +160,7 @@ $categories = getCategories();
                                         </a>
                                     </li>
                                 <?php endfor; ?>
-                                
+
                                 <?php if ($page < $totalPages): ?>
                                     <li class="page-item">
                                         <a class="page-link" href="courses.php?page=<?php echo $page + 1; ?><?php echo $categoryId ? '&category=' . $categoryId : ''; ?><?php echo $search ? '&search=' . urlencode($search) : ''; ?>">

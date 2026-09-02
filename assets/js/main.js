@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initializeSlider();
     initializeCarousels();
     initializeValidation();
+    initializePasswordControls();
     initializeScrollEffects();
 });
 
@@ -16,38 +17,38 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeSlider() {
     const slides = document.querySelectorAll('.hero-slide');
     if (slides.length === 0) return;
-    
+
     let currentSlide = 0;
     const totalSlides = slides.length;
     const slideInterval = 5000; // 5 seconds
-    
+
     function showSlide(index) {
         slides.forEach(slide => slide.classList.remove('active'));
         slides[index].classList.add('active');
     }
-    
+
     function nextSlide() {
         currentSlide = (currentSlide + 1) % totalSlides;
         showSlide(currentSlide);
     }
-    
+
     // Show first slide
     showSlide(0);
-    
+
     // Auto advance slides
     setInterval(nextSlide, slideInterval);
-    
+
     // Navigation arrows if they exist
     const prevBtn = document.querySelector('.slider-prev');
     const nextBtn = document.querySelector('.slider-next');
-    
+
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
             currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
             showSlide(currentSlide);
         });
     }
-    
+
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
             nextSlide();
@@ -74,7 +75,7 @@ function initializeCarousels() {
 // ============================================
 function initializeValidation() {
     const forms = document.querySelectorAll('form[data-validate="true"]');
-    
+
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
             if (!validateForm(this)) {
@@ -87,16 +88,16 @@ function initializeValidation() {
 function validateForm(form) {
     let isValid = true;
     const inputs = form.querySelectorAll('input, textarea, select');
-    
+
     inputs.forEach(input => {
         clearError(input);
-        
+
         if (!validateField(input)) {
             isValid = false;
             showError(input);
         }
     });
-    
+
     return isValid;
 }
 
@@ -104,71 +105,97 @@ function validateField(field) {
     const value = field.value.trim();
     const type = field.getAttribute('type') || field.tagName.toLowerCase();
     const required = field.hasAttribute('required');
-    
+
     // Check required
     if (required && !value) {
         return false;
     }
-    
+
     // Skip validation if field is empty and not required
     if (!value && !required) {
         return true;
     }
-    
+
     // Email validation
     if (type === 'email' && value) {
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailRegex.test(value);
     }
-    
+
     // Phone validation (Kenya)
     if (type === 'tel' && value) {
         const phoneRegex = /^(\+254|0)[1-9]\d{8}$/;
         return phoneRegex.test(value);
     }
-    
+
     // Password validation
     if (type === 'password' && value) {
-        return value.length >= 6;
+        return value.length >= 8 && /[A-Z]/.test(value) && /[0-9]/.test(value) && /[^a-zA-Z0-9]/.test(value);
     }
-    
+
     // Number validation
     if (type === 'number' && value) {
         return !isNaN(value) && value > 0;
     }
-    
+
     return true;
 }
 
 function showError(field) {
     field.classList.add('is-invalid');
     field.classList.remove('is-valid');
-    
+
     let errorMsg = field.nextElementSibling;
     if (!errorMsg || !errorMsg.classList.contains('form-error')) {
         errorMsg = document.createElement('div');
         errorMsg.className = 'form-error';
         field.parentNode.insertBefore(errorMsg, field.nextSibling);
     }
-    
+
     let message = 'This field is required';
     const type = field.getAttribute('type');
-    
+
     if (type === 'email') {
         message = 'Please enter a valid email address';
     } else if (type === 'tel') {
         message = 'Please enter a valid phone number';
     } else if (type === 'password') {
-        message = 'Password must be at least 6 characters';
+        message = 'Use at least 8 characters, one uppercase letter, one number, and one special character';
     }
-    
+
     errorMsg.textContent = message;
+}
+
+function initializePasswordControls() {
+    document.querySelectorAll('[data-password-toggle]').forEach(button => {
+        button.addEventListener('click', () => {
+            const input = document.getElementById(button.dataset.passwordToggle);
+            if (!input) return;
+            input.type = input.type === 'password' ? 'text' : 'password';
+            button.innerHTML = input.type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+            button.setAttribute('aria-label', input.type === 'password' ? 'Show password' : 'Hide password');
+        });
+    });
+
+    document.querySelectorAll('[data-password-rules]').forEach(input => {
+        const rules = document.querySelector(input.dataset.passwordRules);
+        if (!rules) return;
+        const update = () => {
+            const value = input.value;
+            rules.querySelector('[data-rule="length"]').classList.toggle('met', value.length >= 8);
+            rules.querySelector('[data-rule="uppercase"]').classList.toggle('met', /[A-Z]/.test(value));
+            rules.querySelector('[data-rule="number"]').classList.toggle('met', /[0-9]/.test(value));
+            rules.querySelector('[data-rule="special"]').classList.toggle('met', /[^a-zA-Z0-9]/.test(value));
+        };
+        input.addEventListener('input', update);
+        update();
+    });
 }
 
 function clearError(field) {
     field.classList.remove('is-invalid');
     field.classList.add('is-valid');
-    
+
     const errorMsg = field.nextElementSibling;
     if (errorMsg && errorMsg.classList.contains('form-error')) {
         errorMsg.remove();
@@ -181,9 +208,9 @@ function clearError(field) {
 function initializeScrollEffects() {
     // Scroll reveal for elements with data-scroll attribute
     const elements = document.querySelectorAll('[data-scroll]');
-    
+
     if (elements.length === 0) return;
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -194,7 +221,7 @@ function initializeScrollEffects() {
     }, {
         threshold: 0.1
     });
-    
+
     elements.forEach(element => observer.observe(element));
 }
 
@@ -211,9 +238,9 @@ function showNotification(message, type = 'info') {
         ${message}
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     `;
-    
+
     document.body.appendChild(alertDiv);
-    
+
     // Auto-dismiss after 5 seconds
     setTimeout(() => {
         alertDiv.remove();
@@ -262,12 +289,12 @@ function throttle(func, delay = 300) {
 const setupSearch = (searchInputSelector, itemsSelector, nameAttr = 'data-name') => {
     const searchInput = document.querySelector(searchInputSelector);
     if (!searchInput) return;
-    
+
     const items = document.querySelectorAll(itemsSelector);
-    
+
     searchInput.addEventListener('keyup', debounce(function() {
         const query = this.value.toLowerCase();
-        
+
         items.forEach(item => {
             const name = item.getAttribute(nameAttr).toLowerCase();
             if (name.includes(query)) {
@@ -308,14 +335,14 @@ async function fetchRequest(url, options = {}) {
             'Content-Type': 'application/json',
         }
     };
-    
+
     try {
         const response = await fetch(url, { ...defaultOptions, ...options });
-        
+
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         return await response.json();
     } catch (error) {
         console.error('Request failed:', error);

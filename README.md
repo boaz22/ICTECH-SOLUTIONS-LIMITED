@@ -8,13 +8,13 @@
 
 ICTECH Solutions is a complete web-based training management platform featuring:
 
-✅ **Public Website** - Professional corporate site with course catalog  
-✅ **Student Portal** - Dashboard, course enrollment, payment tracking  
-✅ **Admin Dashboard** - Course and user management (Phase 2)  
-✅ **M-Pesa Integration** - Secure payment processing  
-✅ **Responsive Design** - Mobile-friendly interface  
-✅ **Secure Authentication** - Password hashing, session management, CSRF protection  
-✅ **Database Driven** - MySQL with prepared statements for security  
+✅ **Public Website** - Professional corporate site with course catalog
+✅ **Student Portal** - Dashboard, course enrollment, payment tracking
+✅ **Admin Dashboard** - Course and user management (Phase 2)
+✅ **M-Pesa Integration** - Secure payment processing
+✅ **Responsive Design** - Mobile-friendly interface
+✅ **Secure Authentication** - Password hashing, session management, CSRF protection
+✅ **Database Driven** - MySQL with prepared statements for security
 
 ---
 
@@ -41,11 +41,13 @@ The project is located at: `c:\xampp\htdocs\ICTECH\`
 **Method A: Using phpMyAdmin**
 
 1. Open phpMyAdmin: `http://localhost/phpmyadmin`
-2. Create a new database: `ictech_training`
+2. Create a new database: `ictech_solutions_limited`
 3. Select the database
 4. Go to **Import** tab
 5. Upload file: `database/schema.sql`
 6. Click **Import**
+
+For an existing database, import `database/migrations/001_training_workflow.sql` once after pulling the latest code.
 
 **Method B: Using Command Line**
 
@@ -67,7 +69,7 @@ mysql -u root -p < c:\xampp\htdocs\ICTECH\database\schema.sql
    define('DB_HOST', 'localhost');
    define('DB_USER', 'root');
    define('DB_PASS', '');  // Empty for XAMPP
-   define('DB_NAME', 'ictech_training');
+   define('DB_NAME', 'ictech_solutions_limited');
    ```
 
 ### 4. Create Uploads Directory
@@ -129,7 +131,7 @@ ICTECH/
 │   │   └── student.css       # Student portal styles
 │   ├── js/
 │   │   └── main.js           # JavaScript utilities
-│   └── images/               # Images directory
+│   └── images/               # Logo, hero, course, and partner images
 ├── payment/                   # Payment processing (Phase 2)
 ├── uploads/                   # User uploads
 ├── database/
@@ -566,9 +568,9 @@ Use these for testing all features.
 
 ---
 
-**Version:** 1.0 - Phase 1 (Foundation)  
-**Last Updated:** 2024  
-**Status:** Ready for Phase 2 Implementation  
+**Version:** 1.0 - Phase 1 (Foundation)
+**Last Updated:** 2024
+**Status:** Ready for Phase 2 Implementation
 
 ---
 

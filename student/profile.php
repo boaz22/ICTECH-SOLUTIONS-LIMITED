@@ -18,14 +18,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'update_pro
     $name = postParam('name');
     $phone = postParam('phone');
     $csrf_token = postParam('csrf_token');
-    
+
     if (!Auth::verifyCSRFToken($csrf_token)) {
         $error = 'Security validation failed.';
     } elseif (empty($name)) {
         $error = 'Name is required.';
     } else {
         try {
-            $db->update('users', 
+            $db->update('users',
                 ['name' => $name, 'phone' => $phone],
                 'id = ?',
                 [$userId]
@@ -46,15 +46,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
     $newPassword = postParam('new_password');
     $confirmPassword = postParam('confirm_password');
     $csrf_token = postParam('csrf_token');
-    
+
     if (!Auth::verifyCSRFToken($csrf_token)) {
         $error = 'Security validation failed.';
     } elseif (empty($currentPassword) || empty($newPassword)) {
         $error = 'All fields are required.';
     } elseif (!Auth::verifyPassword($currentPassword, $userProfile['password'])) {
         $error = 'Current password is incorrect.';
-    } elseif (strlen($newPassword) < 6) {
-        $error = 'New password must be at least 6 characters.';
+                    } elseif (!empty(Auth::validatePassword($newPassword))) {
+                        $error = implode('. ', Auth::validatePassword($newPassword));
     } elseif ($newPassword !== $confirmPassword) {
         $error = 'Passwords do not match.';
     } else {
@@ -77,21 +77,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
             <p class="text-muted">Manage your profile and account preferences</p>
         </div>
     </div>
-    
+
     <?php if ($message): ?>
         <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
             <i class="fas fa-check-circle me-2"></i> <?php echo $message; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
-    
+
     <?php if ($error): ?>
         <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
             <i class="fas fa-exclamation-circle me-2"></i> <?php echo $error; ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
     <?php endif; ?>
-    
+
     <div class="row">
         <!-- Profile Information -->
         <div class="col-md-6 mb-4">
@@ -103,39 +103,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
                     <form method="POST" class="portal-form">
                         <input type="hidden" name="action" value="update_profile">
                         <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Full Name</label>
-                            <input type="text" name="name" class="form-control" 
+                            <input type="text" name="name" class="form-control"
                                    value="<?php echo h($userProfile['name']); ?>" required>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Email Address</label>
-                            <input type="email" class="form-control" 
+                            <input type="email" class="form-control"
                                    value="<?php echo h($userProfile['email']); ?>" disabled>
                             <small class="text-muted">Email cannot be changed</small>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Phone Number</label>
-                            <input type="tel" name="phone" class="form-control" 
-                                   value="<?php echo h($userProfile['phone'] ?? ''); ?>" 
+                            <input type="tel" name="phone" class="form-control"
+                                   value="<?php echo h($userProfile['phone'] ?? ''); ?>"
                                    placeholder="+254 712 345 678">
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Account Status</label>
-                            <input type="text" class="form-control" 
+                            <input type="text" class="form-control"
                                    value="<?php echo ucfirst($userProfile['status']); ?>" disabled>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Member Since</label>
-                            <input type="text" class="form-control" 
+                            <input type="text" class="form-control"
                                    value="<?php echo formatDate($userProfile['created_at']); ?>" disabled>
                         </div>
-                        
+
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-save me-2"></i> Save Changes
                         </button>
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
                 </div>
             </div>
         </div>
-        
+
         <!-- Change Password -->
         <div class="col-md-6 mb-4">
             <div class="card shadow-sm border-0">
@@ -154,27 +154,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
                     <form method="POST" class="portal-form">
                         <input type="hidden" name="action" value="change_password">
                         <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
-                        
+
                         <div class="alert alert-info mb-3">
                             <small><i class="fas fa-info-circle me-2"></i> Keep your password secure and unique. Change it regularly for better security.</small>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Current Password</label>
                             <input type="password" name="current_password" class="form-control" required>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">New Password</label>
                             <input type="password" name="new_password" class="form-control" required>
-                            <small class="text-muted">Minimum 6 characters</small>
+                            <small class="text-muted">Use 8+ characters, an uppercase letter, a number, and a special character.</small>
                         </div>
-                        
+
                         <div class="form-group mb-3">
                             <label class="form-label">Confirm New Password</label>
                             <input type="password" name="confirm_password" class="form-control" required>
                         </div>
-                        
+
                         <button type="submit" class="btn btn-primary w-100">
                             <i class="fas fa-key me-2"></i> Update Password
                         </button>
@@ -183,7 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'change_pas
             </div>
         </div>
     </div>
-    
+
     <!-- Account Actions -->
     <div class="row">
         <div class="col-md-12">

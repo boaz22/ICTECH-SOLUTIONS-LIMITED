@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /includes/
+Disallow: /database/
+Disallow: /student/
+Sitemap: https://ictechsolutions.co.ke/sitemap.xml

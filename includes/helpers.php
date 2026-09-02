@@ -54,9 +54,9 @@ function formatDate($date, $format = 'M d, Y') {
 function getCourse($courseId) {
     $db = Database::getInstance();
     return $db->getRow(
-        "SELECT c.*, cat.name as category_name 
-         FROM courses c 
-         LEFT JOIN categories cat ON c.category_id = cat.id 
+        "SELECT c.*, cat.name as category_name
+         FROM courses c
+         LEFT JOIN categories cat ON c.category_id = cat.id
          WHERE c.id = ?",
         [$courseId]
     );
@@ -68,11 +68,11 @@ function getCourse($courseId) {
 function getFeaturedCourses($limit = 6) {
     $db = Database::getInstance();
     return $db->getAll(
-        "SELECT c.*, cat.name as category_name 
-         FROM courses c 
-         LEFT JOIN categories cat ON c.category_id = cat.id 
-         WHERE c.status = 'published' AND c.is_featured = 1 
-         ORDER BY c.created_at DESC 
+        "SELECT c.*, cat.name as category_name
+         FROM courses c
+         LEFT JOIN categories cat ON c.category_id = cat.id
+         WHERE c.status = 'published' AND c.is_featured = 1
+         ORDER BY c.created_at DESC
          LIMIT ?",
         [$limit]
     );
@@ -83,33 +83,33 @@ function getFeaturedCourses($limit = 6) {
  */
 function getPublishedCourses($limit = null, $offset = 0, $categoryId = null, $search = null) {
     $db = Database::getInstance();
-    $sql = "SELECT c.*, cat.name as category_name 
-            FROM courses c 
-            LEFT JOIN categories cat ON c.category_id = cat.id 
+    $sql = "SELECT c.*, cat.name as category_name
+            FROM courses c
+            LEFT JOIN categories cat ON c.category_id = cat.id
             WHERE c.status = 'published'";
-    
+
     $params = [];
-    
+
     if ($categoryId) {
         $sql .= " AND c.category_id = ?";
         $params[] = $categoryId;
     }
-    
+
     if ($search) {
         $sql .= " AND (c.title LIKE ? OR c.description LIKE ?)";
         $searchTerm = '%' . $search . '%';
         $params[] = $searchTerm;
         $params[] = $searchTerm;
     }
-    
+
     $sql .= " ORDER BY c.created_at DESC";
-    
+
     if ($limit) {
         $sql .= " LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = $offset;
     }
-    
+
     return $db->getAll($sql, $params);
 }
 
@@ -119,9 +119,9 @@ function getPublishedCourses($limit = null, $offset = 0, $categoryId = null, $se
 function getFeaturedTestimonials($limit = 3) {
     $db = Database::getInstance();
     return $db->getAll(
-        "SELECT * FROM testimonials 
-         WHERE is_featured = 1 
-         ORDER BY created_at DESC 
+        "SELECT * FROM testimonials
+         WHERE is_featured = 1
+         ORDER BY created_at DESC
          LIMIT ?",
         [$limit]
     );
@@ -133,8 +133,8 @@ function getFeaturedTestimonials($limit = 3) {
 function getActivePartners() {
     $db = Database::getInstance();
     return $db->getAll(
-        "SELECT * FROM partners 
-         WHERE status = 'active' 
+        "SELECT * FROM partners
+         WHERE status = 'active'
          ORDER BY name ASC"
     );
 }
@@ -155,7 +155,7 @@ function getCategories() {
 function isEnrolled($userId, $courseId) {
     $db = Database::getInstance();
     $enrollment = $db->getRow(
-        "SELECT id FROM enrollments 
+        "SELECT id FROM enrollments
          WHERE user_id = ? AND course_id = ? AND status IN ('active', 'completed')",
         [$userId, $courseId]
     );
@@ -168,13 +168,50 @@ function isEnrolled($userId, $courseId) {
 function getStudentEnrollments($userId) {
     $db = Database::getInstance();
     return $db->getAll(
-        "SELECT e.*, c.title as course_title, c.image, c.duration, c.price
+        "SELECT e.*, c.title as course_title, c.image, c.duration, c.price, u.name as trainer_name
          FROM enrollments e
          JOIN courses c ON e.course_id = c.id
+         LEFT JOIN users u ON e.trainer_id = u.id
          WHERE e.user_id = ?
          ORDER BY e.enrolled_at DESC",
         [$userId]
     );
+}
+
+function approveEnrollment($enrollmentId, $adminId) {
+    $db = Database::getInstance();
+    return $db->update('enrollments', ['status' => 'active', 'approved_by' => $adminId, 'approved_at' => date('Y-m-d H:i:s')], 'id = ? AND status = ? ', [$enrollmentId, 'pending']);
+}
+
+function assignTrainer($enrollmentId, $trainerId) {
+    $db = Database::getInstance();
+    return $db->update('enrollments', ['trainer_id' => $trainerId], 'id = ? AND status = ?', [$enrollmentId, 'active']);
+}
+
+function updateEnrollmentProgress($enrollmentId, $studentId, $progress) {
+    $db = Database::getInstance();
+    $progress = max(0, min(100, (int) $progress));
+    return $db->update('enrollments', ['progress' => $progress], 'id = ? AND user_id = ? AND status = ?', [$enrollmentId, $studentId, 'active']);
+}
+
+function markStudentCompleted($enrollmentId, $studentId) {
+    $db = Database::getInstance();
+    return $db->update('enrollments', ['student_completed_at' => date('Y-m-d H:i:s')], 'id = ? AND user_id = ? AND status = ? AND progress = 100', [$enrollmentId, $studentId, 'active']);
+}
+
+function approveTrainerCompletion($enrollmentId, $trainerId) {
+    $db = Database::getInstance();
+    return $db->update('enrollments', ['trainer_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_id = ? AND progress = 100 AND student_completed_at IS NOT NULL', [$enrollmentId, $trainerId]);
+}
+
+function approveAdminCompletion($enrollmentId) {
+    $db = Database::getInstance();
+    $updated = $db->update('enrollments', ['status' => 'completed', 'admin_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_approved_at IS NOT NULL AND progress = 100', [$enrollmentId]);
+    if ($updated) {
+        $number = 'ICTECH-' . date('Y') . '-' . str_pad($enrollmentId, 6, '0', STR_PAD_LEFT);
+        $db->query('INSERT IGNORE INTO certificates (enrollment_id, certificate_number) VALUES (?, ?)', [$enrollmentId, $number]);
+    }
+    return $updated;
 }
 
 /**
@@ -182,24 +219,24 @@ function getStudentEnrollments($userId) {
  */
 function createEnrollment($userId, $courseId) {
     $db = Database::getInstance();
-    
+
     // Check if already enrolled
     $existing = $db->getRow(
         "SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?",
         [$userId, $courseId]
     );
-    
+
     if ($existing) {
         return ['success' => false, 'error' => 'Already enrolled in this course'];
     }
-    
+
     try {
         $enrollmentId = $db->insert('enrollments', [
             'user_id' => $userId,
             'course_id' => $courseId,
             'status' => 'pending'
         ]);
-        
+
         return ['success' => true, 'enrollment_id' => $enrollmentId];
     } catch (Exception $e) {
         return ['success' => false, 'error' => 'Failed to create enrollment'];
@@ -233,7 +270,7 @@ function truncateText($text, $length = 150, $suffix = '...') {
 function getRelativeTime($date) {
     $timestamp = strtotime($date);
     $diff = time() - $timestamp;
-    
+
     if ($diff < 60) {
         return 'just now';
     } elseif ($diff < 3600) {
@@ -255,28 +292,28 @@ function getRelativeTime($date) {
  */
 function validateFileUpload($file, $maxSize = 5242880, $allowedTypes = ['image/jpeg', 'image/png']) {
     $errors = [];
-    
+
     if (!isset($file) || $file['error'] !== UPLOAD_ERR_OK) {
         $errors[] = 'File upload failed';
         return ['success' => false, 'errors' => $errors];
     }
-    
+
     if ($file['size'] > $maxSize) {
         $errors[] = 'File is too large. Maximum size: ' . round($maxSize / 1024 / 1024) . 'MB';
     }
-    
+
     $finfo = finfo_open(FILEINFO_MIME_TYPE);
     $mimeType = finfo_file($finfo, $file['tmp_name']);
     finfo_close($finfo);
-    
+
     if (!in_array($mimeType, $allowedTypes)) {
         $errors[] = 'Invalid file type';
     }
-    
+
     if (!empty($errors)) {
         return ['success' => false, 'errors' => $errors];
     }
-    
+
     return ['success' => true];
 }
 
@@ -287,29 +324,29 @@ function uploadFile($file, $uploadDir = null) {
     if ($uploadDir === null) {
         $uploadDir = UPLOAD_DIR;
     }
-    
+
     // Validate
     $validation = validateFileUpload($file);
     if (!$validation['success']) {
         return $validation;
     }
-    
+
     // Create directory if not exists
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
-    
+
     // Generate unique filename
     $originalName = basename($file['name']);
     $extension = pathinfo($originalName, PATHINFO_EXTENSION);
     $newFilename = uniqid('upload_', true) . '.' . $extension;
     $filePath = $uploadDir . $newFilename;
-    
+
     // Move uploaded file
     if (move_uploaded_file($file['tmp_name'], $filePath)) {
         return ['success' => true, 'filename' => $newFilename, 'path' => $filePath];
     }
-    
+
     return ['success' => false, 'errors' => ['Failed to save file']];
 }
 

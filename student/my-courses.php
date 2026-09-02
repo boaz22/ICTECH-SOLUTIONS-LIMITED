@@ -12,16 +12,19 @@ $db = Database::getInstance();
 // Handle enrollment
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'enroll') {
     $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
-    
+
     if ($courseId) {
         $result = createEnrollment($userId, $courseId);
         if ($result['success']) {
             $enrollmentId = $result['enrollment_id'];
-            // Redirect to payment
-            header("Location: " . SITE_URL . "payment/initiate.php?enrollment_id=" . $enrollmentId);
+            header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
             exit;
         }
     }
+}
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'mark_completed' && Auth::verifyCSRFToken(postParam('csrf_token'))) {
+    markStudentCompleted(postParam('enrollment_id', null, FILTER_VALIDATE_INT), $userId);
 }
 
 // Handle URL enrollment
@@ -31,7 +34,7 @@ if (getParam('action') === 'enroll') {
         $result = createEnrollment($userId, $courseId);
         if ($result['success']) {
             $enrollmentId = $result['enrollment_id'];
-            header("Location: " . SITE_URL . "payment/initiate.php?enrollment_id=" . $enrollmentId);
+            header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
             exit;
         }
     }
@@ -50,7 +53,7 @@ $enrollments = getStudentEnrollments($userId);
             <p class="text-muted">Manage your enrolled courses and track your progress</p>
         </div>
     </div>
-    
+
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-4" role="tablist">
         <li class="nav-item">
@@ -69,23 +72,23 @@ $enrollments = getStudentEnrollments($userId);
             </a>
         </li>
     </ul>
-    
+
     <!-- Tab Content -->
     <div class="tab-content">
         <!-- Active Courses -->
         <div class="tab-pane fade show active" id="active-courses">
             <div class="row">
-                <?php 
+                <?php
                 $activeCourses = array_filter($enrollments, fn($e) => $e['status'] === 'active');
-                if (!empty($activeCourses)): 
+                if (!empty($activeCourses)):
                 ?>
                     <?php foreach ($activeCourses as $course): ?>
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="portal-course-card">
                                 <div style="height: 200px; background: linear-gradient(135deg, var(--primary) 0%, #003d99 100%); overflow: hidden;">
                                     <?php if ($course['image']): ?>
-                                        <img src="<?php echo SITE_URL . 'uploads/' . h($course['image']); ?>" 
-                                             alt="<?php echo h($course['course_title']); ?>" 
+                                        <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>"
+                                             alt="<?php echo h($course['course_title']); ?>"
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     <?php else: ?>
                                         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
@@ -103,14 +106,19 @@ $enrollments = getStudentEnrollments($userId);
                                         </small>
                                     </p>
                                     <div class="course-progress mb-3">
-                                        <div class="course-progress-bar" style="width: 45%;"></div>
+                                        <div class="course-progress-bar" style="width: <?php echo (int) $course['progress']; ?>%;"></div>
                                     </div>
-                                    <small class="text-muted">45% Complete</small>
+                                     <small class="text-muted"><?php echo (int) $course['progress']; ?>% Complete</small>
                                     <div class="mt-3">
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>" 
+                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
                                            class="btn btn-primary btn-sm w-100">
                                             <i class="fas fa-arrow-right me-1"></i> Continue Learning
                                         </a>
+                                            <?php if ((int) $course['progress'] === 100 && empty($course['student_completed_at'])): ?>
+                                                <form method="post" class="mt-2"><input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>"><input type="hidden" name="enrollment_id" value="<?php echo (int) $course['id']; ?>"><button name="action" value="mark_completed" class="btn btn-outline-success btn-sm w-100">Mark Course Complete</button></form>
+                                            <?php elseif ($course['student_completed_at'] && empty($course['trainer_approved_at'])): ?>
+                                                <small class="d-block text-warning mt-2">Awaiting trainer approval</small>
+                                            <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
@@ -132,21 +140,21 @@ $enrollments = getStudentEnrollments($userId);
                 <?php endif; ?>
             </div>
         </div>
-        
+
         <!-- Completed Courses -->
         <div class="tab-pane fade" id="completed-courses">
             <div class="row">
-                <?php 
+                <?php
                 $completedCourses = array_filter($enrollments, fn($e) => $e['status'] === 'completed');
-                if (!empty($completedCourses)): 
+                if (!empty($completedCourses)):
                 ?>
                     <?php foreach ($completedCourses as $course): ?>
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="portal-course-card">
                                 <div style="height: 200px; background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); overflow: hidden;">
                                     <?php if ($course['image']): ?>
-                                        <img src="<?php echo SITE_URL . 'uploads/' . h($course['image']); ?>" 
-                                             alt="<?php echo h($course['course_title']); ?>" 
+                                        <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>"
+                                             alt="<?php echo h($course['course_title']); ?>"
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     <?php else: ?>
                                         <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: white; font-size: 3rem;">
@@ -168,7 +176,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </div>
                                     <small class="text-success">100% Complete</small>
                                     <div class="mt-3">
-                                        <a href="#" class="btn btn-outline-primary btn-sm w-100">
+                                        <a href="<?php echo SITE_URL; ?>student/certificate.php?id=<?php echo (int) $course['id']; ?>" class="btn btn-outline-primary btn-sm w-100">
                                             <i class="fas fa-certificate me-1"></i> Download Certificate
                                         </a>
                                     </div>
@@ -189,7 +197,7 @@ $enrollments = getStudentEnrollments($userId);
                 <?php endif; ?>
             </div>
         </div>
-        
+
         <!-- All Courses -->
         <div class="tab-pane fade" id="all-courses">
             <?php if (!empty($enrollments)): ?>
@@ -214,11 +222,11 @@ $enrollments = getStudentEnrollments($userId);
                                     </td>
                                     <td><?php echo formatCurrency($course['price']); ?></td>
                                     <td>
-                                        <?php 
+                                        <?php
                                         $status = $course['status'];
                                         $statusClass = 'status-pending';
                                         $statusLabel = 'Pending';
-                                        
+
                                         if ($status === 'active') {
                                             $statusClass = 'status-active';
                                             $statusLabel = 'Active';
@@ -233,7 +241,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </td>
                                     <td><?php echo formatDate($course['enrolled_at'], 'M d, Y'); ?></td>
                                     <td>
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>" 
+                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
                                            class="btn btn-sm btn-outline-primary">
                                             View
                                         </a>
