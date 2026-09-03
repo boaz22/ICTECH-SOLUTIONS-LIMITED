@@ -8,10 +8,13 @@ $pageTitle = 'Services';
 ?>
 
 <!-- Page Header -->
-<section class="bg-primary text-white py-5">
+<section class="services-page-header">
     <div class="container">
-        <h1>Our Services</h1>
-        <p>Comprehensive training solutions for individuals and organizations</p>
+        <div class="services-page-header-content">
+            <div class="section-subtitle">What we do</div>
+            <h1>Technology support that moves you forward</h1>
+            <p>Comprehensive training solutions for individuals and organizations</p>
+        </div>
     </div>
 </section>
 
@@ -21,15 +24,14 @@ $pageTitle = 'Services';
         <div class="row">
             <!-- ICT Training -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-laptop-code"></i> ICT Training
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-laptop-code"></i></div>
+                        <h5 class="mb-0">ICT Training</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Comprehensive technology training covering web development, mobile apps, data science, cloud computing, and more.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> Professional Courses</li>
                             <li><i class="fas fa-check text-success me-2"></i> Industry-Relevant Skills</li>
                             <li><i class="fas fa-check text-success me-2"></i> Hands-on Projects</li>
@@ -41,15 +43,14 @@ $pageTitle = 'Services';
             
             <!-- Corporate Training -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-building"></i> Corporate Training
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-building"></i></div>
+                        <h5 class="mb-0">Corporate Training</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Customized training programs designed for organizations looking to upskill their workforce.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> Customized Programs</li>
                             <li><i class="fas fa-check text-success me-2"></i> On-Site Training</li>
                             <li><i class="fas fa-check text-success me-2"></i> Group Discounts</li>
@@ -61,15 +62,14 @@ $pageTitle = 'Services';
             
             <!-- Professional Development -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-graduation-cap"></i> Professional Development
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-graduation-cap"></i></div>
+                        <h5 class="mb-0">Professional Development</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Career development programs to help professionals advance in their chosen fields.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> Career Guidance</li>
                             <li><i class="fas fa-check text-success me-2"></i> Mentorship Programs</li>
                             <li><i class="fas fa-check text-success me-2"></i> Portfolio Building</li>
@@ -81,15 +81,14 @@ $pageTitle = 'Services';
             
             <!-- IT Consultancy -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-briefcase"></i> IT Consultancy
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-briefcase"></i></div>
+                        <h5 class="mb-0">IT Consultancy</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Expert IT consultation services to help organizations with their technology strategy and implementation.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> Technology Assessment</li>
                             <li><i class="fas fa-check text-success me-2"></i> Strategic Planning</li>
                             <li><i class="fas fa-check text-success me-2"></i> Implementation Support</li>
@@ -101,15 +100,14 @@ $pageTitle = 'Services';
             
             <!-- Technical Support -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-headset"></i> Technical Support
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-headset"></i></div>
+                        <h5 class="mb-0">Technical Support</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Comprehensive technical support and troubleshooting services for your IT infrastructure.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> 24/7 Support</li>
                             <li><i class="fas fa-check text-success me-2"></i> Problem Resolution</li>
                             <li><i class="fas fa-check text-success me-2"></i> System Optimization</li>
@@ -121,15 +119,14 @@ $pageTitle = 'Services';
             
             <!-- Digital Skills Training -->
             <div class="col-md-6 col-lg-4 mb-4" data-scroll>
-                <div class="card h-100 shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="card-title mb-0">
-                            <i class="fas fa-mobile-alt"></i> Digital Skills
-                        </h5>
+                <div class="card service-card h-100 shadow-sm border-0">
+                    <div class="service-card-header">
+                        <div class="service-card-icon"><i class="fas fa-mobile-alt"></i></div>
+                        <h5 class="mb-0">Digital Skills</h5>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body service-card-body">
                         <p>Training for essential digital skills including office productivity, cloud services, and digital marketing.</p>
-                        <ul class="list-unstyled">
+                        <ul class="service-list list-unstyled">
                             <li><i class="fas fa-check text-success me-2"></i> Office Tools</li>
                             <li><i class="fas fa-check text-success me-2"></i> Cloud Services</li>
                             <li><i class="fas fa-check text-success me-2"></i> Digital Marketing</li>
@@ -152,8 +149,8 @@ $pageTitle = 'Services';
         
         <div class="row">
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="text-center">
-                    <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
+                <div class="service-benefit">
+                    <div class="service-benefit-icon">
                         <i class="fas fa-star"></i>
                     </div>
                     <h5>Expert Team</h5>
@@ -162,8 +159,8 @@ $pageTitle = 'Services';
             </div>
             
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="text-center">
-                    <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
+                <div class="service-benefit">
+                    <div class="service-benefit-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <h5>Results-Driven</h5>
@@ -172,8 +169,8 @@ $pageTitle = 'Services';
             </div>
             
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="text-center">
-                    <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
+                <div class="service-benefit">
+                    <div class="service-benefit-icon">
                         <i class="fas fa-handshake"></i>
                     </div>
                     <h5>Client-Centric</h5>

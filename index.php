@@ -99,8 +99,8 @@ $totalCourses = $db->count('courses', "status = 'published'");
                 <div class="col-md-6 col-lg-4 mb-4" data-scroll>
                     <div class="course-card">
                         <div class="course-image">
-                            <?php if ($course['image']): ?>
-                                <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>" alt="<?php echo h($course['title']); ?>">
+                            <?php if (courseImageUrl($course)): ?>
+                                <img src="<?php echo h(courseImageUrl($course)); ?>" alt="<?php echo h($course['title']); ?>">
                             <?php else: ?>
                                 <i class="fas fa-book"></i>
                             <?php endif; ?>
@@ -170,8 +170,8 @@ $totalCourses = $db->count('courses', "status = 'published'");
                                     <div class="testimonial-label">Featured Success Story</div>
                                     <div class="testimonial-header">
                                         <div class="testimonial-avatar">
-                                            <?php if (!empty($testimonial['photo'])): ?>
-                                                <img src="<?php echo SITE_URL . 'assets/images/testimonials/' . h($testimonial['photo']); ?>" alt="<?php echo h($testimonial['name']); ?>">
+                                            <?php if (testimonialImageUrl($testimonial)): ?>
+                                                <img src="<?php echo h(testimonialImageUrl($testimonial)); ?>" alt="<?php echo h($testimonial['name']); ?>">
                                             <?php else: ?>
                                                 <i class="fas fa-user"></i>
                                             <?php endif; ?>
@@ -238,7 +238,7 @@ $totalCourses = $db->count('courses', "status = 'published'");
                     <div class="partner-card">
                         <?php if ($partner['logo']): ?>
                             <div class="partner-logo-frame">
-                                <img src="<?php echo SITE_URL . 'assets/images/' . h($partner['logo']); ?>" alt="<?php echo h($partner['name']); ?>" class="partner-logo">
+                                <img src="<?php echo h(assetImageUrl($partner['logo'])); ?>" alt="<?php echo h($partner['name']); ?>" class="partner-logo">
                             </div>
                         <?php else: ?>
                             <div class="partner-logo-frame partner-logo-fallback">

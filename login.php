@@ -47,23 +47,28 @@ $redirect = getParam('redirect', '');
 ?>
 
 <!-- Page Header -->
-<section class="bg-primary text-white py-5">
+<section class="auth-page-header">
     <div class="container">
-        <h1>Student Login</h1>
-        <p>Access your student portal and courses</p>
+        <div class="auth-page-header-content">
+            <div class="section-subtitle">Welcome back</div>
+            <h1>Continue your learning journey</h1>
+            <p>Access your student portal, courses, and progress in one place.</p>
+        </div>
     </div>
 </section>
 
 <!-- Login Section -->
-<section class="py-5">
+    <section class="py-5 auth-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-sign-in-alt"></i> Login to Your Account
-                        </h5>
+                <div class="card auth-card shadow-sm border-0">
+                    <div class="auth-card-header">
+                        <div class="auth-card-icon"><i class="fas fa-sign-in-alt"></i></div>
+                        <div>
+                            <div class="section-subtitle">Secure access</div>
+                            <h2 class="mb-0">Login to your account</h2>
+                        </div>
                     </div>
                     <div class="card-body p-4">
                         <?php if ($error): ?>
@@ -127,7 +132,7 @@ $redirect = getParam('redirect', '');
                 </div>
 
                 <!-- Demo Credentials -->
-                <div class="alert alert-info mt-4">
+                <div class="alert auth-note alert-info mt-4">
                     <h6 class="mb-2"><i class="fas fa-info-circle"></i> Demo Account (Development Only)</h6>
                     <p class="mb-2">
                         <strong>Email:</strong> john.kamau@email.com<br>

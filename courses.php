@@ -95,8 +95,8 @@ $categories = getCategories();
                             <div class="col-md-6 col-lg-4 mb-4">
                                 <div class="course-card">
                                     <div class="course-image">
-                                        <?php if ($course['image']): ?>
-                                            <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>" alt="<?php echo h($course['title']); ?>">
+                                        <?php if (courseImageUrl($course)): ?>
+                                            <img src="<?php echo h(courseImageUrl($course)); ?>" alt="<?php echo h($course['title']); ?>">
                                         <?php else: ?>
                                             <i class="fas fa-book"></i>
                                         <?php endif; ?>

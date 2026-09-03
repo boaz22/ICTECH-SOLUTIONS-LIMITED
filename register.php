@@ -51,23 +51,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 ?>
 
 <!-- Page Header -->
-<section class="bg-primary text-white py-5">
+<section class="auth-page-header">
     <div class="container">
-        <h1>Create Your Account</h1>
-        <p>Join ICTECH and start your learning journey</p>
+        <div class="auth-page-header-content">
+            <div class="section-subtitle">Start here</div>
+            <h1>Build your next chapter with ICTECH</h1>
+            <p>Create your student account and begin learning with expert guidance.</p>
+        </div>
     </div>
 </section>
 
 <!-- Registration Section -->
-<section class="py-5 registration-section">
+<section class="py-5 registration-section auth-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="card shadow-sm border-0">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-user-plus"></i> Student Registration
-                        </h5>
+            <div class="col-md-8 col-lg-6">
+                <div class="card auth-card shadow-sm border-0">
+                    <div class="auth-card-header">
+                        <div class="auth-card-icon"><i class="fas fa-user-plus"></i></div>
+                        <div>
+                            <div class="section-subtitle">Create your profile</div>
+                            <h2 class="mb-0">Student registration</h2>
+                        </div>
                     </div>
                     <div class="card-body p-4">
                         <?php if (!empty($errors)): ?>

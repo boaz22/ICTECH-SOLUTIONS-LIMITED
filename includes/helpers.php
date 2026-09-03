@@ -21,6 +21,55 @@ function sanitizeUrl($url) {
 }
 
 /**
+ * Build a public URL for an image stored in the assets directory.
+ */
+function assetImageUrl($filename, $directory = 'images/') {
+    $legacyNames = [
+        'airtel.png' => 'partner-airtel-kenya.svg',
+        'amazon-aws.png' => 'partner-amazon-aws.svg',
+        'google-cloud.png' => 'partner-google-cloud.svg',
+        'microsoft-azure.png' => 'partner-microsoft-azure.svg',
+        'safaricom.png' => 'partner-safaricom.png'
+    ];
+
+    $filename = $legacyNames[$filename] ?? $filename;
+    return SITE_URL . 'assets/' . $directory . rawurlencode($filename);
+}
+
+function courseImageUrl($course) {
+    $defaultImages = [
+        'php-web-development' => 'course-web-development.jpg',
+        'advanced-mysql' => 'course-cloud-computing.jpg',
+        'javascript-es6' => 'course-javascript.jpg',
+        'reactjs-frontend' => 'course-data-science.jpg',
+        'flutter-mobile-dev' => 'course-mobile-development.jpg',
+        'data-science-python' => 'course-cybersecurity.jpg'
+    ];
+
+    $filename = trim((string) ($course['image'] ?? ''));
+    if ($filename === '') {
+        $filename = $defaultImages[$course['slug'] ?? ''] ?? '';
+    }
+
+    return $filename === '' ? '' : assetImageUrl($filename);
+}
+
+function testimonialImageUrl($testimonial) {
+    $defaultImages = [
+        'James Kariuki' => 'male-professional.jpg',
+        'Sarah Mwangi' => 'female-professional.jpg',
+        'Michael Ouma' => 'male-professional.jpg'
+    ];
+
+    $filename = trim((string) ($testimonial['photo'] ?? ''));
+    if ($filename === '') {
+        $filename = $defaultImages[$testimonial['name'] ?? ''] ?? '';
+    }
+
+    return $filename === '' ? '' : assetImageUrl($filename, 'images/testimonials/');
+}
+
+/**
  * Validate email
  */
 function isValidEmail($email) {

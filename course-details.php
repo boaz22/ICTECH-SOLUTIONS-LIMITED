@@ -203,8 +203,8 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                     <div class="col-md-6 col-lg-4 mb-4">
                         <div class="course-card">
                             <div class="course-image">
-                                <?php if ($related['image']): ?>
-                                    <img src="<?php echo SITE_URL . 'assets/images/' . h($related['image']); ?>" alt="<?php echo h($related['title']); ?>">
+                                <?php if (courseImageUrl($related)): ?>
+                                    <img src="<?php echo h(courseImageUrl($related)); ?>" alt="<?php echo h($related['title']); ?>">
                                 <?php else: ?>
                                     <i class="fas fa-book"></i>
                                 <?php endif; ?>

@@ -8,28 +8,32 @@ $pageTitle = 'About Us';
 ?>
 
 <!-- Page Header -->
-<section class="bg-primary text-white py-5">
+<section class="about-page-header">
     <div class="container">
-        <h1>About ICTECH Solutions</h1>
-        <p>Professional technology training for career advancement</p>
+        <div class="about-page-header-content">
+            <div class="section-subtitle">About ICTECH</div>
+            <h1>Building confident technology professionals</h1>
+            <p>Professional technology training for career advancement</p>
+        </div>
     </div>
 </section>
 
 <!-- Company Overview -->
-<section class="py-5">
+<section class="about-overview py-5">
     <div class="container">
         <div class="row align-items-center">
-            <div class="col-lg-6 mb-4" data-scroll>
+            <div class="col-lg-6 mb-4 mb-lg-0" data-scroll>
+                <div class="about-overview-copy">
                 <h2>Who We Are</h2>
                 <p>ICTECH Solutions Limited is a leading provider of professional technology training and development services in East Africa. With over a decade of experience, we're committed to empowering individuals and organizations through quality ICT education.</p>
                 <p>Our mission is to bridge the skills gap in the technology sector by providing industry-relevant, practical training that prepares professionals for real-world challenges.</p>
                 <p>We believe technology should be accessible to everyone, and that continuous learning is key to professional success in our rapidly evolving digital world.</p>
+                </div>
             </div>
             <div class="col-lg-6" data-scroll>
-                <div class="bg-light p-5 rounded" style="text-align: center; min-height: 300px; display: flex; align-items: center; justify-content: center;">
-                    <div style="font-size: 5rem; color: var(--primary);">
-                        <i class="fas fa-laptop-code"></i>
-                    </div>
+                <div class="about-overview-visual">
+                    <img src="<?php echo SITE_URL; ?>assets/images/hero-tech.jpg" alt="Technology training at ICTECH Solutions">
+                    <div class="about-overview-badge"><strong>10+</strong><span>Years of experience</span></div>
                 </div>
             </div>
         </div>
@@ -40,15 +44,16 @@ $pageTitle = 'About Us';
 <section class="bg-light py-5">
     <div class="container">
         <div class="section-header mb-5">
+            <div class="section-subtitle">What guides us</div>
             <h2>Our Vision & Values</h2>
         </div>
         
         <div class="row">
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card about-value-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
-                        <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
-                            <i class="fas fa-target"></i>
+                        <div class="about-value-icon">
+                            <i class="fas fa-bullseye"></i>
                         </div>
                         <h5 class="card-title">Our Mission</h5>
                         <p class="card-text">To deliver world-class technology training that transforms careers and drives digital innovation across East Africa.</p>
@@ -57,9 +62,9 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card about-value-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
-                        <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
+                        <div class="about-value-icon">
                             <i class="fas fa-eye"></i>
                         </div>
                         <h5 class="card-title">Our Vision</h5>
@@ -69,9 +74,9 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-4 mb-4" data-scroll>
-                <div class="card h-100 border-0 shadow-sm">
+                <div class="card about-value-card h-100 border-0 shadow-sm">
                     <div class="card-body text-center">
-                        <div style="font-size: 3rem; color: var(--secondary); margin-bottom: 1rem;">
+                        <div class="about-value-icon">
                             <i class="fas fa-heart"></i>
                         </div>
                         <h5 class="card-title">Our Values</h5>
@@ -87,13 +92,14 @@ $pageTitle = 'About Us';
 <section class="py-5">
     <div class="container">
         <div class="section-header mb-5">
+            <div class="section-subtitle">The ICTECH difference</div>
             <h2>Why Choose ICTECH?</h2>
         </div>
         
         <div class="row">
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-award"></i>
                     </div>
                     <div>
@@ -104,8 +110,8 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-code"></i>
                     </div>
                     <div>
@@ -116,8 +122,8 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-chart-line"></i>
                     </div>
                     <div>
@@ -128,8 +134,8 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-certificate"></i>
                     </div>
                     <div>
@@ -140,8 +146,8 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-users"></i>
                     </div>
                     <div>
@@ -152,8 +158,8 @@ $pageTitle = 'About Us';
             </div>
             
             <div class="col-md-6 mb-4" data-scroll>
-                <div class="d-flex mb-4">
-                    <div style="color: var(--secondary); font-size: 2rem; margin-right: 1.5rem; flex-shrink: 0;">
+                <div class="about-benefit d-flex mb-4">
+                    <div class="about-benefit-icon">
                         <i class="fas fa-wallet"></i>
                     </div>
                     <div>

@@ -86,8 +86,8 @@ $enrollments = getStudentEnrollments($userId);
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="portal-course-card">
                                 <div style="height: 200px; background: linear-gradient(135deg, var(--primary) 0%, #003d99 100%); overflow: hidden;">
-                                    <?php if ($course['image']): ?>
-                                        <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>"
+                                    <?php if (courseImageUrl($course)): ?>
+                                        <img src="<?php echo h(courseImageUrl($course)); ?>"
                                              alt="<?php echo h($course['course_title']); ?>"
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     <?php else: ?>
@@ -152,8 +152,8 @@ $enrollments = getStudentEnrollments($userId);
                         <div class="col-md-6 col-lg-4 mb-4">
                             <div class="portal-course-card">
                                 <div style="height: 200px; background: linear-gradient(135deg, #4caf50 0%, #388e3c 100%); overflow: hidden;">
-                                    <?php if ($course['image']): ?>
-                                        <img src="<?php echo SITE_URL . 'assets/images/' . h($course['image']); ?>"
+                                    <?php if (courseImageUrl($course)): ?>
+                                        <img src="<?php echo h(courseImageUrl($course)); ?>"
                                              alt="<?php echo h($course['course_title']); ?>"
                                              style="width: 100%; height: 100%; object-fit: cover;">
                                     <?php else: ?>
