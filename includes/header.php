@@ -10,6 +10,7 @@ require_once __DIR__ . '/helpers.php';
 $isLoggedIn = Auth::isLoggedIn();
 $currentUser = Auth::getCurrentUser();
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
+$isHomePage = in_array($currentPage, ['', 'index.php'], true);
 $seoTitle = isset($pageTitle) ? $pageTitle : SITE_NAME;
 $seoDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $currentPage === 'index.php' ? SITE_URL : SITE_URL . $currentPage;
@@ -90,22 +91,22 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>">Home</a>
+                        <a class="nav-link <?php echo $isHomePage ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>"<?php echo $isHomePage ? ' aria-current="page"' : ''; ?>>Home</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>about.php">About</a>
+                        <a class="nav-link <?php echo $currentPage === 'about.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>about.php"<?php echo $currentPage === 'about.php' ? ' aria-current="page"' : ''; ?>>About</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>courses.php">Courses</a>
+                        <a class="nav-link <?php echo $currentPage === 'courses.php' || $currentPage === 'course-details.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>courses.php"<?php echo $currentPage === 'courses.php' || $currentPage === 'course-details.php' ? ' aria-current="page"' : ''; ?>>Courses</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>services.php">Services</a>
+                        <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>resources.php">Resources</a>
+                        <a class="nav-link <?php echo $currentPage === 'resources.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>resources.php"<?php echo $currentPage === 'resources.php' ? ' aria-current="page"' : ''; ?>>Resources</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo SITE_URL; ?>contact.php">Contact</a>
+                        <a class="nav-link <?php echo $currentPage === 'contact.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>contact.php"<?php echo $currentPage === 'contact.php' ? ' aria-current="page"' : ''; ?>>Contact</a>
                     </li>
 
                     <?php if ($isLoggedIn): ?>

@@ -175,6 +175,10 @@ a:hover {
     color: var(--secondary) !important;
 }
 
+.nav-link.active {
+    color: var(--secondary) !important;
+}
+
 .nav-link::after {
     content: '';
     position: absolute;
@@ -187,6 +191,10 @@ a:hover {
 }
 
 .nav-link:hover::after {
+    width: 100%;
+}
+
+.nav-link.active::after {
     width: 100%;
 }
 
