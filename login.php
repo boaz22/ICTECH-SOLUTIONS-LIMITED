@@ -131,15 +131,6 @@ $redirect = getParam('redirect', '');
                     </div>
                 </div>
 
-                <!-- Demo Credentials -->
-                <div class="alert auth-note alert-info mt-4">
-                    <h6 class="mb-2"><i class="fas fa-info-circle"></i> Demo Account (Development Only)</h6>
-                    <p class="mb-2">
-                        <strong>Email:</strong> john.kamau@email.com<br>
-                        <strong>Password:</strong> password (set during schema import)
-                    </p>
-                    <small class="text-muted">Change these credentials before deploying to production!</small>
-                </div>
             </div>
         </div>
     </div>

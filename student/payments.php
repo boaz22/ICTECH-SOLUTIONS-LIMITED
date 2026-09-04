@@ -39,6 +39,12 @@ $failedPayments = $db->count('payments', "user_id = ? AND status = 'failed'", [$
             <p class="text-muted">View and manage your payments</p>
         </div>
     </div>
+
+    <?php if (getParam('success')): ?>
+        <div class="alert alert-success mb-4">
+            Payment request created successfully. Reference: <code><?php echo h(getParam('reference', '')); ?></code>
+        </div>
+    <?php endif; ?>
     
     <!-- Statistics -->
     <div class="row mb-4">

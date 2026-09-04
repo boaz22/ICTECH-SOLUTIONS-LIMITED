@@ -5,6 +5,7 @@
  */
 
 require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/helpers.php';
 
 class Auth
 {
@@ -187,6 +188,11 @@ class Auth
                 'role' => 'student',
                 'status' => 'active'
             ]);
+
+            $welcomeMessage = '<p>Welcome to ICTECH Solutions Limited, ' . h($name) . '.</p>'
+                . '<p>Your student account has been created successfully.</p>'
+                . '<p>You can now browse courses, enroll, and access your student portal.</p>';
+            sendEmail($email, 'Welcome to ICTECH Solutions Limited', $welcomeMessage);
 
             return [
                 'success' => true,
