@@ -229,7 +229,15 @@ function getStudentEnrollments($userId) {
 
 function approveEnrollment($enrollmentId, $adminId) {
     $db = Database::getInstance();
-    return $db->update('enrollments', ['status' => 'active', 'approved_by' => $adminId, 'approved_at' => date('Y-m-d H:i:s')], 'id = ? AND status = ? ', [$enrollmentId, 'pending']);
+    $updated = $db->update('enrollments', ['status' => 'active', 'approved_by' => $adminId, 'approved_at' => date('Y-m-d H:i:s')], 'id = ? AND status = ? ', [$enrollmentId, 'pending']);
+    if ($updated) {
+        $enrollment = $db->getRow('SELECT e.user_id, c.title FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.id = ?', [$enrollmentId]);
+        if ($enrollment) {
+            $message = '<p>Your enrollment for <strong>' . h($enrollment['title']) . '</strong> has been approved.</p><p>You can now continue with your coursework.</p>';
+            sendUserEmail($enrollment['user_id'], 'Enrollment approved', $message);
+        }
+    }
+    return $updated;
 }
 
 function assignTrainer($enrollmentId, $trainerId) {
@@ -245,20 +253,70 @@ function updateEnrollmentProgress($enrollmentId, $studentId, $progress) {
 
 function markStudentCompleted($enrollmentId, $studentId) {
     $db = Database::getInstance();
-    return $db->update('enrollments', ['student_completed_at' => date('Y-m-d H:i:s')], 'id = ? AND user_id = ? AND status = ? AND progress = 100', [$enrollmentId, $studentId, 'active']);
+    $updated = $db->update('enrollments', ['student_completed_at' => date('Y-m-d H:i:s')], 'id = ? AND user_id = ? AND status = ? AND progress = 100', [$enrollmentId, $studentId, 'active']);
+
+    if ($updated) {
+        $enrollment = $db->getRow(
+            'SELECT e.id, e.user_id, e.trainer_id, c.title, s.name AS student_name
+             FROM enrollments e
+             JOIN courses c ON c.id = e.course_id
+             JOIN users s ON s.id = e.user_id
+             WHERE e.id = ?',
+            [$enrollmentId]
+        );
+
+        if ($enrollment && !empty($enrollment['trainer_id'])) {
+            $message = '<p>Student <strong>' . h($enrollment['student_name']) . '</strong> has marked the course <strong>' . h($enrollment['title']) . '</strong> as complete.</p>'
+                . '<p>Please review the learner progress and approve the completion when ready.</p>';
+            sendUserEmail($enrollment['trainer_id'], 'Course completion submitted for approval', $message);
+        }
+    }
+
+    return $updated;
 }
 
 function approveTrainerCompletion($enrollmentId, $trainerId) {
     $db = Database::getInstance();
-    return $db->update('enrollments', ['trainer_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_id = ? AND progress = 100 AND student_completed_at IS NOT NULL', [$enrollmentId, $trainerId]);
+    $updated = $db->update('enrollments', ['trainer_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_id = ? AND progress = 100 AND student_completed_at IS NOT NULL', [$enrollmentId, $trainerId]);
+
+    if ($updated) {
+        $enrollment = $db->getRow(
+            'SELECT e.id, e.user_id, e.trainer_id, c.title, s.name AS student_name, t.name AS trainer_name
+             FROM enrollments e
+             JOIN courses c ON c.id = e.course_id
+             JOIN users s ON s.id = e.user_id
+             JOIN users t ON t.id = e.trainer_id
+             WHERE e.id = ?',
+            [$enrollmentId]
+        );
+
+        if ($enrollment) {
+            $studentMessage = '<p>Your completion for <strong>' . h($enrollment['title']) . '</strong> has been approved by your trainer.</p>'
+                . '<p>The course is now awaiting final admin approval before your certificate is issued.</p>';
+            sendUserEmail($enrollment['user_id'], 'Trainer approval received', $studentMessage);
+
+            $adminUsers = $db->getAll("SELECT id, email FROM users WHERE role = 'admin' AND status = 'active'");
+            foreach ($adminUsers as $admin) {
+                $adminMessage = '<p>Trainer <strong>' . h($enrollment['trainer_name']) . '</strong> approved completion for student <strong>' . h($enrollment['student_name']) . '</strong> in <strong>' . h($enrollment['title']) . '</strong>.</p>'
+                    . '<p>Please confirm the final admin approval to issue the certificate.</p>';
+                sendUserEmail($admin['id'], 'Completion approval awaiting admin sign-off', $adminMessage);
+            }
+        }
+    }
+
+    return $updated;
 }
 
 function approveAdminCompletion($enrollmentId) {
     $db = Database::getInstance();
     $updated = $db->update('enrollments', ['status' => 'completed', 'admin_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_approved_at IS NOT NULL AND progress = 100', [$enrollmentId]);
     if ($updated) {
-        $number = 'ICTECH-' . date('Y') . '-' . str_pad($enrollmentId, 6, '0', STR_PAD_LEFT);
-        $db->query('INSERT IGNORE INTO certificates (enrollment_id, certificate_number) VALUES (?, ?)', [$enrollmentId, $number]);
+        createCertificateForEnrollment($enrollmentId);
+        $enrollment = $db->getRow('SELECT e.user_id, c.title FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.id = ?', [$enrollmentId]);
+        if ($enrollment) {
+            $message = '<p>Your course <strong>' . h($enrollment['title']) . '</strong> has been marked complete and your certificate is ready.</p>';
+            sendUserEmail($enrollment['user_id'], 'Course completion approved', $message);
+        }
     }
     return $updated;
 }
@@ -420,6 +478,78 @@ function getPageTitle($title) {
 function redirect($url) {
     header("Location: " . $url);
     exit;
+}
+
+/**
+ * Send a simple email notification.
+ */
+function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
+    if (empty($to)) {
+        return false;
+    }
+
+    $from = $from ?? MAIL_FROM;
+    $fromName = $fromName ?? MAIL_FROM_NAME;
+
+    $headers = [
+        'From: ' . $fromName . ' <' . $from . '>',
+        'Reply-To: ' . $from,
+        'MIME-Version: 1.0',
+        'Content-Type: text/html; charset=UTF-8'
+    ];
+
+    $success = mail($to, $subject, $message, implode("\r\n", $headers));
+    if (!$success) {
+        error_log('Failed to send email to ' . $to . ' subject: ' . $subject);
+    }
+
+    return $success;
+}
+
+/**
+ * Send an email to a user ID using their account details.
+ */
+function sendUserEmail($userId, $subject, $message) {
+    $db = Database::getInstance();
+    $user = $db->getRow('SELECT email FROM users WHERE id = ?', [$userId]);
+    if (!$user || empty($user['email'])) {
+        return false;
+    }
+
+    return sendEmail($user['email'], $subject, $message);
+}
+
+/**
+ * Create a certificate for a completed enrollment if one does not already exist.
+ */
+function createCertificateForEnrollment($enrollmentId) {
+    $db = Database::getInstance();
+    $record = $db->getRow(
+        'SELECT e.id, e.user_id, e.course_id, c.title, u.email, u.name
+         FROM enrollments e
+         JOIN courses c ON c.id = e.course_id
+         JOIN users u ON u.id = e.user_id
+         WHERE e.id = ? AND e.status = ?',
+        [$enrollmentId, 'completed']
+    );
+
+    if (!$record) {
+        return false;
+    }
+
+    $certificateNumber = 'ICTECH-' . date('Y') . '-' . str_pad((int) $enrollmentId, 6, '0', STR_PAD_LEFT);
+    $db->query('INSERT IGNORE INTO certificates (enrollment_id, certificate_number) VALUES (?, ?)', [$enrollmentId, $certificateNumber]);
+
+    $certificate = $db->getRow('SELECT * FROM certificates WHERE enrollment_id = ?', [$enrollmentId]);
+    if ($certificate && !empty($record['email'])) {
+        $body = '<p>Congratulations ' . h($record['name']) . ',</p>'
+            . '<p>Your course completion certificate is ready for <strong>' . h($record['title']) . '</strong>.</p>'
+            . '<p>Certificate Number: <strong>' . h($certificate['certificate_number']) . '</strong></p>'
+            . '<p>You can access it from your student portal.</p>';
+        sendEmail($record['email'], 'Certificate issued for ' . $record['title'], $body);
+    }
+
+    return $certificate !== null;
 }
 
 /**

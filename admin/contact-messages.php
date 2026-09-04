@@ -1,0 +1,116 @@
+<?php
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/helpers.php';
+
+Auth::requireAdmin();
+$db = Database::getInstance();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) {
+        die('Security validation failed.');
+    }
+
+    $messageId = postParam('message_id', null, FILTER_VALIDATE_INT);
+    $status = postParam('status');
+    if ($messageId && in_array($status, ['new', 'read', 'archived'], true)) {
+        $db->update('contact_messages', ['status' => $status], 'id = ?', [$messageId]);
+        header('Location: contact-messages.php?updated=1');
+        exit;
+    }
+}
+
+$statusFilter = getParam('status', 'all');
+$sql = 'SELECT * FROM contact_messages WHERE 1 = 1';
+$params = [];
+if ($statusFilter !== 'all') {
+    $sql .= ' AND status = ?';
+    $params[] = $statusFilter;
+}
+$sql .= ' ORDER BY created_at DESC';
+$messages = $db->getAll($sql, $params);
+?>
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Contact Messages | ICTECH</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="text-secondary mb-1">ADMIN CONSOLE</p>
+            <h1 class="mb-0">Contact Messages</h1>
+        </div>
+        <a href="index.php" class="btn btn-outline-primary">Back to dashboard</a>
+    </div>
+
+    <?php if (getParam('updated')): ?>
+        <div class="alert alert-success">Message status updated.</div>
+    <?php endif; ?>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-2 align-items-center">
+                <div class="col-md-4">
+                    <select name="status" class="form-select">
+                        <option value="all" <?php echo $statusFilter === 'all' ? 'selected' : ''; ?>>All messages</option>
+                        <option value="new" <?php echo $statusFilter === 'new' ? 'selected' : ''; ?>>New</option>
+                        <option value="read" <?php echo $statusFilter === 'read' ? 'selected' : ''; ?>>Read</option>
+                        <option value="archived" <?php echo $statusFilter === 'archived' ? 'selected' : ''; ?>>Archived</option>
+                    </select>
+                </div>
+                <div class="col-md-8 d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                    <a href="contact-messages.php" class="btn btn-outline-secondary">Reset</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <section class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Subject</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php foreach ($messages as $message): ?>
+                        <tr>
+                            <td><?php echo h($message['name']); ?></td>
+                            <td><?php echo h($message['email']); ?></td>
+                            <td><?php echo h($message['subject']); ?></td>
+                            <td><span class="badge text-bg-<?php echo $message['status'] === 'new' ? 'primary' : ($message['status'] === 'read' ? 'success' : 'secondary'); ?>"><?php echo h($message['status']); ?></span></td>
+                            <td><?php echo h(date('M d, Y', strtotime($message['created_at']))); ?></td>
+                            <td>
+                                <form method="post" class="d-flex gap-2 align-items-center">
+                                    <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                    <input type="hidden" name="message_id" value="<?php echo (int) $message['id']; ?>">
+                                    <select name="status" class="form-select form-select-sm">
+                                        <option value="new" <?php echo $message['status'] === 'new' ? 'selected' : ''; ?>>New</option>
+                                        <option value="read" <?php echo $message['status'] === 'read' ? 'selected' : ''; ?>>Read</option>
+                                        <option value="archived" <?php echo $message['status'] === 'archived' ? 'selected' : ''; ?>>Archived</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</main>
+</body>
+</html>
