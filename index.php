@@ -18,12 +18,12 @@ $totalStudents = $db->count('users', "role = 'student'");
 $totalCourses = $db->count('courses', "status = 'published'");
 ?>
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="container">
-        <div class="row align-items-center g-5">
-            <div class="col-lg-6">
-                <div class="hero-content">
+<!-- Hero Media Slider -->
+<section class="hero hero-slider" aria-label="ICTECH highlights">
+    <div class="hero-track">
+        <article class="hero-slide active" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-training-team.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
                     <div class="hero-kicker">Empower. Learn. Succeed.</div>
                     <h1>Professional Training<br>For A Digital Future</h1>
                     <p>We offer industry-leading ICT training and digital solutions to empower individuals and organizations.</p>
@@ -33,15 +33,100 @@ $totalCourses = $db->count('courses', "status = 'published'");
                     </div>
                 </div>
             </div>
-            <div class="col-lg-6">
-                <div class="hero-visual" aria-hidden="true">
-                    <div class="hero-globe"><i class="fas fa-globe-africa"></i></div>
-                    <div class="hero-screen"><i class="fas fa-laptop-code"></i></div>
-                    <div class="hero-network hero-network-one"></div>
-                    <div class="hero-network hero-network-two"></div>
+        </article>
+        <article class="hero-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-cybersecurity.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Protect Your Business</div>
+                    <h1>Cybersecurity &amp;<br>Data Protection</h1>
+                    <p>Help your teams secure systems, protect customer information, and respond confidently to digital threats.</p>
+                    <div class="hero-buttons">
+                        <a href="courses.php" class="btn btn-secondary">Explore Courses</a>
+                        <a href="contact.php" class="btn btn-outline-light">Talk To Us</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        </article>
+        <article class="hero-slide hero-data-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-data-analytics.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Turn Data Into Action</div>
+                    <h1>Data Analytics<br>&amp; Power BI</h1>
+                    <p>Equip decision-makers with practical reporting and data storytelling skills for faster, clearer business decisions.</p>
+                    <div class="hero-buttons">
+                        <a href="courses.php" class="btn btn-secondary">Start Learning</a>
+                        <a href="contact.php" class="btn btn-outline-light">Talk To Us</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="hero-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-cloud-computing.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Modernise Your Workplace</div>
+                    <h1>Cloud Computing<br>&amp; Microsoft 365</h1>
+                    <p>Build confident teams that can collaborate securely and use cloud platforms to work smarter.</p>
+                    <div class="hero-buttons">
+                        <a href="courses.php" class="btn btn-secondary">View Courses</a>
+                        <a href="about.php" class="btn btn-outline-light">About Us</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="hero-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-project-management.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Deliver With Confidence</div>
+                    <h1>Project Management<br>&amp; Agile Delivery</h1>
+                    <p>Improve planning, collaboration, and delivery outcomes with practical project management methods.</p>
+                    <div class="hero-buttons">
+                        <a href="courses.php" class="btn btn-secondary">Explore Courses</a>
+                        <a href="contact.php" class="btn btn-outline-light">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="hero-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-leadership.jpg'); ?>');">
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Lead Stronger Teams</div>
+                    <h1>Leadership &amp;<br>Team Performance</h1>
+                    <p>Develop the communication, leadership, and people skills that help Kenyan organisations perform at their best.</p>
+                    <div class="hero-buttons">
+                        <a href="courses.php" class="btn btn-secondary">Browse Courses</a>
+                        <a href="register.php" class="btn btn-outline-light">Register Now</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+        <article class="hero-slide hero-video-slide" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-training-action.jpg'); ?>');">
+            <video class="hero-slide-media" muted playsinline loop preload="metadata" poster="<?php echo h(SITE_URL . 'assets/images/hero-tech.jpg'); ?>">
+                <source src="<?php echo h(SITE_URL . 'assets/videos/ict-training.mp4'); ?>" type="video/mp4">
+            </video>
+            <div class="hero-slide-overlay"></div>
+            <div class="container hero-slide-content">
+                <div class="hero-copy">
+                    <div class="hero-kicker">Training In Action</div>
+                    <h1>Practical Learning<br>That Moves You Forward</h1>
+                    <p>See how hands-on learning prepares you for the technology work of tomorrow.</p>
+                    <div class="hero-buttons">
+                        <a href="about.php" class="btn btn-secondary">Discover ICTECH</a>
+                        <a href="contact.php" class="btn btn-outline-light">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </article>
+    </div>
+    <button class="slider-prev" type="button" aria-label="Previous slide"><i class="fas fa-arrow-left"></i></button>
+    <button class="slider-next" type="button" aria-label="Next slide"><i class="fas fa-arrow-right"></i></button>
+    <div class="slider-dots" role="tablist" aria-label="Choose a hero slide">
+        <button class="slider-dot active" type="button" role="tab" aria-label="Slide 1" aria-selected="true"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 2" aria-selected="false"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 3" aria-selected="false"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 4" aria-selected="false"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 5" aria-selected="false"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 6" aria-selected="false"></button>
+        <button class="slider-dot" type="button" role="tab" aria-label="Slide 7" aria-selected="false"></button>
     </div>
 </section>
 
