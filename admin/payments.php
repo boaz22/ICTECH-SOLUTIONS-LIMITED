@@ -22,16 +22,43 @@ $payments = $db->getAll($sql, $params);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Payment Management | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260902">
 </head>
-<body class="bg-light">
-<main class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <p class="text-secondary mb-1">ADMIN CONSOLE</p>
-            <h1 class="mb-0">Payment Management</h1>
+<body class="admin-shell">
+<div class="admin-app">
+    <aside class="admin-sidebar">
+        <div class="admin-sidebar-inner">
+            <div class="sidebar-brand"><img src="../assets/images/ictech-logo-transparent.png" alt="ICTECH Solutions"></div>
+            <div class="admin-user-box"><p class="name"><?php echo h(Auth::getCurrentUser()['name'] ?? 'Administrator'); ?></p><p class="email"><?php echo h(Auth::getCurrentUser()['email'] ?? ''); ?></p></div>
+            <nav>
+                <?php $page = basename($_SERVER['PHP_SELF']); ?>
+                <a href="index.php" class="<?php echo $page === 'index.php' ? 'active' : ''; ?>"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <a href="users.php" class="<?php echo $page === 'users.php' ? 'active' : ''; ?>"><i class="fas fa-users"></i> Users</a>
+                <a href="enrollments.php" class="<?php echo $page === 'enrollments.php' ? 'active' : ''; ?>"><i class="fas fa-clipboard-list"></i> Enrollments</a>
+                <a href="courses.php" class="<?php echo $page === 'courses.php' ? 'active' : ''; ?>"><i class="fas fa-book-open"></i> Courses</a>
+                <a href="categories.php" class="<?php echo $page === 'categories.php' ? 'active' : ''; ?>"><i class="fas fa-tags"></i> Categories</a>
+                <a href="payments.php" class="<?php echo $page === 'payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> Payments</a>
+                <a href="reports.php" class="<?php echo $page === 'reports.php' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a>
+                <a href="testimonials.php" class="<?php echo $page === 'testimonials.php' ? 'active' : ''; ?>"><i class="fas fa-comments"></i> Testimonials</a>
+                <a href="partners.php" class="<?php echo $page === 'partners.php' ? 'active' : ''; ?>"><i class="fas fa-handshake"></i> Partners</a>
+                <a href="contact-messages.php" class="<?php echo $page === 'contact-messages.php' ? 'active' : ''; ?>"><i class="fas fa-envelope"></i> Messages</a>
+                <a href="settings.php" class="<?php echo $page === 'settings.php' ? 'active' : ''; ?>"><i class="fas fa-sliders-h"></i> Settings</a>
+            </nav>
+            <div class="sidebar-footer"><a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
         </div>
-        <a href="index.php" class="btn btn-outline-primary">Back to dashboard</a>
-    </div>
+    </aside>
+    <div class="admin-content">
+        <header class="admin-topbar"><div class="admin-topbar-inner"><div class="brand-mark"><i class="fas fa-shield-alt"></i> Admin Console</div><div class="admin-user-chip"><i class="fas fa-user-circle"></i> <?php echo h(Auth::getCurrentUser()['name'] ?? 'Admin'); ?></div></div></header>
+        <div class="admin-content-body">
+            <main class="container-fluid px-0">
+                <div class="admin-page-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                    <div>
+                        <p class="eyebrow mb-2">ADMIN CONSOLE</p>
+                        <h1>Payment Management</h1>
+                    </div>
+                    <a href="index.php" class="btn btn-outline-primary">Back to dashboard</a>
+                </div>
 
     <div class="card mb-4">
         <div class="card-body">
@@ -85,6 +112,9 @@ $payments = $db->getAll($sql, $params);
             </div>
         </div>
     </section>
-</main>
+            </main>
+        </div>
+    </div>
+</div>
 </body>
 </html>

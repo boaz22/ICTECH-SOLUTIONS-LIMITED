@@ -37,13 +37,14 @@ $enrollments = $db->getAll($sql, $params);
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Enrollment Management | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260902">
 </head>
-<body class="bg-light">
+<body class="admin-shell">
 <main class="container py-5">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="admin-page-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
         <div>
-            <p class="text-secondary mb-1">ADMIN CONSOLE</p>
-            <h1 class="mb-0">Enrollment Management</h1>
+            <p class="eyebrow mb-2">ADMIN CONSOLE</p>
+            <h1>Enrollment Management</h1>
         </div>
         <a href="index.php" class="btn btn-outline-primary">Back to dashboard</a>
     </div>

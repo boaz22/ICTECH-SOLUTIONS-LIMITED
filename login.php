@@ -17,6 +17,9 @@ if (Auth::isLoggedIn()) {
 
 $error = '';
 $successMessage = '';
+if (isset($_GET['registered']) && $_GET['registered'] == '1') {
+    $successMessage = 'Registration successful. Please log in to access your account.';
+}
 
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -74,6 +77,13 @@ $redirect = getParam('redirect', '');
                         <?php if ($error): ?>
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="fas fa-exclamation-circle"></i> <?php echo h($error); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if ($successMessage): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         <?php endif; ?>

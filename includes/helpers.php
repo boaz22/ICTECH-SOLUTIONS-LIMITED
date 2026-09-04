@@ -4,6 +4,7 @@
  * Common utility functions
  */
 
+require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/db.php';
 
 /**
@@ -491,19 +492,39 @@ function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
     $from = $from ?? MAIL_FROM;
     $fromName = $fromName ?? MAIL_FROM_NAME;
 
-    $headers = [
-        'From: ' . $fromName . ' <' . $from . '>',
-        'Reply-To: ' . $from,
-        'MIME-Version: 1.0',
-        'Content-Type: text/html; charset=UTF-8'
-    ];
+    try {
+        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $mail->CharSet = 'UTF-8';
+        $mail->isHTML(true);
+        $mail->setFrom($from, $fromName);
+        $mail->addReplyTo(defined('MAIL_REPLY_TO') ? MAIL_REPLY_TO : $from, $fromName);
+        $mail->addAddress($to);
+        $mail->Subject = $subject;
+        $mail->Body = $message;
+        $mail->AltBody = strip_tags($message);
 
-    $success = mail($to, $subject, $message, implode("\r\n", $headers));
-    if (!$success) {
-        error_log('Failed to send email to ' . $to . ' subject: ' . $subject);
+        if (defined('MAIL_HOST') && defined('MAIL_USERNAME') && defined('MAIL_PASSWORD') && !empty(MAIL_HOST) && !empty(MAIL_USERNAME)) {
+            $mail->isSMTP();
+            $mail->Host = MAIL_HOST;
+            $mail->SMTPAuth = defined('MAIL_SMTP_AUTH') ? MAIL_SMTP_AUTH : true;
+            $mail->Username = MAIL_USERNAME;
+            $mail->Password = MAIL_PASSWORD;
+            $mail->SMTPSecure = defined('MAIL_ENCRYPTION') && MAIL_ENCRYPTION ? MAIL_ENCRYPTION : false;
+            $mail->Port = defined('MAIL_PORT') ? (int) MAIL_PORT : 587;
+            $mail->SMTPDebug = 0;
+        }
+
+        $success = $mail->send();
+        if (!$success) {
+            error_log('PHPMailer failed to send email to ' . $to . ' subject: ' . $subject . ' - ' . $mail->ErrorInfo);
+            return false;
+        }
+
+        return true;
+    } catch (Exception $e) {
+        error_log('PHPMailer exception for ' . $to . ' subject: ' . $subject . ' - ' . $e->getMessage());
+        return false;
     }
-
-    return $success;
 }
 
 /**

@@ -41,8 +41,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = Auth::register($name, $email, $phone, $password, $confirmPassword);
 
         if ($result['success']) {
-            $successMessage = 'Registration successful! You can now login with your credentials.';
-            $successMessage = 'Registration successful. Please log in to access your student account.';
+            header('Location: ' . SITE_URL . 'login.php?registered=1');
+            exit;
         } else {
             $errors = $result['errors'];
         }

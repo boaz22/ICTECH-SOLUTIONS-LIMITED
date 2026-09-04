@@ -630,12 +630,11 @@ class Auth
             urlencode($token);
 
         // Send email
-        @mail(
-            $user['email'],
-            'ICTECH password reset',
-            'Use this link within one hour to reset your password: ' .
-            $link
-        );
+        $resetMessage = '<p>You requested a password reset for your ICTECH account.</p>'
+            . '<p>Use the link below within one hour to reset your password:</p>'
+            . '<p><a href="' . h($link) . '">' . h($link) . '</a></p>'
+            . '<p>If you did not request this change, you can ignore this email.</p>';
+        sendEmail($user['email'], 'ICTECH password reset', $resetMessage);
 
         return true;
     }

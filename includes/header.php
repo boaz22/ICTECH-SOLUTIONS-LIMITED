@@ -109,14 +109,27 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
                         <a class="nav-link <?php echo $currentPage === 'contact.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>contact.php"<?php echo $currentPage === 'contact.php' ? ' aria-current="page"' : ''; ?>>Contact</a>
                     </li>
 
+                    <?php if ($isLoggedIn && $currentUser['role'] === 'student'): ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo $currentPage === 'student/my-courses.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>student/my-courses.php"<?php echo $currentPage === 'student/my-courses.php' ? ' aria-current="page"' : ''; ?>>My Courses</a>
+                        </li>
+                    <?php endif; ?>
+
                     <?php if ($isLoggedIn): ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
                                 <i class="fas fa-user"></i> <?php echo h($currentUser['name']); ?>
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL . ($currentUser['role'] === 'admin' ? 'admin/index.php' : ($currentUser['role'] === 'trainer' ? 'trainer/dashboard.php' : 'student/dashboard.php')); ?>">Dashboard</a></li>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/my-courses.php">My Courses</a></li>
+                                <?php if ($currentUser['role'] === 'admin'): ?>
+                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/index.php">Admin Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/settings.php">Admin Settings</a></li>
+                                <?php elseif ($currentUser['role'] === 'trainer'): ?>
+                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>trainer/dashboard.php">Trainer Dashboard</a></li>
+                                <?php else: ?>
+                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/dashboard.php">Student Dashboard</a></li>
+                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/my-courses.php">My Courses</a></li>
+                                <?php endif; ?>
                                 <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/profile.php">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>logout.php">Logout</a></li>

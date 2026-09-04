@@ -36,8 +36,15 @@ define('ALLOWED_UPLOAD_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'applica
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 
 // Email Configuration (Optional)
-define('MAIL_FROM', 'noreply@ictech.local');
-define('MAIL_FROM_NAME', 'ICTECH Solutions');
+define('MAIL_FROM', 'noreply@ictechsolutions.co.ke');
+define('MAIL_FROM_NAME', 'ICTECH Solutions Limited');
+define('MAIL_REPLY_TO', 'info@ictechsolutions.co.ke');
+define('MAIL_HOST', 'mail.ictechsolutions.co.ke');
+define('MAIL_PORT', 465);
+define('MAIL_USERNAME', 'noreply@ictechsolutions.co.ke');
+define('MAIL_PASSWORD', '');
+define('MAIL_ENCRYPTION', 'ssl');
+define('MAIL_SMTP_AUTH', true);
 
 // Payment Configuration
 define('CURRENCY', 'KES');

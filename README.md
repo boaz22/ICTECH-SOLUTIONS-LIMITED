@@ -376,8 +376,8 @@ The payment structure is set up and ready for M-Pesa integration:
 ### Email Settings
 Edit `includes/config.php`:
 ```php
-define('MAIL_FROM', 'noreply@ictech.local');
-define('MAIL_FROM_NAME', 'ICTECH Solutions');
+define('MAIL_FROM', 'noreply@ictechsolutions.co.ke');
+define('MAIL_FROM_NAME', 'ICTECH Solutions Limited');
 ```
 
 ### M-Pesa Settings (Phase 2)

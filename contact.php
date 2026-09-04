@@ -36,6 +36,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'subject' => $subject,
                 'message' => $message
             ]);
+
+            $body = '<p><strong>Name:</strong> ' . h($name) . '</p>'
+                . '<p><strong>Email:</strong> ' . h($email) . '</p>'
+                . '<p><strong>Phone:</strong> ' . h($phone) . '</p>'
+                . '<p><strong>Subject:</strong> ' . h($subject) . '</p>'
+                . '<p><strong>Message:</strong></p>'
+                . '<p>' . nl2br(h($message)) . '</p>';
+
+            sendEmail(MAIL_FROM, 'New website enquiry: ' . $subject, $body);
+            sendEmail($email, 'We received your message', '<p>Thank you for contacting ICTECH Solutions Limited.</p><p>We have received your message and our team will respond soon.</p>');
             $successMessage = 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.';
         } catch (Exception $e) {
             $errorMessage = 'Failed to send message. Please try again.';
