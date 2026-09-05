@@ -3,9 +3,13 @@
  * ICTECH Solutions - Student My Courses Page
  */
 
-require_once __DIR__ . '/../includes/student-header.php';
+require_once __DIR__ . '/../includes/config.php';
+require_once __DIR__ . '/../includes/auth.php';
+require_once __DIR__ . '/../includes/helpers.php';
 
-$pageTitle = 'My Courses';
+// Require login before any output so redirects work correctly
+Auth::requireStudent();
+
 $userId = Auth::getCurrentUserId();
 $db = Database::getInstance();
 
@@ -23,10 +27,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'enroll') {
     }
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'mark_completed' && Auth::verifyCSRFToken(postParam('csrf_token'))) {
-    markStudentCompleted(postParam('enrollment_id', null, FILTER_VALIDATE_INT), $userId);
-}
-
 // Handle URL enrollment
 if (getParam('action') === 'enroll') {
     $courseId = getParam('course_id', null, FILTER_VALIDATE_INT);
@@ -38,6 +38,14 @@ if (getParam('action') === 'enroll') {
             exit;
         }
     }
+}
+
+require_once __DIR__ . '/../includes/student-header.php';
+
+$pageTitle = 'My Courses';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'mark_completed' && Auth::verifyCSRFToken(postParam('csrf_token'))) {
+    markStudentCompleted(postParam('enrollment_id', null, FILTER_VALIDATE_INT), $userId);
 }
 
 // Get all enrollments
@@ -57,7 +65,12 @@ $enrollments = getStudentEnrollments($userId);
     <!-- Tabs -->
     <ul class="nav nav-tabs mb-4" role="tablist">
         <li class="nav-item">
-            <a class="nav-link active" href="#active-courses" data-bs-toggle="tab">
+            <a class="nav-link active" href="#all-courses" data-bs-toggle="tab">
+                <i class="fas fa-list me-2"></i> All Courses
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#active-courses" data-bs-toggle="tab">
                 <i class="fas fa-play-circle me-2"></i> Active Courses
             </a>
         </li>
@@ -66,17 +79,81 @@ $enrollments = getStudentEnrollments($userId);
                 <i class="fas fa-check-circle me-2"></i> Completed
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#all-courses" data-bs-toggle="tab">
-                <i class="fas fa-list me-2"></i> All Courses
-            </a>
-        </li>
     </ul>
 
     <!-- Tab Content -->
     <div class="tab-content">
+        <!-- All Courses -->
+        <div class="tab-pane fade show active" id="all-courses">
+            <?php if (!empty($enrollments)): ?>
+                <div class="table-responsive">
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Course</th>
+                                <th>Price</th>
+                                <th>Status</th>
+                                <th>Enrolled Date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($enrollments as $course): ?>
+                                <tr>
+                                    <td>
+                                        <strong><?php echo h($course['course_title']); ?></strong>
+                                        <br>
+                                        <small class="text-muted"><?php echo h($course['duration']); ?></small>
+                                    </td>
+                                    <td><?php echo formatCurrency($course['price']); ?></td>
+                                    <td>
+                                        <?php
+                                        $status = $course['status'];
+                                        $statusClass = 'status-pending';
+                                        $statusLabel = 'Pending';
+
+                                        if ($status === 'active') {
+                                            $statusClass = 'status-active';
+                                            $statusLabel = 'Active';
+                                        } elseif ($status === 'completed') {
+                                            $statusClass = 'status-completed';
+                                            $statusLabel = 'Completed';
+                                        }
+                                        ?>
+                                        <span class="<?php echo $statusClass; ?>">
+                                            <?php echo $statusLabel; ?>
+                                        </span>
+                                    </td>
+                                    <td><?php echo formatDate($course['enrolled_at'], 'M d, Y'); ?></td>
+                                    <td>
+                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
+                                           class="btn btn-sm btn-outline-primary">
+                                            View
+                                        </a>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            <?php else: ?>
+                <div class="col-12">
+                    <div class="empty-state p-5">
+                        <div class="empty-state-icon">
+                            <i class="fas fa-list"></i>
+                        </div>
+                        <h4>No Courses Yet</h4>
+                        <p class="text-muted">You haven't enrolled in any courses yet.</p>
+                        <a href="<?php echo SITE_URL; ?>courses.php" class="btn btn-primary mt-3">
+                            <i class="fas fa-graduation-cap me-2"></i> Explore Courses
+                        </a>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
+
         <!-- Active Courses -->
-        <div class="tab-pane fade show active" id="active-courses">
+        <div class="tab-pane fade" id="active-courses">
             <div class="row">
                 <?php
                 $activeCourses = array_filter($enrollments, fn($e) => $e['status'] === 'active');
@@ -196,62 +273,6 @@ $enrollments = getStudentEnrollments($userId);
                     </div>
                 <?php endif; ?>
             </div>
-        </div>
-
-        <!-- All Courses -->
-        <div class="tab-pane fade" id="all-courses">
-            <?php if (!empty($enrollments)): ?>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Course</th>
-                                <th>Price</th>
-                                <th>Status</th>
-                                <th>Enrolled Date</th>
-                                <th>Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php foreach ($enrollments as $course): ?>
-                                <tr>
-                                    <td>
-                                        <strong><?php echo h($course['course_title']); ?></strong>
-                                        <br>
-                                        <small class="text-muted"><?php echo h($course['duration']); ?></small>
-                                    </td>
-                                    <td><?php echo formatCurrency($course['price']); ?></td>
-                                    <td>
-                                        <?php
-                                        $status = $course['status'];
-                                        $statusClass = 'status-pending';
-                                        $statusLabel = 'Pending';
-
-                                        if ($status === 'active') {
-                                            $statusClass = 'status-active';
-                                            $statusLabel = 'Active';
-                                        } elseif ($status === 'completed') {
-                                            $statusClass = 'status-completed';
-                                            $statusLabel = 'Completed';
-                                        }
-                                        ?>
-                                        <span class="<?php echo $statusClass; ?>">
-                                            <?php echo $statusLabel; ?>
-                                        </span>
-                                    </td>
-                                    <td><?php echo formatDate($course['enrolled_at'], 'M d, Y'); ?></td>
-                                    <td>
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
-                                           class="btn btn-sm btn-outline-primary">
-                                            View
-                                        </a>
-                                    </td>
-                                </tr>
-                            <?php endforeach; ?>
-                        </tbody>
-                    </table>
-                </div>
-            <?php endif; ?>
         </div>
     </div>
 </div>

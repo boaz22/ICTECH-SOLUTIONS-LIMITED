@@ -96,7 +96,7 @@ $userProfile = getUserProfile($userId);
     </div>
     
     <!-- Recent Enrollments -->
-    <div class="row">
+    <div class="row align-items-start">
         <div class="col-md-8">
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">

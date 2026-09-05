@@ -105,7 +105,7 @@ if (getParam('export', '0') === '1') {
     <title>Admin Reports | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css?v=20260902">
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260919">
 </head>
 <body class="admin-shell">
 <div class="admin-app">
@@ -174,14 +174,14 @@ if (getParam('export', '0') === '1') {
     </div>
 
     <section class="row g-3 mb-4">
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active students</div><div class="h3 mb-0"><?php echo (int) $stats['students']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active trainers</div><div class="h3 mb-0"><?php echo (int) $stats['trainers']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Published courses</div><div class="h3 mb-0"><?php echo (int) $stats['courses']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Certificates issued</div><div class="h3 mb-0"><?php echo (int) $stats['certificates']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active enrollments</div><div class="h3 mb-0"><?php echo (int) $stats['active_enrollments']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Pending</div><div class="h3 mb-0"><?php echo (int) $stats['pending_enrollments']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Completed</div><div class="h3 mb-0"><?php echo (int) $stats['completed_enrollments']; ?></div></div></div></div></div>
-        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Paid revenue</div><div class="h3 mb-0"><?php echo formatCurrency((float) $stats['revenue']); ?></div></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active students</div><div class="h3 mb-0"><?php echo (int) $stats['students']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active trainers</div><div class="h3 mb-0"><?php echo (int) $stats['trainers']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Published courses</div><div class="h3 mb-0"><?php echo (int) $stats['courses']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Certificates issued</div><div class="h3 mb-0"><?php echo (int) $stats['certificates']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Active enrollments</div><div class="h3 mb-0"><?php echo (int) $stats['active_enrollments']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Pending</div><div class="h3 mb-0"><?php echo (int) $stats['pending_enrollments']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Completed</div><div class="h3 mb-0"><?php echo (int) $stats['completed_enrollments']; ?></div></div></div></div>
+        <div class="col-md-3"><div class="card h-100"><div class="card-body"><div class="text-muted small mb-2">Paid revenue</div><div class="h3 mb-0"><?php echo formatCurrency((float) $stats['revenue']); ?></div></div></div></div>
     </section>
 
     <div class="row g-4">

@@ -20,8 +20,21 @@
 /* Sidebar */
 nav.bg-primary {
     box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
-    max-height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+nav.bg-primary + .flex-grow-1 {
+    margin-left: 250px;
+}
+
+nav.bg-primary > ul:last-of-type {
+    margin-top: auto;
 }
 
 nav.bg-primary a {
@@ -158,14 +171,17 @@ nav.bg-primary a.active {
     .d-flex {
         flex-direction: column;
     }
-    
+
     nav.bg-primary {
+        position: static;
         width: 100% !important;
+        height: auto;
         max-height: none;
-    }
-    
-    nav.bg-primary {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    nav.bg-primary + .flex-grow-1 {
+        margin-left: 0;
     }
 }
 

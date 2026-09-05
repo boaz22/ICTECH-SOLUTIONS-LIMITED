@@ -26,13 +26,13 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css">
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/student.css">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260918">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/student.css?v=20260918">
 </head>
 <body>
     <div class="d-flex" style="min-height: 100vh;">
         <!-- Sidebar -->
-        <nav class="bg-primary p-3 text-white" style="width: 250px; position: relative;">
+        <nav class="bg-primary p-3 text-white" style="width: 250px;">
             <div class="mb-4">
                 <h5 class="mb-3">
                     <img src="<?php echo SITE_URL; ?>assets/images/ictech-logo-transparent.png" alt="ICTECH Solutions Limited" class="site-logo site-logo-sidebar">

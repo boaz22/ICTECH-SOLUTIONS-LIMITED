@@ -166,8 +166,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                             </div>
 
                             <?php if ($isLoggedIn): ?>
-                                <form method="POST" action="student/my-courses.php">
-                                    <input type="hidden" name="action" value="enroll">
+                                <form method="GET" action="payment/initiate.php">
                                     <input type="hidden" name="course_id" value="<?php echo $courseId; ?>">
                                     <button type="submit" class="btn btn-secondary w-100">
                                         <i class="fas fa-credit-card"></i> Proceed to Enrollment
@@ -225,7 +224,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                                         View
                                     </a>
                                     <?php if ($isLoggedIn && !isEnrolled($currentUser['id'], $related['id'])): ?>
-                                        <a href="student/my-courses.php?action=enroll&course_id=<?php echo $related['id']; ?>" class="btn btn-secondary btn-sm">
+                                        <a href="payment/initiate.php?course_id=<?php echo $related['id']; ?>" class="btn btn-secondary btn-sm">
                                             Enroll
                                         </a>
                                     <?php endif; ?>

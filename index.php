@@ -211,7 +211,7 @@ $totalCourses = $db->count('courses', "status = 'published'");
                                     View Course
                                 </a>
                                 <?php if ($isLoggedIn && !isEnrolled($currentUser['id'], $course['id'])): ?>
-                                    <a href="student/my-courses.php?action=enroll&course_id=<?php echo $course['id']; ?>" class="btn btn-secondary btn-sm">
+                                    <a href="payment/initiate.php?course_id=<?php echo $course['id']; ?>" class="btn btn-secondary btn-sm">
                                         Enroll Now
                                     </a>
                                 <?php elseif ($isLoggedIn && isEnrolled($currentUser['id'], $course['id'])): ?>

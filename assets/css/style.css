@@ -424,10 +424,17 @@ a:hover {
     background: linear-gradient(180deg, var(--primary) 0%, #07255f 100%);
     color: #fff;
     box-shadow: 8px 0 25px rgba(0, 26, 77, 0.15);
-    position: sticky;
+    position: fixed;
     top: 0;
+    left: 0;
+    bottom: 0;
     height: 100vh;
+    overflow-y: auto;
     padding: 1.2rem 1rem 1rem;
+}
+
+.admin-sidebar + .admin-content {
+    margin-left: 260px;
 }
 
 .admin-sidebar-inner {
@@ -517,10 +524,9 @@ a:hover {
 }
 
 .admin-topbar {
-    background: rgba(255, 255, 255, 0.8);
+    background: #fff;
     border-bottom: 1px solid rgba(0, 26, 77, 0.08);
     box-shadow: 0 8px 18px rgba(0, 26, 77, 0.04);
-    backdrop-filter: blur(8px);
     position: sticky;
     top: 0;
     z-index: 20;
@@ -573,7 +579,13 @@ a:hover {
         min-width: 100%;
         height: auto;
         position: relative;
+        left: auto;
+        bottom: auto;
         padding-bottom: 0.6rem;
+    }
+
+    .admin-sidebar + .admin-content {
+        margin-left: 0;
     }
 
     .admin-sidebar nav {
@@ -914,7 +926,6 @@ a:hover {
     box-shadow: var(--shadow);
     transition: var(--transition);
     overflow: hidden;
-    height: 100%;
 }
 
 .card:hover {
@@ -931,6 +942,15 @@ a:hover {
     color: white;
     border: none;
     padding: 1.5rem;
+}
+
+.card-header h1,
+.card-header h2,
+.card-header h3,
+.card-header h4,
+.card-header h5,
+.card-header h6 {
+    color: inherit;
 }
 
 .card-body {

@@ -209,7 +209,7 @@ function isEnrolled($userId, $courseId) {
          WHERE user_id = ? AND course_id = ? AND status IN ('active', 'completed')",
         [$userId, $courseId]
     );
-    return $enrollment !== null;
+    return $enrollment !== false;
 }
 
 /**
@@ -570,7 +570,7 @@ function createCertificateForEnrollment($enrollmentId) {
         sendEmail($record['email'], 'Certificate issued for ' . $record['title'], $body);
     }
 
-    return $certificate !== null;
+    return $certificate !== false;
 }
 
 /**
