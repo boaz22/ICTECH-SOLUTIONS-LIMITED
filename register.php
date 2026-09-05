@@ -7,6 +7,10 @@ ob_start();
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
 
+// Prevent the browser from caching a filled-in registration form
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
+
 $pageTitle = 'Register - Create Your Account';
 
 // If already logged in, redirect to dashboard
@@ -95,39 +99,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php endif; ?>
 
                         <div class="alert alert-info"><i class="fas fa-info-circle"></i> Trainer accounts are created by an administrator. To become a trainer, please contact ICTECH administration.</div>
-                        <form method="POST" data-validate="true">
+                        <form method="POST" data-validate="true" autocomplete="off">
                             <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
                             <div class="form-group mb-3"><label class="form-label">Account type</label><select name="account_type" class="form-control" required><option value="student">Student</option><option value="trainer">Trainer (contact admin)</option></select></div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Full Name *</label>
                                 <input type="text" name="name" class="form-control" placeholder="Your full name"
-                                       value="<?php echo isset($_POST['name']) ? h($_POST['name']) : ''; ?>" required>
+                                       value="" autocomplete="off" required>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Email Address *</label>
                                 <input type="email" name="email" class="form-control" placeholder="your@email.com"
-                                       value="<?php echo isset($_POST['email']) ? h($_POST['email']) : ''; ?>" required>
+                                       value="" autocomplete="off" required>
                                 <small class="text-muted">We'll use this to send course updates</small>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Phone Number</label>
                                 <input type="tel" name="phone" class="form-control" placeholder="+254 712 345 678"
-                                       value="<?php echo isset($_POST['phone']) ? h($_POST['phone']) : ''; ?>">
+                                       value="" autocomplete="off">
                                 <small class="text-muted">For M-Pesa payments and notifications</small>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Password *</label>
-                                <div class="password-field"><input id="registration-password" type="password" name="password" class="form-control" placeholder="Create a strong password" data-password-rules="#registration-password-rules" required><button type="button" class="password-toggle" data-password-toggle="registration-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
+                                <div class="password-field"><input id="registration-password" type="password" name="password" class="form-control" placeholder="Create a strong password" data-password-rules="#registration-password-rules" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                                 <div id="registration-password-rules" class="password-rules"><span data-rule="length"><i class="fas fa-check-circle"></i> 8+ characters</span><span data-rule="uppercase"><i class="fas fa-check-circle"></i> Uppercase letter</span><span data-rule="number"><i class="fas fa-check-circle"></i> Number</span><span data-rule="special"><i class="fas fa-check-circle"></i> Special character</span></div>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Confirm Password *</label>
-                                <div class="password-field"><input id="registration-confirm-password" type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" required><button type="button" class="password-toggle" data-password-toggle="registration-confirm-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
+                                <div class="password-field"><input id="registration-confirm-password" type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-confirm-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                             </div>
 
                             <div class="form-group mb-4">

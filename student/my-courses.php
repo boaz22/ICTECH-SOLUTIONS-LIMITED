@@ -13,29 +13,20 @@ Auth::requireStudent();
 $userId = Auth::getCurrentUserId();
 $db = Database::getInstance();
 
-// Handle enrollment
+// Handle enrollment (state-changing action requires POST + CSRF)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'enroll') {
-    $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
+    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) {
+        $enrollError = 'Security validation failed. Please try again.';
+    } else {
+        $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
 
-    if ($courseId) {
-        $result = createEnrollment($userId, $courseId);
-        if ($result['success']) {
-            $enrollmentId = $result['enrollment_id'];
-            header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
-            exit;
-        }
-    }
-}
-
-// Handle URL enrollment
-if (getParam('action') === 'enroll') {
-    $courseId = getParam('course_id', null, FILTER_VALIDATE_INT);
-    if ($courseId) {
-        $result = createEnrollment($userId, $courseId);
-        if ($result['success']) {
-            $enrollmentId = $result['enrollment_id'];
-            header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
-            exit;
+        if ($courseId) {
+            $result = createEnrollment($userId, $courseId);
+            if ($result['success']) {
+                header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
+                exit;
+            }
+            $enrollError = $result['error'];
         }
     }
 }

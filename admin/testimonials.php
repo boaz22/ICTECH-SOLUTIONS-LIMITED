@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $type = postParam('type', 'student');
     $isFeatured = postParam('is_featured') ? 1 : 0;
 
-    if ($action === 'delete' && $testimonialId) {
+    if (!$errors && $action === 'delete' && $testimonialId) {
         $db->delete('testimonials', 'id = ?', [$testimonialId]);
         header('Location: testimonials.php');
         exit;

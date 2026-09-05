@@ -272,16 +272,69 @@ class Auth
             ];
         }
 
+        self::establishSession($user);
+
+        return [
+            'success' => true,
+            'role' => $user['role']
+        ];
+    }
+
+
+    /**
+     * Store the authenticated user in the session
+     */
+    private static function establishSession($user)
+    {
         // Regenerate session ID after successful login
         session_regenerate_id(true);
 
-        // Set session data
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_name'] = $user['name'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
+    }
+
+
+    /**
+     * Log in an existing user using a Google-verified email address.
+     * Does NOT create new accounts - the user must already be registered.
+     */
+    public static function loginWithGoogleEmail($email, $requestedRole = null)
+    {
+        self::startSession();
+
+        $db = Database::getInstance();
+
+        $user = $db->getRow(
+            'SELECT id, name, email, role, status FROM users WHERE email = ?',
+            [$email]
+        );
+
+        if (!$user) {
+            return [
+                'success' => false,
+                'error' => 'No ICTECH account is registered with this Google email. Please register first.'
+            ];
+        }
+
+        if ($requestedRole && $user['role'] !== $requestedRole) {
+            return [
+                'success' => false,
+                'error' => 'This account is not registered for the selected login type'
+            ];
+        }
+
+        if ($user['status'] !== 'active') {
+            return [
+                'success' => false,
+                'error' => 'Your account is inactive'
+            ];
+        }
+
+        self::establishSession($user);
 
         return [
             'success' => true,

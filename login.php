@@ -6,6 +6,11 @@
 ob_start();
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
+require_once __DIR__ . '/includes/google-auth.php';
+
+// Prevent the browser from caching a filled-in login form
+header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+header('Pragma: no-cache');
 
 $pageTitle = 'Login - Student or Trainer Portal';
 
@@ -20,6 +25,17 @@ $successMessage = '';
 if (isset($_GET['registered']) && $_GET['registered'] == '1') {
     $successMessage = 'Registration successful. Please log in to access your account.';
 }
+
+$googleErrors = [
+    'unavailable' => 'Google sign-in is not available right now.',
+    'failed' => 'Google sign-in failed. Please try again.',
+    'not_registered' => 'No ICTECH account is registered with that Google email. Please register first.',
+];
+$googleError = getParam('google_error', '');
+if ($googleError && isset($googleErrors[$googleError])) {
+    $error = $googleErrors[$googleError];
+}
+
 
 // Handle login
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -88,7 +104,7 @@ $redirect = getParam('redirect', '');
                             </div>
                         <?php endif; ?>
 
-                        <form method="POST" data-validate="true">
+                        <form method="POST" data-validate="true" autocomplete="off">
                             <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
                             <?php if ($redirect): ?>
                                 <input type="hidden" name="redirect" value="<?php echo h($redirect); ?>">
@@ -106,12 +122,12 @@ $redirect = getParam('redirect', '');
                             <div class="form-group mb-3">
                                 <label class="form-label">Email Address</label>
                                 <input type="email" name="email" class="form-control" placeholder="your@email.com"
-                                       value="<?php echo isset($_POST['email']) ? h($_POST['email']) : ''; ?>" required>
+                                       value="" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" required>
                             </div>
 
                             <div class="form-group mb-3">
                                 <label class="form-label">Password</label>
-                                <div class="password-field"><input id="login-password" type="password" name="password" class="form-control" placeholder="Enter your password" required><button type="button" class="password-toggle" data-password-toggle="login-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
+                                <div class="password-field"><input id="login-password" type="password" name="password" class="form-control" placeholder="Enter your password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="login-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                             </div>
 
                             <div class="form-group mb-3">
@@ -127,6 +143,12 @@ $redirect = getParam('redirect', '');
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </button>
                         </form>
+
+                        <div class="text-center text-muted mb-3">or</div>
+                        <a href="google-login.php" class="btn btn-outline-secondary w-100 mb-3">
+                            <i class="fab fa-google"></i> Sign in with Google
+                        </a>
+                        <p class="text-center"><small class="text-muted">Google sign-in works only for existing ICTECH accounts.</small></p>
 
                         <hr>
 

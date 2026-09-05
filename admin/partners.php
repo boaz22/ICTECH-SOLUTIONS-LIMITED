@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $website = trim(postParam('website'));
     $status = postParam('status', 'active');
 
-    if ($action === 'delete' && $partnerId) {
+    if (!$errors && $action === 'delete' && $partnerId) {
         $db->delete('partners', 'id = ?', [$partnerId]);
         header('Location: partners.php');
         exit;

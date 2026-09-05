@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $enrollmentId = postParam('enrollment_id', null, FILTER_VALIDATE_INT);
     $status = postParam('status');
-    if ($enrollmentId && in_array($status, ['pending', 'active', 'completed', 'cancelled'], true)) {
+    if (!$errors && $enrollmentId && in_array($status, ['pending', 'active', 'completed', 'cancelled'], true)) {
         $db->update('enrollments', ['status' => $status], 'id = ?', [$enrollmentId]);
         header('Location: enrollments.php?updated=1');
         exit;

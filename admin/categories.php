@@ -18,9 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = postParam('action');
     $categoryId = postParam('category_id', null, FILTER_VALIDATE_INT);
     $name = trim(postParam('name'));
-    $slug = trim(postParam('slug')); 
+    $slug = trim(postParam('slug'));
 
-    if ($action === 'delete' && $categoryId) {
+    if (!$errors && $action === 'delete' && $categoryId) {
         $db->delete('categories', 'id = ?', [$categoryId]);
         header('Location: categories.php');
         exit;

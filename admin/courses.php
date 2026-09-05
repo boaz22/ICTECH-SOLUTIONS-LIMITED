@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = postParam('status', 'draft');
     $isFeatured = postParam('is_featured') ? 1 : 0;
 
-    if ($action === 'archive' && $courseId) {
+    if (!$errors && $action === 'archive' && $courseId) {
         $db->update('courses', ['status' => 'archived'], 'id = ?', [$courseId]);
         header('Location: courses.php?saved=1');
         exit;

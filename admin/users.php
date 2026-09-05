@@ -14,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = postParam('user_id', null, FILTER_VALIDATE_INT);
     $action = postParam('action');
 
-    if ($action === 'delete' && $userId) {
+    if (!$errors && $action === 'delete' && $userId) {
         if ($userId === Auth::getCurrentUserId()) {
             $errors[] = 'You cannot delete your own account.';
         } else {

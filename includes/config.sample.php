@@ -30,6 +30,12 @@ define('MPESA_PASSKEY', 'your-mpesa-passkey');
 define('MPESA_CALLBACK_URL', SITE_URL . 'payment/callback.php');
 define('MPESA_TIMEOUT_URL', SITE_URL . 'payment/timeout.php');
 
+// Google Sign-In (Get from https://console.cloud.google.com/apis/credentials)
+// Sign-in only works for emails that already match a registered account.
+define('GOOGLE_CLIENT_ID', 'your-google-client-id');
+define('GOOGLE_CLIENT_SECRET', 'your-google-client-secret');
+define('GOOGLE_REDIRECT_URI', SITE_URL . 'google-callback.php');
+
 // File Upload Configuration
 define('MAX_UPLOAD_SIZE', 5242880); // 5MB
 define('ALLOWED_UPLOAD_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'application/pdf']);

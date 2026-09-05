@@ -328,14 +328,20 @@ function approveAdminCompletion($enrollmentId) {
 function createEnrollment($userId, $courseId) {
     $db = Database::getInstance();
 
-    // Check if already enrolled
+    // Check if an enrollment record already exists (unique per user/course)
     $existing = $db->getRow(
-        "SELECT id FROM enrollments WHERE user_id = ? AND course_id = ?",
+        "SELECT id, status FROM enrollments WHERE user_id = ? AND course_id = ?",
         [$userId, $courseId]
     );
 
     if ($existing) {
-        return ['success' => false, 'error' => 'Already enrolled in this course'];
+        if (in_array($existing['status'], ['active', 'completed'], true)) {
+            return ['success' => false, 'error' => 'Already enrolled in this course'];
+        }
+
+        // Allow retrying enrollment/payment after a pending attempt stalled or was cancelled
+        $db->update('enrollments', ['status' => 'pending'], 'id = ?', [$existing['id']]);
+        return ['success' => true, 'enrollment_id' => $existing['id']];
     }
 
     try {
