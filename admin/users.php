@@ -12,6 +12,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $userId = postParam('user_id', null, FILTER_VALIDATE_INT);
+    $action = postParam('action');
+
+    if ($action === 'delete' && $userId) {
+        if ($userId === Auth::getCurrentUserId()) {
+            $errors[] = 'You cannot delete your own account.';
+        } else {
+            $db->delete('users', 'id = ?', [$userId]);
+            header('Location: users.php?deleted=1');
+            exit;
+        }
+    }
+
     $status = postParam('status');
     if ($userId && in_array($status, ['active', 'inactive'], true)) {
         $db->update('users', ['status' => $status], 'id = ?', [$userId]);
@@ -80,6 +92,10 @@ $users = $db->getAll($sql, $params);
         <div class="alert alert-success">User status updated.</div>
     <?php endif; ?>
 
+    <?php if (getParam('deleted')): ?>
+        <div class="alert alert-success">User deleted successfully.</div>
+    <?php endif; ?>
+
     <?php foreach ($errors as $error): ?>
         <div class="alert alert-danger"><?php echo h($error); ?></div>
     <?php endforeach; ?>
@@ -122,7 +138,7 @@ $users = $db->getAll($sql, $params);
                             <td><span class="badge text-bg-primary"><?php echo h($user['role']); ?></span></td>
                             <td><span class="badge text-bg-<?php echo $user['status'] === 'active' ? 'success' : 'secondary'; ?>"><?php echo h($user['status']); ?></span></td>
                             <td><?php echo h(date('M d, Y', strtotime($user['created_at']))); ?></td>
-                            <td>
+                            <td class="text-nowrap d-flex gap-2">
                                 <form method="post" class="d-inline-block">
                                     <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
                                     <input type="hidden" name="user_id" value="<?php echo (int) $user['id']; ?>">
@@ -131,6 +147,13 @@ $users = $db->getAll($sql, $params);
                                         <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
                                     </button>
                                 </form>
+                                <?php if ((int) $user['id'] !== Auth::getCurrentUserId()): ?>
+                                    <form method="post" class="d-inline-block" onsubmit="return confirm('Delete <?php echo h(addslashes($user['name'])); ?>? This will permanently remove their account and all related data. This cannot be undone.');">
+                                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                        <input type="hidden" name="user_id" value="<?php echo (int) $user['id']; ?>">
+                                        <button type="submit" name="action" value="delete" class="btn btn-sm btn-outline-danger">Delete</button>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
