@@ -1,47 +1,40 @@
 <?php
 /**
- * ICTECH Solutions Limited - Configuration Template
- * Copy this file to config.php and fill in actual values
- * IMPORTANT: config.php should NOT be committed to Git
+ * ICTECH Solutions Limited - Local Configuration
+ * This file is ignored by Git. Keep production credentials out of the repository.
  */
 
 // Database Configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', ''); // Default XAMPP has empty password
+define('DB_PASS', '');
 define('DB_NAME', 'ictech_solutions_limited');
 
 // Site Configuration
-define('SITE_URL', 'http://localhost/ICTECH/');
+define('SITE_URL', 'http://localhost/ICTECH-SOLUTIONS-LIMITED/');
 define('SITE_NAME', 'ICTECH Solutions Limited');
 define('SITE_DESCRIPTION', 'Professional Technology Training and Development Platform');
 
 // Security
 define('JWT_SECRET', 'your-secret-key-change-this-in-production');
 define('SESSION_NAME', 'ictech_session');
-define('SESSION_TIMEOUT', 1800); // 30 minutes of inactivity
+define('SESSION_TIMEOUT', 1800);
 
-// M-Pesa Configuration (Get from Safaricom Daraja API)
-// Register at: https://developer.safaricom.co.ke/
-define('MPESA_CONSUMER_KEY', 'your-mpesa-consumer-key');
-define('MPESA_CONSUMER_SECRET', 'your-mpesa-consumer-secret');
-define('MPESA_BUSINESS_SHORTCODE', 'your-business-shortcode');
-define('MPESA_PASSKEY', 'your-mpesa-passkey');
-define('MPESA_CALLBACK_URL', SITE_URL . 'payment/callback.php');
-define('MPESA_TIMEOUT_URL', SITE_URL . 'payment/timeout.php');
-
-// Google Sign-In (Get from https://console.cloud.google.com/apis/credentials)
-// Sign-in only works for emails that already match a registered account.
-define('GOOGLE_CLIENT_ID', 'your-google-client-id');
-define('GOOGLE_CLIENT_SECRET', 'your-google-client-secret');
-define('GOOGLE_REDIRECT_URI', SITE_URL . 'google-callback.php');
+// M-Pesa Configuration
+define('MPESA_CONSUMER_KEY', '9AYMIwozkCnBML7WOPiFvvAA5jpmednEsKEiMbA5OWX3gGm9');
+define('MPESA_CONSUMER_SECRET', 'BtvFoSivXPIq7v9RWyv8d8lGMWDeRRsjjBC4I03eServnJKPlAaYSwdjz8YlDPpo');
+define('MPESA_BUSINESS_SHORTCODE', '174379');
+define('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919');
+define('MPESA_CALLBACK_URL', 'https://cea1-217-199-148-228.ngrok-free.app/payment/callback.php');
+define('MPESA_TIMEOUT_URL', 'https://cea1-217-199-148-228.ngrok-free.app/payment/timeout.php');
 
 // File Upload Configuration
-define('MAX_UPLOAD_SIZE', 5242880); // 5MB
+define('MAX_UPLOAD_SIZE', 5242880);
 define('ALLOWED_UPLOAD_TYPES', ['image/jpeg', 'image/png', 'image/gif', 'application/pdf']);
 define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 
-// Email Configuration (Optional)
+// Email Configuration
+// Update credentials in this file to match your domain mail account.
 define('MAIL_FROM', 'noreply@ictechsolutions.co.ke');
 define('MAIL_FROM_NAME', 'ICTECH Solutions Limited');
 define('MAIL_REPLY_TO', 'info@ictechsolutions.co.ke');
@@ -57,11 +50,7 @@ define('CURRENCY', 'KES');
 define('MIN_PAYMENT', 100);
 define('MAX_PAYMENT', 999999);
 
-// Debug Mode (Set to false in production)
+// Debug and notifications
 define('DEBUG_MODE', true);
 define('LOG_ERRORS', true);
-
-// Email/SMS Notifications (Optional)
 define('SEND_NOTIFICATIONS', false);
-
-?>

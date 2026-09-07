@@ -42,6 +42,7 @@ class MpesaGateway
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
         if ($httpCode !== 200 || !$response) {
@@ -119,9 +120,20 @@ class MpesaGateway
         $response = self::sendJsonRequest('https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest', $token, $payload);
 
         if ($response && isset($response['ResponseCode']) && (string) $response['ResponseCode'] === '0') {
+            $darajaCheckoutRequestId = $response['CheckoutRequestID'] ?? null;
+            $darajaMerchantRequestId = $response['MerchantRequestID'] ?? null;
+            if (!$darajaCheckoutRequestId || !$darajaMerchantRequestId) {
+                $db->update('payments', ['status' => 'failed'], 'id = ?', [$paymentId]);
+                return [
+                    'success' => false,
+                    'error' => 'M-Pesa returned an incomplete payment reference. Please try again.',
+                    'response' => $response,
+                ];
+            }
+
             $db->update('payments', [
-                'checkout_request_id' => $checkoutRequestId,
-                'merchant_request_id' => $merchantRequestId,
+                'checkout_request_id' => $darajaCheckoutRequestId,
+                'merchant_request_id' => $darajaMerchantRequestId,
                 'status' => 'pending',
             ], 'id = ?', [$paymentId]);
 
@@ -130,17 +142,23 @@ class MpesaGateway
                 'payment_id' => $paymentId,
                 'status' => 'pending',
                 'reference' => $reference,
-                'checkout_request_id' => $checkoutRequestId,
-                'merchant_request_id' => $merchantRequestId,
+                'checkout_request_id' => $darajaCheckoutRequestId,
+                'merchant_request_id' => $darajaMerchantRequestId,
                 'response' => $response,
             ];
         }
 
         $db->update('payments', ['status' => 'failed'], 'id = ?', [$paymentId]);
 
+        $errorMessage = $response['ResponseDescription']
+            ?? $response['errorMessage']
+            ?? $response['error_description']
+            ?? $response['message']
+            ?? 'M-Pesa request was rejected.';
+
         return [
             'success' => false,
-            'error' => $response['ResponseDescription'] ?? 'M-Pesa request was rejected.',
+            'error' => $errorMessage,
             'response' => $response,
         ];
     }
@@ -148,6 +166,10 @@ class MpesaGateway
     public static function updatePaymentFromCallback($data)
     {
         $db = Database::getInstance();
+
+        if (isset($data['Body']['stkCallback']) && is_array($data['Body']['stkCallback'])) {
+            $data = $data['Body']['stkCallback'];
+        }
 
         $checkoutId = $data['CheckoutRequestID'] ?? $data['checkoutRequestId'] ?? null;
         $merchantId = $data['MerchantRequestID'] ?? $data['merchantRequestId'] ?? null;
@@ -178,6 +200,51 @@ class MpesaGateway
         return true;
     }
 
+    public static function queryPaymentStatus($payment)
+    {
+        if (!self::isConfigured() || empty($payment['checkout_request_id'])) {
+            return null;
+        }
+
+        $token = self::getAccessToken();
+        if (!$token) {
+            return null;
+        }
+
+        $timestamp = date('YmdHis');
+        $payload = [
+            'BusinessShortCode' => MPESA_BUSINESS_SHORTCODE,
+            'Password' => base64_encode(MPESA_BUSINESS_SHORTCODE . MPESA_PASSKEY . $timestamp),
+            'Timestamp' => $timestamp,
+            'CheckoutRequestID' => $payment['checkout_request_id'],
+        ];
+        $response = self::sendJsonRequest(
+            'https://sandbox.safaricom.co.ke/mpesa/stkpushquery/v1/query',
+            $token,
+            $payload
+        );
+
+        if (!$response) {
+            return null;
+        }
+
+        if (isset($response['ResultCode']) && (string) $response['ResultCode'] === '0') {
+            $db = Database::getInstance();
+            $db->update('payments', ['status' => 'paid'], 'id = ?', [$payment['id']]);
+            if (!empty($payment['enrollment_id'])) {
+                $db->update(
+                    'enrollments',
+                    ['status' => 'active', 'approved_at' => date('Y-m-d H:i:s')],
+                    'id = ?',
+                    [$payment['enrollment_id']]
+                );
+            }
+            return 'paid';
+        }
+
+        return 'pending';
+    }
+
     private static function sendJsonRequest($url, $token, $payload)
     {
         if (!function_exists('curl_init')) {
@@ -199,12 +266,22 @@ class MpesaGateway
 
         $response = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
-        if ($httpCode < 200 || $httpCode >= 300 || !$response) {
-            return null;
+        $payload = $response ? json_decode($response, true) : [];
+        if (!is_array($payload)) {
+            $payload = [];
         }
 
-        return json_decode($response, true);
+        if ($httpCode < 200 || $httpCode >= 300) {
+            $payload['_http_code'] = $httpCode;
+        }
+
+        if (!$response && $curlError !== '') {
+            $payload['errorMessage'] = 'Daraja connection failed: ' . $curlError;
+        }
+
+        return $payload ?: null;
     }
 }

@@ -21,6 +21,8 @@ if (!$course) {
 
 $userProfile = getUserProfile($userId);
 $phone = trim((string) ($userProfile['phone'] ?? ''));
+$payment = null;
+$paymentReference = '';
 if ($phone === '') {
     $phone = trim((string) postParam('phone', ''));
 }
@@ -38,10 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'initiate_p
             $response = MpesaGateway::initiateSTKPush($userId, $enrollmentId, $course['price'], $phone, 'ICTECH-' . $courseId);
             if ($response['success']) {
                 $paymentReference = $response['reference'];
-                header('Location: ' . SITE_URL . 'student/payments.php?success=1&reference=' . urlencode($paymentReference));
-                exit;
+                $payment = [
+                    'id' => (int) $response['payment_id'],
+                    'reference' => $paymentReference,
+                ];
             }
-            $error = $response['error'];
+            if (!$response['success']) {
+                $error = $response['error'];
+            }
         }
     }
 }
@@ -65,10 +71,69 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'initiate_p
                     <p class="text-muted">Course: <strong><?php echo h($course['title']); ?></strong></p>
                     <p class="display-6 mb-4"><?php echo formatCurrency((float) $course['price']); ?></p>
 
-                    <?php if (!empty($error)): ?>
+                    <?php if ($payment): ?>
+                        <div id="payment-waiting" class="text-center">
+                            <div class="spinner-border text-primary mb-3" role="status" aria-label="Checking payment status"></div>
+                            <h2 class="h5">Check your phone</h2>
+                            <p class="text-muted">An M-Pesa STK prompt was sent to <strong><?php echo h($phone); ?></strong>. Enter your M-Pesa PIN to complete the payment.</p>
+                            <p class="small text-muted mb-0">Reference: <code><?php echo h($paymentReference); ?></code></p>
+                            <div id="payment-status" class="alert alert-info mt-4">Waiting for payment confirmation...</div>
+                            <a href="<?php echo SITE_URL; ?>student/my-courses.php" class="btn btn-link">Cancel</a>
+                        </div>
+                        <script>
+                            (function () {
+                                const statusBox = document.getElementById('payment-status');
+                                const statusUrl = <?php echo json_encode(SITE_URL . 'payment/status.php?payment_id=' . (int) $payment['id']); ?>;
+                                let attempts = 0;
+                                const maxAttempts = 100;
+
+                                function checkPayment() {
+                                    fetch(statusUrl, {headers: {'Accept': 'application/json'}})
+                                        .then(function (response) {
+                                            if (!response.ok) {
+                                                throw new Error('Unable to check payment status.');
+                                            }
+                                            return response.json();
+                                        })
+                                        .then(function (result) {
+                                            if (result.status === 'paid') {
+                                                statusBox.className = 'alert alert-success mt-4';
+                                                statusBox.textContent = 'Payment confirmed. Redirecting...';
+                                                window.location.href = <?php echo json_encode(SITE_URL . 'student/payments.php?success=1&reference=' . urlencode($paymentReference)); ?>;
+                                                return;
+                                            }
+                                            if (result.status === 'failed' || result.status === 'cancelled') {
+                                                statusBox.className = 'alert alert-danger mt-4';
+                                                statusBox.textContent = result.message || 'Payment was not completed. Please try again.';
+                                                return;
+                                            }
+                                            attempts++;
+                                            if (attempts < maxAttempts) {
+                                                window.setTimeout(checkPayment, 3000);
+                                            } else {
+                                                statusBox.className = 'alert alert-warning mt-4';
+                                                statusBox.textContent = 'We are still waiting for confirmation. Check Payment History shortly.';
+                                            }
+                                        })
+                                        .catch(function () {
+                                            attempts++;
+                                            if (attempts < maxAttempts) {
+                                                window.setTimeout(checkPayment, 3000);
+                                            } else {
+                                                statusBox.className = 'alert alert-warning mt-4';
+                                                statusBox.textContent = 'Unable to check the payment status right now. Check Payment History shortly.';
+                                            }
+                                        });
+                                }
+
+                                checkPayment();
+                            }());
+                        </script>
+                    <?php elseif (!empty($error)): ?>
                         <div class="alert alert-danger"><?php echo h($error); ?></div>
                     <?php endif; ?>
 
+                    <?php if (!$payment): ?>
                     <form method="post">
                         <input type="hidden" name="action" value="initiate_payment">
                         <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
@@ -79,6 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'initiate_p
                         <button type="submit" class="btn btn-primary w-100">Pay with M-Pesa</button>
                         <a href="<?php echo SITE_URL; ?>student/my-courses.php" class="btn btn-link w-100">Cancel</a>
                     </form>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
