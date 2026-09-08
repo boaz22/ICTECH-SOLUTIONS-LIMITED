@@ -15,6 +15,58 @@ function h($text) {
 }
 
 /**
+ * Send baseline browser protections before a page produces output.
+ */
+function sendSecurityHeaders() {
+    if (headers_sent()) {
+        return;
+    }
+
+    header('X-Content-Type-Options: nosniff');
+    header('X-Frame-Options: SAMEORIGIN');
+    header('Referrer-Policy: strict-origin-when-cross-origin');
+    header('Permissions-Policy: camera=(), microphone=(), geolocation=()');
+
+    if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') {
+        header('Strict-Transport-Security: max-age=31536000');
+    }
+}
+
+/**
+ * Only allow post-login redirects back into this installation.
+ */
+function safeRedirectUrl($url, $default) {
+    $url = trim((string) $url);
+    if ($url === '' || preg_match('/[\r\n]/', $url)) {
+        return $default;
+    }
+
+    $site = parse_url(SITE_URL);
+    $target = parse_url($url);
+    if ($site === false || $target === false) {
+        return $default;
+    }
+
+    $basePath = rtrim($site['path'] ?? '/', '/') . '/';
+    $targetPath = $target['path'] ?? '';
+
+    if (isset($target['host'])) {
+        $sameHost = strtolower($target['host']) === strtolower($site['host'] ?? '');
+        $sameScheme = !isset($target['scheme'])
+            || strtolower($target['scheme']) === strtolower($site['scheme'] ?? '');
+        $samePort = !isset($target['port'])
+            || (int) $target['port'] === (int) ($site['port'] ?? 0);
+        if (!$sameHost || !$sameScheme || !$samePort) {
+            return $default;
+        }
+    } elseif (substr($url, 0, 2) === '//') {
+        return $default;
+    }
+
+    return strpos($targetPath, $basePath) === 0 ? $url : $default;
+}
+
+/**
  * Sanitize URL
  */
 function sanitizeUrl($url) {
@@ -583,7 +635,7 @@ function createCertificateForEnrollment($enrollmentId) {
  * Get query parameter safely
  */
 function getParam($key, $default = null, $filter = FILTER_SANITIZE_STRING) {
-    if (isset($_GET[$key])) {
+    if (isset($_GET[$key]) && !is_array($_GET[$key])) {
         return filter_var($_GET[$key], $filter);
     }
     return $default;
@@ -593,10 +645,12 @@ function getParam($key, $default = null, $filter = FILTER_SANITIZE_STRING) {
  * Get POST parameter safely
  */
 function postParam($key, $default = null, $filter = FILTER_SANITIZE_STRING) {
-    if (isset($_POST[$key])) {
+    if (isset($_POST[$key]) && !is_array($_POST[$key])) {
         return filter_var($_POST[$key], $filter);
     }
     return $default;
 }
+
+sendSecurityHeaders();
 
 ?>

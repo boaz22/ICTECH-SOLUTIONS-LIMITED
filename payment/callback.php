@@ -4,10 +4,17 @@ require_once __DIR__ . '/mpesa.php';
 
 header('Content-Type: application/json');
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    echo json_encode(['success' => false, 'message' => 'Method not allowed.']);
+    exit;
+}
+
 $data = $_POST;
 if (empty($data)) {
     $raw = file_get_contents('php://input');
-    $data = json_decode($raw, true) ?: [];
+    $data = strlen($raw) <= 65536 ? (json_decode($raw, true) ?: []) : [];
 }
 
 if (empty($data)) {

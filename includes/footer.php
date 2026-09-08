@@ -19,12 +19,7 @@
                         <i class="fas fa-laptop-code text-warning"></i> ICTECH Solutions
                     </h5>
                     <p>Professional technology training and development platform dedicated to empowering your future through education and innovation.</p>
-                    <div class="social-links">
-                        <a href="#" class="text-light me-2"><i class="fab fa-facebook"></i></a>
-                        <a href="#" class="text-light me-2"><i class="fab fa-twitter"></i></a>
-                        <a href="#" class="text-light me-2"><i class="fab fa-linkedin"></i></a>
-                        <a href="#" class="text-light"><i class="fab fa-instagram"></i></a>
-                    </div>
+                    <a href="<?php echo SITE_URL; ?>contact.php" class="text-light-footer">Contact our team</a>
                 </div>
 
                 <div class="col-md-3 mb-4">
@@ -41,9 +36,10 @@
                     <h6 class="mb-3">Support</h6>
                     <ul class="list-unstyled">
                         <li><a href="<?php echo SITE_URL; ?>contact.php" class="text-light-footer">Contact Us</a></li>
-                        <li><a href="#" class="text-light-footer">FAQ</a></li>
-                        <li><a href="#" class="text-light-footer">Privacy Policy</a></li>
-                        <li><a href="#" class="text-light-footer">Terms of Service</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>privacy.php" class="text-light-footer">Privacy Policy</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>terms.php" class="text-light-footer">Terms of Service</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>refunds.php" class="text-light-footer">Refund Policy</a></li>
+                        <li><a href="<?php echo SITE_URL; ?>cookies.php" class="text-light-footer">Cookie Policy</a></li>
                     </ul>
                 </div>
 
@@ -65,21 +61,41 @@
 
             <div class="row">
                 <div class="col-md-6">
-                    <p class="mb-0">&copy; 2024 ICTECH Solutions Limited. All rights reserved.</p>
+                    <p class="mb-0">&copy; <?php echo date('Y'); ?> ICTECH Solutions Limited. All rights reserved.</p>
                 </div>
                 <div class="col-md-6 text-md-end">
                     <small>
-                        <a href="#" class="text-light-footer">Privacy Policy</a> |
-                        <a href="#" class="text-light-footer">Terms & Conditions</a>
+                        <a href="<?php echo SITE_URL; ?>privacy.php" class="text-light-footer">Privacy Policy</a> |
+                        <a href="<?php echo SITE_URL; ?>terms.php" class="text-light-footer">Terms & Conditions</a> |
+                        <a href="<?php echo SITE_URL; ?>cookies.php" class="text-light-footer">Cookie Policy</a>
                     </small>
                 </div>
             </div>
         </div>
     </footer>
 
+    <aside id="cookie-notice" class="cookie-notice" aria-label="Cookie notice" hidden>
+        <p class="mb-2">We use only essential session cookies to provide secure sign-in and forms. <a href="<?php echo SITE_URL; ?>cookies.php">Read our Cookie Policy</a>.</p>
+        <button id="dismiss-cookie-notice" type="button" class="btn btn-warning btn-sm">Dismiss</button>
+    </aside>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Custom JS -->
     <script src="<?php echo SITE_URL; ?>assets/js/main.js?v=20260915"></script>
+    <script>
+        (function () {
+            var notice = document.getElementById('cookie-notice');
+            var dismiss = document.getElementById('dismiss-cookie-notice');
+            if (!notice || !dismiss || localStorage.getItem('cookie-notice-dismissed') === '1') {
+                return;
+            }
+            notice.hidden = false;
+            dismiss.addEventListener('click', function () {
+                localStorage.setItem('cookie-notice-dismissed', '1');
+                notice.hidden = true;
+            });
+        }());
+    </script>
 </body>
 </html>

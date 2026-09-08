@@ -25,8 +25,8 @@ define('MPESA_CONSUMER_KEY', '9AYMIwozkCnBML7WOPiFvvAA5jpmednEsKEiMbA5OWX3gGm9')
 define('MPESA_CONSUMER_SECRET', 'BtvFoSivXPIq7v9RWyv8d8lGMWDeRRsjjBC4I03eServnJKPlAaYSwdjz8YlDPpo');
 define('MPESA_BUSINESS_SHORTCODE', '174379');
 define('MPESA_PASSKEY', 'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919');
-define('MPESA_CALLBACK_URL', 'https://cea1-217-199-148-228.ngrok-free.app/payment/callback.php');
-define('MPESA_TIMEOUT_URL', 'https://cea1-217-199-148-228.ngrok-free.app/payment/timeout.php');
+define('MPESA_CALLBACK_URL', 'https://f14c-197-248-119-218.ngrok-free.app/payment/callback.php');
+define('MPESA_TIMEOUT_URL', 'https://f14c-197-248-119-218.ngrok-free.app/payment/timeout.php');
 
 // File Upload Configuration
 define('MAX_UPLOAD_SIZE', 5242880);

@@ -82,9 +82,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
 
             <ul class="list-unstyled">
                 <li class="mb-2">
-                    <a href="<?php echo SITE_URL; ?>logout.php" class="text-light text-decoration-none">
-                        <i class="fas fa-sign-out-alt me-2"></i> Logout
-                    </a>
+                    <form method="post" action="<?php echo SITE_URL; ?>logout.php">
+                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                        <button type="submit" class="btn btn-link text-light text-decoration-none p-0">
+                            <i class="fas fa-sign-out-alt me-2"></i> Logout
+                        </button>
+                    </form>
                 </li>
             </ul>
         </nav>
@@ -105,7 +108,12 @@ $currentPage = basename($_SERVER['PHP_SELF']);
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li><a class="dropdown-item" href="profile.php">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>logout.php">Logout</a></li>
+                                <li>
+                                    <form method="post" action="<?php echo SITE_URL; ?>logout.php">
+                                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                        <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Logout</button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
                     </div>

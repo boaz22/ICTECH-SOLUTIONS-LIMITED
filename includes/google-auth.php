@@ -76,6 +76,10 @@ class GoogleAuth
 
     private static function exchangeCodeForToken($code)
     {
+        if (!function_exists('curl_init')) {
+            return null;
+        }
+
         $payload = http_build_query([
             'code' => $code,
             'client_id' => GOOGLE_CLIENT_ID,
@@ -90,6 +94,10 @@ class GoogleAuth
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => $payload,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_HTTPHEADER => ['Content-Type: application/x-www-form-urlencoded'],
         ]);
 
@@ -106,10 +114,18 @@ class GoogleAuth
 
     private static function fetchUserInfo($accessToken)
     {
+        if (!function_exists('curl_init')) {
+            return null;
+        }
+
         $ch = curl_init();
         curl_setopt_array($ch, [
             CURLOPT_URL => 'https://www.googleapis.com/oauth2/v3/userinfo',
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_HTTPHEADER => ['Authorization: Bearer ' . $accessToken],
         ]);
 

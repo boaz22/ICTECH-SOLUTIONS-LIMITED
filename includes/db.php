@@ -19,11 +19,11 @@ class Database {
                 PDO::ATTR_EMULATE_PREPARES => false,
             ]);
         } catch (PDOException $e) {
-            if (DEBUG_MODE) {
-                die("Database connection failed: " . $e->getMessage());
-            } else {
-                die("Unable to connect to the database. Please try again later.");
+            if (defined('LOG_ERRORS') && LOG_ERRORS) {
+                error_log('Database connection failed: ' . $e->getMessage());
             }
+            http_response_code(500);
+            exit('Unable to connect to the database. Please try again later.');
         }
     }
 

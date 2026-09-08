@@ -72,6 +72,11 @@ a:hover {
     text-decoration: none;
 }
 
+:focus-visible {
+    outline: 3px solid var(--secondary);
+    outline-offset: 3px;
+}
+
 /* Navigation */
 .site-header {
     background: #ffffff;
@@ -516,6 +521,32 @@ a:hover {
     margin-top: auto;
     padding-top: 0.9rem;
     border-top: 1px solid rgba(255, 255, 255, 0.11);
+}
+
+.sidebar-logout {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    border-radius: 12px;
+    color: rgba(255, 255, 255, 0.82);
+    cursor: pointer;
+    display: flex;
+    font-weight: 600;
+    gap: 0.7rem;
+    padding: 0.76rem 0.8rem;
+    transition: all 0.2s ease;
+    width: 100%;
+}
+
+.sidebar-logout:hover {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+    transform: translateX(2px);
+}
+
+.sidebar-logout i {
+    text-align: center;
+    width: 18px;
 }
 
 .admin-content {
@@ -2399,4 +2430,20 @@ section {
 
 ::-webkit-scrollbar-thumb:hover {
     background: #003d99;
+}
+
+.cookie-notice {
+    background: #1a1a1a;
+    bottom: 1rem;
+    color: #fff;
+    left: 1rem;
+    max-width: 28rem;
+    padding: 1rem;
+    position: fixed;
+    right: 1rem;
+    z-index: 1080;
+}
+
+.cookie-notice a {
+    color: #ffda44;
 }

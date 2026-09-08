@@ -13,18 +13,21 @@ $errorMessage = '';
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = postParam('name');
-    $email = postParam('email');
-    $phone = postParam('phone');
-    $subject = postParam('subject');
-    $message = postParam('message');
+    $name = trim((string) postParam('name', ''));
+    $email = trim((string) postParam('email', ''));
+    $phone = trim((string) postParam('phone', ''));
+    $subject = trim((string) postParam('subject', ''));
+    $message = trim((string) postParam('message', ''));
     
     // Validation
     $errors = [];
+    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) $errors[] = 'Security validation failed. Please try again.';
     if (empty($name)) $errors[] = 'Name is required';
     if (empty($email) || !isValidEmail($email)) $errors[] = 'Valid email is required';
     if (empty($subject)) $errors[] = 'Subject is required';
     if (empty($message)) $errors[] = 'Message is required';
+    if (strlen($name) > 100 || strlen($phone) > 32 || strlen($subject) > 150 || strlen($message) > 5000) $errors[] = 'One or more fields exceed the allowed length.';
+    if (postParam('privacy_consent') !== '1') $errors[] = 'Please confirm that you have read the Privacy Policy.';
     
     if (empty($errors)) {
         $db = Database::getInstance();
@@ -105,8 +108,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-envelope text-secondary"></i> Email
                     </h6>
                     <p>
-                        <a href="mailto:info@ictech.co.ke">info@ictech.co.ke</a><br>
-                        <a href="mailto:support@ictech.co.ke">support@ictech.co.ke</a>
+                        <a href="mailto:info@ictechsolutions.co.ke">info@ictechsolutions.co.ke</a>
                     </p>
                 </div>
                 
@@ -121,23 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </p>
                 </div>
                 
-                <div class="contact-socials">
-                    <h6 class="text-primary mb-3">Follow Us</h6>
-                    <div>
-                        <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                            <i class="fab fa-facebook"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                            <i class="fab fa-twitter"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-primary btn-sm me-2">
-                            <i class="fab fa-linkedin"></i>
-                        </a>
-                        <a href="#" class="btn btn-outline-primary btn-sm">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    </div>
-                </div>
                 </div>
             </div>
             
@@ -154,49 +139,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <div class="card-body">
                         <?php if ($successMessage): ?>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check-circle"></i> <?php echo $successMessage; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
                         
                         <?php if ($errorMessage): ?>
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-circle"></i> <?php echo $errorMessage; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <i class="fas fa-exclamation-circle"></i> <?php echo h($errorMessage); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
                         
                         <form method="POST" data-validate="true">
+                            <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label">Full Name *</label>
-                                        <input type="text" name="name" class="form-control" placeholder="Your name" required>
+                                        <label class="form-label" for="contact-name">Full Name *</label>
+                                        <input id="contact-name" type="text" name="name" class="form-control" placeholder="Your name" maxlength="100" required>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label class="form-label">Email Address *</label>
-                                        <input type="email" name="email" class="form-control" placeholder="your@email.com" required>
+                                        <label class="form-label" for="contact-email">Email Address *</label>
+                                        <input id="contact-email" type="email" name="email" class="form-control" placeholder="your@email.com" maxlength="254" required>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" class="form-control" placeholder="+254 712 345 678">
+                                <label class="form-label" for="contact-phone">Phone Number</label>
+                                <input id="contact-phone" type="tel" name="phone" class="form-control" placeholder="+254 712 345 678" maxlength="32">
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Subject *</label>
-                                <input type="text" name="subject" class="form-control" placeholder="What is this regarding?" required>
+                                <label class="form-label" for="contact-subject">Subject *</label>
+                                <input id="contact-subject" type="text" name="subject" class="form-control" placeholder="What is this regarding?" maxlength="150" required>
                             </div>
                             
                             <div class="form-group">
-                                <label class="form-label">Message *</label>
-                                <textarea name="message" class="form-control" rows="6" placeholder="Your message..." required></textarea>
+                                <label class="form-label" for="contact-message">Message *</label>
+                                <textarea id="contact-message" name="message" class="form-control" rows="6" placeholder="Your message..." maxlength="5000" required></textarea>
                             </div>
-                            
+                            <div class="form-check my-3">
+                                <input class="form-check-input" type="checkbox" id="contact-privacy" name="privacy_consent" value="1" required>
+                                <label class="form-check-label" for="contact-privacy">I have read the <a href="privacy.php">Privacy Policy</a> and agree to ICTECH using this information to respond to my enquiry.</label>
+                            </div>
+
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary btn-lg w-100">
                                     <i class="fas fa-paper-plane"></i> Send Message

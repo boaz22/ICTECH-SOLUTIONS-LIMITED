@@ -54,7 +54,10 @@ $assignments = $db->getAll(
             <p class="text-secondary mb-1">TRAINER PORTAL</p>
             <h1 class="mb-0">Course Delivery Dashboard</h1>
         </div>
-        <a href="../logout.php" class="btn btn-outline-primary">Logout</a>
+        <form method="post" action="../logout.php">
+            <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+            <button type="submit" class="btn btn-outline-primary">Logout</button>
+        </form>
     </div>
 
     <div class="row g-3 mb-4">

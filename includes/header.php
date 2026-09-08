@@ -72,11 +72,8 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
                     <span><i class="fas fa-phone"></i> +254 712 345 678</span>
                     <span><i class="fas fa-envelope"></i> info@ictechsolutions.co.ke</span>
                 </div>
-                <div class="header-socials" aria-label="Social media links">
-                    <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a>
-                    <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
-                    <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin"></i></a>
-                    <a href="<?php echo SITE_URL; ?>contact.php" aria-label="Search"><i class="fas fa-search"></i></a>
+                <div class="header-socials">
+                    <a href="<?php echo SITE_URL; ?>contact.php" aria-label="Contact ICTECH"><i class="fas fa-envelope"></i><span class="visually-hidden">Contact ICTECH</span></a>
                 </div>
             </div>
         </div>
@@ -132,7 +129,12 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
                                 <?php endif; ?>
                                 <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/profile.php">Profile</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>logout.php">Logout</a></li>
+                                <li>
+                                    <form method="post" action="<?php echo SITE_URL; ?>logout.php">
+                                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                        <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Logout</button>
+                                    </form>
+                                </li>
                             </ul>
                         </li>
                     <?php else: ?>

@@ -9,6 +9,8 @@ require_once __DIR__ . '/helpers.php';
 
 class Auth
 {
+    private static $sessionUserValidated = null;
+
     /**
      * Start secure session
      */
@@ -16,6 +18,7 @@ class Auth
     {
         // Start session only if one is not already active
         if (session_status() === PHP_SESSION_NONE) {
+            ini_set('session.use_strict_mode', '1');
             session_name(SESSION_NAME);
 
             session_set_cookie_params([
@@ -116,16 +119,27 @@ class Auth
     ) {
         $db = Database::getInstance();
 
+        $name = trim((string) $name);
+        $email = strtolower(trim((string) $email));
+        $phone = trim((string) $phone);
         $errors = [];
 
         // Validate name
         if (empty($name)) {
             $errors[] = 'Name is required';
+        } elseif (strlen($name) > 100) {
+            $errors[] = 'Name must not exceed 100 characters';
         }
 
         // Validate email
         if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $errors[] = 'Valid email is required';
+        } elseif (strlen($email) > 254) {
+            $errors[] = 'Email must not exceed 254 characters';
+        }
+
+        if ($phone !== '' && (!isValidPhone($phone) || strlen($phone) > 32)) {
+            $errors[] = 'Use a valid Kenyan phone number';
         }
 
         // Validate email domain
@@ -295,6 +309,7 @@ class Auth
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
+        self::$sessionUserValidated = true;
     }
 
 
@@ -350,8 +365,31 @@ class Auth
     {
         self::startSession();
 
-        return isset($_SESSION['logged_in']) &&
-               $_SESSION['logged_in'] === true;
+        if (
+            !isset($_SESSION['logged_in'], $_SESSION['user_id'], $_SESSION['user_role']) ||
+            $_SESSION['logged_in'] !== true
+        ) {
+            return false;
+        }
+
+        if (self::$sessionUserValidated !== null) {
+            return self::$sessionUserValidated;
+        }
+
+        $user = Database::getInstance()->getRow(
+            'SELECT role, status FROM users WHERE id = ?',
+            [(int) $_SESSION['user_id']]
+        );
+
+        self::$sessionUserValidated = $user
+            && $user['status'] === 'active'
+            && hash_equals((string) $user['role'], (string) $_SESSION['user_role']);
+
+        if (!self::$sessionUserValidated) {
+            self::logout();
+        }
+
+        return self::$sessionUserValidated;
     }
 
 
@@ -360,10 +398,9 @@ class Auth
      */
     public static function isAdmin()
     {
-        self::startSession();
-
-        return isset($_SESSION['user_role']) &&
-               $_SESSION['user_role'] === 'admin';
+        return self::isLoggedIn() &&
+            isset($_SESSION['user_role']) &&
+            $_SESSION['user_role'] === 'admin';
     }
 
 
@@ -372,10 +409,9 @@ class Auth
      */
     public static function isStudent()
     {
-        self::startSession();
-
-        return isset($_SESSION['user_role']) &&
-               $_SESSION['user_role'] === 'student';
+        return self::isLoggedIn() &&
+            isset($_SESSION['user_role']) &&
+            $_SESSION['user_role'] === 'student';
     }
 
 
@@ -384,10 +420,9 @@ class Auth
      */
     public static function isTrainer()
     {
-        self::startSession();
-
-        return isset($_SESSION['user_role']) &&
-               $_SESSION['user_role'] === 'trainer';
+        return self::isLoggedIn() &&
+            isset($_SESSION['user_role']) &&
+            $_SESSION['user_role'] === 'trainer';
     }
 
 
@@ -455,6 +490,7 @@ class Auth
 
         // Destroy session
         session_destroy();
+        self::$sessionUserValidated = null;
     }
 
 
@@ -503,7 +539,8 @@ class Auth
     {
         self::startSession();
 
-        return isset($_SESSION['csrf_token']) &&
+        return is_string($token) &&
+               isset($_SESSION['csrf_token']) &&
                hash_equals(
                    $_SESSION['csrf_token'],
                    $token

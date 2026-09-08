@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($result['success']) {
             $defaultRedirect = $result['role'] === 'trainer' ? SITE_URL . 'trainer/dashboard.php' : ($result['role'] === 'admin' ? SITE_URL . 'admin/index.php' : SITE_URL . 'student/dashboard.php');
-            $redirectUrl = getParam('redirect', $defaultRedirect);
+            $redirectUrl = safeRedirectUrl(getParam('redirect', ''), $defaultRedirect);
             header("Location: " . $redirectUrl);
             exit;
         } else {
@@ -93,14 +93,14 @@ $redirect = getParam('redirect', '');
                         <?php if ($error): ?>
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="fas fa-exclamation-circle"></i> <?php echo h($error); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
 
                         <?php if ($successMessage): ?>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
 
@@ -111,8 +111,8 @@ $redirect = getParam('redirect', '');
                             <?php endif; ?>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Login as</label>
-                                <select name="login_role" class="form-control" required>
+                                <label class="form-label" for="login-role">Login as</label>
+                                <select id="login-role" name="login_role" class="form-control" required>
                                     <option value="student">Student</option>
                                     <option value="trainer">Trainer</option>
                                     <option value="admin">Administrator</option>
@@ -120,13 +120,13 @@ $redirect = getParam('redirect', '');
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Email Address</label>
-                                <input type="email" name="email" class="form-control" placeholder="your@email.com"
+                                <label class="form-label" for="login-email">Email Address</label>
+                                <input id="login-email" type="email" name="email" class="form-control" placeholder="your@email.com"
                                        value="" autocomplete="off" readonly onfocus="this.removeAttribute('readonly');" required>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Password</label>
+                                <label class="form-label" for="login-password">Password</label>
                                 <div class="password-field"><input id="login-password" type="password" name="password" class="form-control" placeholder="Enter your password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="login-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                             </div>
 

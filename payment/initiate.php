@@ -3,7 +3,7 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/mpesa.php';
 
-Auth::requireLogin();
+Auth::requireStudent();
 
 $db = Database::getInstance();
 $userId = Auth::getCurrentUserId();
@@ -138,8 +138,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'initiate_p
                         <input type="hidden" name="action" value="initiate_payment">
                         <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
                         <div class="mb-3">
-                            <label class="form-label">Phone number</label>
-                            <input type="tel" class="form-control" name="phone" value="<?php echo h($phone); ?>" placeholder="e.g. 0712345678" required>
+                            <label class="form-label" for="payment-phone">Phone number</label>
+                            <input id="payment-phone" type="tel" class="form-control" name="phone" value="<?php echo h($phone); ?>" placeholder="e.g. 0712345678" required>
                         </div>
                         <button type="submit" class="btn btn-primary w-100">Pay with M-Pesa</button>
                         <a href="<?php echo SITE_URL; ?>student/my-courses.php" class="btn btn-link w-100">Cancel</a>

@@ -6,6 +6,7 @@ includes/config.php
 # Uploads
 uploads/*
 !uploads/.gitkeep
+!uploads/.htaccess
 
 # Environment
 .env

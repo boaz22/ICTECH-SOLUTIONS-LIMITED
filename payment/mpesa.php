@@ -37,6 +37,10 @@ class MpesaGateway
         curl_setopt_array($ch, [
             CURLOPT_URL => $url,
             CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_HTTPHEADER => ['Authorization: Basic ' . $credentials, 'Content-Type: application/json'],
         ]);
 
@@ -175,29 +179,22 @@ class MpesaGateway
         $merchantId = $data['MerchantRequestID'] ?? $data['merchantRequestId'] ?? null;
         $resultCode = $data['ResultCode'] ?? $data['resultCode'] ?? null;
 
-        if (!$checkoutId && !$merchantId) {
+        if (!$checkoutId || !$merchantId || !self::isConfigured()) {
             return false;
         }
 
         $payment = $db->getRow(
-            'SELECT * FROM payments WHERE checkout_request_id = ? OR merchant_request_id = ? LIMIT 1',
-            [$checkoutId, $merchantId]
+            'SELECT * FROM payments WHERE checkout_request_id = ? AND merchant_request_id = ? AND status = ? LIMIT 1',
+            [$checkoutId, $merchantId, 'pending']
         );
 
         if (!$payment) {
             return false;
         }
 
-        if ((string) $resultCode === '0') {
-            $db->update('payments', ['status' => 'paid'], 'id = ?', [$payment['id']]);
-            if (!empty($payment['enrollment_id'])) {
-                $db->update('enrollments', ['status' => 'active', 'approved_at' => date('Y-m-d H:i:s')], 'id = ?', [$payment['enrollment_id']]);
-            }
-            return true;
-        }
-
-        $db->update('payments', ['status' => 'failed'], 'id = ?', [$payment['id']]);
-        return true;
+        // A callback can be delivered by any public client. Confirm its result with
+        // Daraja's authenticated status API before changing payment or enrollment state.
+        return self::queryPaymentStatus($payment) !== null;
     }
 
     public static function queryPaymentStatus($payment)
@@ -257,6 +254,10 @@ class MpesaGateway
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_POST => true,
             CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_CONNECTTIMEOUT => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
             CURLOPT_HTTPHEADER => [
                 'Authorization: Bearer ' . $token,
                 'Content-Type: application/json',

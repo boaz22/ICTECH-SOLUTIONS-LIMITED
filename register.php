@@ -37,8 +37,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Security validation failed. Please try again.';
     }
 
-    if ($accountType === 'trainer') {
-        $errors[] = 'Trainer accounts are created by an administrator. Please contact ICTECH administration.';
+    if ($accountType !== 'student') {
+        $errors[] = 'Only student accounts can be created here. Please contact ICTECH administration for trainer accounts.';
+    }
+
+    if (postParam('terms') !== '1') {
+        $errors[] = 'You must agree to the Terms of Service and Privacy Policy.';
     }
 
     if (empty($errors)) {
@@ -60,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="auth-page-header-content">
             <div class="section-subtitle">Start here</div>
             <h1>Build your next chapter with ICTECH</h1>
-            <p>Create your student account and begin learning with expert guidance.</p>
+            <p>Create your student account and begin learning with ICTECH.</p>
         </div>
     </div>
 </section>
@@ -87,59 +91,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         <li><?php echo h($error); ?></li>
                                     <?php endforeach; ?>
                                 </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
 
                         <?php if ($successMessage): ?>
                             <div class="alert alert-success alert-dismissible fade show" role="alert">
                                 <i class="fas fa-check-circle"></i> <?php echo $successMessage; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
 
                         <div class="alert alert-info"><i class="fas fa-info-circle"></i> Trainer accounts are created by an administrator. To become a trainer, please contact ICTECH administration.</div>
                         <form method="POST" data-validate="true" autocomplete="off">
                             <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
-                            <div class="form-group mb-3"><label class="form-label">Account type</label><select name="account_type" class="form-control" required><option value="student">Student</option><option value="trainer">Trainer (contact admin)</option></select></div>
+                            <div class="form-group mb-3"><label class="form-label" for="account-type">Account type</label><select id="account-type" name="account_type" class="form-control" required><option value="student">Student</option><option value="trainer">Trainer (contact admin)</option></select></div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Full Name *</label>
-                                <input type="text" name="name" class="form-control" placeholder="Your full name"
+                                <label class="form-label" for="registration-name">Full Name *</label>
+                                <input id="registration-name" type="text" name="name" class="form-control" placeholder="Your full name" maxlength="100"
                                        value="" autocomplete="off" required>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Email Address *</label>
-                                <input type="email" name="email" class="form-control" placeholder="your@email.com"
+                                <label class="form-label" for="registration-email">Email Address *</label>
+                                <input id="registration-email" type="email" name="email" class="form-control" placeholder="your@email.com" maxlength="254"
                                        value="" autocomplete="off" required>
                                 <small class="text-muted">We'll use this to send course updates</small>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Phone Number</label>
-                                <input type="tel" name="phone" class="form-control" placeholder="+254 712 345 678"
+                                <label class="form-label" for="registration-phone">Phone Number</label>
+                                <input id="registration-phone" type="tel" name="phone" class="form-control" placeholder="+254 712 345 678" maxlength="32"
                                        value="" autocomplete="off">
                                 <small class="text-muted">For M-Pesa payments and notifications</small>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Password *</label>
+                                <label class="form-label" for="registration-password">Password *</label>
                                 <div class="password-field"><input id="registration-password" type="password" name="password" class="form-control" placeholder="Create a strong password" data-password-rules="#registration-password-rules" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                                 <div id="registration-password-rules" class="password-rules"><span data-rule="length"><i class="fas fa-check-circle"></i> 8+ characters</span><span data-rule="uppercase"><i class="fas fa-check-circle"></i> Uppercase letter</span><span data-rule="number"><i class="fas fa-check-circle"></i> Number</span><span data-rule="special"><i class="fas fa-check-circle"></i> Special character</span></div>
                             </div>
 
                             <div class="form-group mb-3">
-                                <label class="form-label">Confirm Password *</label>
+                                <label class="form-label" for="registration-confirm-password">Confirm Password *</label>
                                 <div class="password-field"><input id="registration-confirm-password" type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-confirm-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
                             </div>
 
                             <div class="form-group mb-4">
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" required>
+                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" value="1" required>
                                     <label class="form-check-label" for="terms">
-                                        I agree to the <a href="#" target="_blank">Terms of Service</a> and
-                                        <a href="#" target="_blank">Privacy Policy</a>
+                                        I agree to the <a href="terms.php" target="_blank">Terms of Service</a> and
+                                        <a href="privacy.php" target="_blank">Privacy Policy</a>
                                     </label>
                                 </div>
                             </div>
@@ -168,11 +172,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </li>
                         <li class="mb-2">
                             <i class="fas fa-check text-success"></i>
-                            <span>Learn from industry experts</span>
+                            <span>Explore professional courses</span>
                         </li>
                         <li class="mb-2">
                             <i class="fas fa-check text-success"></i>
-                            <span>Get recognized certificates</span>
+                            <span>Receive course completion certificates</span>
                         </li>
                         <li class="mb-2">
                             <i class="fas fa-check text-success"></i>

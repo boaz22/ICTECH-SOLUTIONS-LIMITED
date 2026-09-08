@@ -5,8 +5,13 @@
 
 require_once __DIR__ . '/includes/auth.php';
 
-// Check if user is logged in
-if (!Auth::isLoggedIn()) {
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    header('Allow: POST');
+    exit('Method not allowed.');
+}
+
+if (!Auth::isLoggedIn() || !Auth::verifyCSRFToken(postParam('csrf_token'))) {
     header("Location: " . SITE_URL . "login.php");
     exit;
 }
