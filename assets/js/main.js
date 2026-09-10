@@ -225,8 +225,9 @@ function validateField(field) {
         return phoneRegex.test(value);
     }
 
-    // Password validation
-    if (type === 'password' && value) {
+    // Password strength validation only applies to fields that opt in (registration,
+    // reset password) - login and "current password" fields must accept any existing password.
+    if (type === 'password' && value && field.hasAttribute('data-password-rules')) {
         return value.length >= 8 && /[A-Z]/.test(value) && /[0-9]/.test(value) && /[^a-zA-Z0-9]/.test(value);
     }
 

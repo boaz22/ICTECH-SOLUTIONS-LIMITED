@@ -24,6 +24,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if (!$errors && $action === 'reset_password' && $userId) {
+        // Set a real usable password directly since password-reset emails aren't
+        // deliverable unless MAIL_HOST/SMTP is configured in includes/config.php.
+        $tempPassword = bin2hex(random_bytes(6));
+        $db->update('users', ['password' => password_hash($tempPassword, PASSWORD_BCRYPT)], 'id = ?', [$userId]);
+        $resetPasswordNotice = 'New temporary password: ' . $tempPassword . ' — share this with the user securely.';
+    }
+
     $status = postParam('status');
     if ($userId && in_array($status, ['active', 'inactive'], true)) {
         $db->update('users', ['status' => $status], 'id = ?', [$userId]);
@@ -77,7 +85,7 @@ $users = $db->getAll($sql, $params);
         </div>
     </aside>
     <div class="admin-content">
-        <header class="admin-topbar"><div class="admin-topbar-inner"><div class="brand-mark"><i class="fas fa-shield-alt"></i> Admin Console</div><div class="admin-user-chip"><i class="fas fa-user-circle"></i> <?php echo h(Auth::getCurrentUser()['name'] ?? 'Admin'); ?></div></div></header>
+        <header class="admin-topbar"><div class="admin-topbar-inner"><div class="brand-mark"><i class="fas fa-shield-alt"></i> Admin Console</div><div class="d-flex align-items-center gap-2"><div class="admin-user-chip"><i class="fas fa-user-circle"></i> <?php echo h(Auth::getCurrentUser()['name'] ?? 'Admin'); ?></div><a href="../logout.php" class="btn btn-sm btn-outline-primary"><i class="fas fa-sign-out-alt"></i> Logout</a></div></div></header>
         <div class="admin-content-body">
             <main class="container-fluid px-0">
                 <div class="admin-page-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
@@ -94,6 +102,10 @@ $users = $db->getAll($sql, $params);
 
     <?php if (getParam('deleted')): ?>
         <div class="alert alert-success">User deleted successfully.</div>
+    <?php endif; ?>
+
+    <?php if (!empty($resetPasswordNotice)): ?>
+        <div class="alert alert-success"><?php echo h($resetPasswordNotice); ?></div>
     <?php endif; ?>
 
     <?php foreach ($errors as $error): ?>
@@ -146,6 +158,11 @@ $users = $db->getAll($sql, $params);
                                     <button type="submit" class="btn btn-sm btn-outline-<?php echo $user['status'] === 'active' ? 'warning' : 'success'; ?>">
                                         <?php echo $user['status'] === 'active' ? 'Deactivate' : 'Activate'; ?>
                                     </button>
+                                </form>
+                                <form method="post" class="d-inline-block" onsubmit="return confirm('Reset password for <?php echo h(addslashes($user['name'])); ?>? A new temporary password will be generated.');">
+                                    <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                    <input type="hidden" name="user_id" value="<?php echo (int) $user['id']; ?>">
+                                    <button type="submit" name="action" value="reset_password" class="btn btn-sm btn-outline-primary">Reset Password</button>
                                 </form>
                                 <?php if ((int) $user['id'] !== Auth::getCurrentUserId()): ?>
                                     <form method="post" class="d-inline-block" onsubmit="return confirm('Delete <?php echo h(addslashes($user['name'])); ?>? This will permanently remove their account and all related data. This cannot be undone.');">

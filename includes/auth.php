@@ -504,6 +504,7 @@ class Auth
         self::startSession();
 
         return isset($_SESSION['csrf_token']) &&
+               is_string($token) &&
                hash_equals(
                    $_SESSION['csrf_token'],
                    $token
