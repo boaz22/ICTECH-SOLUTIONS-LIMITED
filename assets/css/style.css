@@ -327,6 +327,13 @@ a:hover {
     background: linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
     border: 1px solid rgba(0, 26, 77, 0.08);
     box-shadow: 0 10px 20px rgba(0, 26, 77, 0.04);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+a.admin-stat-card:hover, a.admin-stat-card:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 26px rgba(0, 26, 77, 0.1);
+    border-color: rgba(0, 26, 77, 0.16);
 }
 
 .admin-stat-card .card-body {

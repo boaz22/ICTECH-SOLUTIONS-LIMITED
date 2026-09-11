@@ -41,12 +41,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $search = trim((string) getParam('q', ''));
+$roleFilter = getParam('role', 'all');
 $sql = 'SELECT * FROM users WHERE 1 = 1';
 $params = [];
+if (in_array($roleFilter, ['student', 'trainer', 'admin'], true)) {
+    $sql .= ' AND role = ?';
+    $params[] = $roleFilter;
+}
 if ($search !== '') {
     $sql .= ' AND (name LIKE ? OR email LIKE ? OR phone LIKE ?)';
     $term = '%' . $search . '%';
-    $params = [$term, $term, $term];
+    $params[] = $term;
+    $params[] = $term;
+    $params[] = $term;
 }
 $sql .= ' ORDER BY created_at DESC';
 $users = $db->getAll($sql, $params);
@@ -118,11 +125,19 @@ $users = $db->getAll($sql, $params);
     <div class="card admin-panel-card mb-4">
         <div class="card-body">
             <form method="get" class="row g-2 align-items-center">
-                <div class="col-md-8">
+                <div class="col-md-5">
                     <input type="text" class="form-control" name="q" value="<?php echo h($search); ?>" placeholder="Search by name, email, or phone">
                 </div>
+                <div class="col-md-3">
+                    <select name="role" class="form-select">
+                        <option value="all" <?php echo $roleFilter === 'all' ? 'selected' : ''; ?>>All roles</option>
+                        <option value="student" <?php echo $roleFilter === 'student' ? 'selected' : ''; ?>>Students</option>
+                        <option value="trainer" <?php echo $roleFilter === 'trainer' ? 'selected' : ''; ?>>Trainers</option>
+                        <option value="admin" <?php echo $roleFilter === 'admin' ? 'selected' : ''; ?>>Admins</option>
+                    </select>
+                </div>
                 <div class="col-md-4 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary">Search</button>
+                    <button type="submit" class="btn btn-primary">Filter</button>
                     <a href="users.php" class="btn btn-outline-secondary">Reset</a>
                 </div>
             </form>
