@@ -14,9 +14,12 @@ header('Pragma: no-cache');
 
 $pageTitle = 'Login - Student or Trainer Portal';
 
-// If already logged in, redirect
+// If already logged in, redirect to the dashboard matching their role
 if (Auth::isLoggedIn()) {
-    header("Location: " . SITE_URL . "student/dashboard.php");
+    $currentUser = Auth::getCurrentUser();
+    $currentRole = $currentUser['role'] ?? 'student';
+    $roleRedirect = $currentRole === 'trainer' ? 'trainer/dashboard.php' : ($currentRole === 'admin' ? 'admin/index.php' : 'student/dashboard.php');
+    header("Location: " . SITE_URL . $roleRedirect);
     exit;
 }
 
