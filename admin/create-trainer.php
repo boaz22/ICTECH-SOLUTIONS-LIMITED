@@ -42,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="enrollments.php"><i class="fas fa-clipboard-list"></i> Enrollments</a>
                 <a href="courses.php"><i class="fas fa-book-open"></i> Courses</a>
                 <a href="categories.php"><i class="fas fa-tags"></i> Categories</a>
+                <a href="certificates.php"><i class="fas fa-certificate"></i> Certificates</a>
                 <a href="payments.php"><i class="fas fa-credit-card"></i> Payments</a>
                 <a href="reports.php"><i class="fas fa-chart-bar"></i> Reports</a>
                 <a href="testimonials.php"><i class="fas fa-comments"></i> Testimonials</a>
@@ -49,7 +50,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <a href="contact-messages.php"><i class="fas fa-envelope"></i> Messages</a>
                 <a href="settings.php"><i class="fas fa-sliders-h"></i> Settings</a>
             </nav>
-            <div class="sidebar-footer"><a href="../logout.php"><i class="fas fa-sign-out-alt"></i> Logout</a></div>
+            <div class="sidebar-footer"><form method="post" action="../logout.php"><input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>"><button type="submit" class="sidebar-logout"><i class="fas fa-sign-out-alt"></i> Logout</button></form></div>
         </div>
     </aside>
     <div class="admin-content">
@@ -58,7 +59,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="brand-mark"><i class="fas fa-shield-alt"></i> Admin Console</div>
                 <div class="d-flex align-items-center gap-2">
                     <div class="admin-user-chip"><i class="fas fa-user-circle"></i> <?php echo h(Auth::getCurrentUser()['name'] ?? 'Admin'); ?></div>
-                    <a href="../logout.php" class="btn btn-sm btn-outline-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <form method="post" action="../logout.php" class="d-inline"><input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>"><button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
                 </div>
             </div>
         </header>

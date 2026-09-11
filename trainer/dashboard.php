@@ -70,7 +70,7 @@ $assignments = $db->getAll(
                 <div class="brand-mark"><i class="fas fa-chalkboard-teacher"></i> Trainer Portal</div>
                 <div class="d-flex align-items-center gap-2">
                     <div class="admin-user-chip"><i class="fas fa-user-circle"></i> <?php echo h(Auth::getCurrentUser()['name'] ?? 'Trainer'); ?></div>
-                    <a href="../logout.php" class="btn btn-sm btn-outline-primary"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    <form method="post" action="../logout.php" class="d-inline"><input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>"><button type="submit" class="btn btn-sm btn-outline-primary"><i class="fas fa-sign-out-alt"></i> Logout</button></form>
                 </div>
             </div>
         </header>

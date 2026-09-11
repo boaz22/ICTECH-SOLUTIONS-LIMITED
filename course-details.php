@@ -23,6 +23,31 @@ if (!$course || $course['status'] !== 'published') {
 
 $pageTitle = h($course['title']);
 
+// Load the current student's enrollment so enrolled learners can see their
+// trainer-tracked progress and mark the course complete once it hits 100%.
+// Progress itself is set by the trainer (see trainer/dashboard.php), not the student.
+$studentEnrollment = null;
+$completionMessage = null;
+if ($isLoggedIn && $currentUser['role'] === 'student') {
+    $studentEnrollment = $db->getRow(
+        "SELECT id, status, progress, student_completed_at, trainer_approved_at
+         FROM enrollments
+         WHERE user_id = ? AND course_id = ? AND status IN ('active', 'completed')",
+        [$currentUser['id'], $courseId]
+    );
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'mark_completed') {
+        if (!Auth::verifyCSRFToken(postParam('csrf_token'))) {
+            $completionMessage = 'Security validation failed. Please try again.';
+        } elseif ($studentEnrollment && markStudentCompleted((int) $studentEnrollment['id'], (int) $currentUser['id'])) {
+            $studentEnrollment['student_completed_at'] = date('Y-m-d H:i:s');
+            $completionMessage = 'Course marked as complete. Awaiting trainer approval.';
+        } else {
+            $completionMessage = 'Unable to mark course complete. Make sure your progress is at 100%.';
+        }
+    }
+}
+
 // Get related courses
 $relatedCourses = $db->getAll(
     "SELECT c.*, cat.name as category_name
@@ -134,7 +159,7 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
             <!-- Sidebar -->
             <div class="col-lg-4">
                 <!-- Enrollment Card -->
-                <div class="card sticky-top" style="top: 80px;">
+                <div class="card">
                     <div class="card-body">
                         <!-- Course Meta -->
                         <div class="mb-4">
@@ -152,12 +177,21 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
 
                         <!-- Enrollment Button -->
                         <?php if ($isEnrolledInCourse): ?>
-                            <div class="alert alert-success mb-3">
-                                <i class="fas fa-check-circle"></i> You are enrolled in this course
-                            </div>
-                            <a href="student/my-courses.php" class="btn btn-primary w-100">
-                                <i class="fas fa-graduation-cap"></i> Go to Dashboard
-                            </a>
+                            <?php if ($studentEnrollment && $studentEnrollment['status'] === 'completed'): ?>
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle"></i> You have completed this course
+                                </div>
+                                <a href="#learning-progress" class="btn btn-primary w-100">
+                                    <i class="fas fa-certificate"></i> View Certificate
+                                </a>
+                            <?php else: ?>
+                                <div class="alert alert-success mb-3">
+                                    <i class="fas fa-check-circle"></i> You are enrolled in this course
+                                </div>
+                                <a href="#learning-progress" class="btn btn-primary w-100">
+                                    <i class="fas fa-play-circle"></i> Continue Learning
+                                </a>
+                            <?php endif; ?>
                         <?php else: ?>
                             <div class="mb-3">
                                 <div class="mb-2">
@@ -184,6 +218,46 @@ $isEnrolledInCourse = $isLoggedIn ? isEnrolled($currentUser['id'], $courseId) : 
                         <?php endif; ?>
                     </div>
                 </div>
+
+                <?php if ($studentEnrollment): ?>
+                    <div class="card mt-4" id="learning-progress">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-play-circle me-2"></i> Your Learning Progress</h5>
+                        </div>
+                        <div class="card-body">
+                            <?php if ($completionMessage): ?>
+                                <div class="alert alert-info"><?php echo h($completionMessage); ?></div>
+                            <?php endif; ?>
+
+                            <div class="progress mb-2" style="height: 10px;">
+                                <div class="progress-bar" role="progressbar"
+                                     style="width: <?php echo (int) $studentEnrollment['progress']; ?>%;"
+                                     aria-valuenow="<?php echo (int) $studentEnrollment['progress']; ?>"
+                                     aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                            <p class="text-muted mb-3">
+                                <?php echo (int) $studentEnrollment['progress']; ?>% complete
+                                <small class="d-block">Your trainer updates this as you progress through the course.</small>
+                            </p>
+
+                            <?php if ($studentEnrollment['status'] === 'completed'): ?>
+                                <a href="<?php echo SITE_URL; ?>student/certificate.php?id=<?php echo (int) $studentEnrollment['id']; ?>" class="btn btn-success w-100">
+                                    <i class="fas fa-certificate me-1"></i> View / Download Certificate
+                                </a>
+                            <?php elseif ((int) $studentEnrollment['progress'] === 100 && empty($studentEnrollment['student_completed_at'])): ?>
+                                <form method="post">
+                                    <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                    <input type="hidden" name="action" value="mark_completed">
+                                    <button type="submit" class="btn btn-outline-success w-100">Mark Course Complete</button>
+                                </form>
+                            <?php elseif ($studentEnrollment['student_completed_at'] && empty($studentEnrollment['trainer_approved_at'])): ?>
+                                <div class="alert alert-warning mb-0">Awaiting trainer approval.</div>
+                            <?php elseif ($studentEnrollment['trainer_approved_at']): ?>
+                                <div class="alert alert-success mb-0">Trainer approved. Awaiting final admin approval before your certificate is issued.</div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>

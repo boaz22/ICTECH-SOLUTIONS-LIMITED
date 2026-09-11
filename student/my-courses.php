@@ -117,7 +117,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </td>
                                     <td><?php echo formatDate($course['enrolled_at'], 'M d, Y'); ?></td>
                                     <td>
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
+                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>#learning-progress"
                                            class="btn btn-sm btn-outline-primary">
                                             View
                                         </a>
@@ -178,7 +178,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </div>
                                      <small class="text-muted"><?php echo (int) $course['progress']; ?>% Complete</small>
                                     <div class="mt-3">
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>"
+                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>#learning-progress"
                                            class="btn btn-primary btn-sm w-100">
                                             <i class="fas fa-arrow-right me-1"></i> Continue Learning
                                         </a>
