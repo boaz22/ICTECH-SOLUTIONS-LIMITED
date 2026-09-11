@@ -24,6 +24,9 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
     <meta name="description" content="<?php echo h($seoDescription); ?>">
     <meta name="keywords" content="ICT training Kenya, technology courses, professional certification, corporate training, IT solutions">
     <meta name="robots" content="index, follow">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo SITE_URL; ?>assets/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo SITE_URL; ?>assets/images/favicon-16.png">
+    <link rel="apple-touch-icon" href="<?php echo SITE_URL; ?>assets/images/apple-touch-icon.png">
     <link rel="canonical" href="<?php echo h($canonicalUrl); ?>">
     <meta property="og:locale" content="en_KE">
     <meta property="og:site_name" content="<?php echo h(SITE_NAME); ?>">
@@ -69,7 +72,7 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
         <div class="header-topbar">
             <div class="container header-topbar-inner">
                 <div class="header-contact">
-                    <span><i class="fas fa-phone"></i> +254 712 345 678</span>
+                    <span><i class="fas fa-phone"></i> +254 733 600 326</span>
                     <span><i class="fas fa-envelope"></i> info@ictechsolutions.co.ke</span>
                 </div>
                 <div class="header-socials">

@@ -28,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Set a real usable password directly since password-reset emails aren't
         // deliverable unless MAIL_HOST/SMTP is configured in includes/config.php.
         $tempPassword = bin2hex(random_bytes(6));
-        $db->update('users', ['password' => password_hash($tempPassword, PASSWORD_BCRYPT)], 'id = ?', [$userId]);
-        $resetPasswordNotice = 'New temporary password: ' . $tempPassword . ' — share this with the user securely.';
+        $db->update('users', ['password' => password_hash($tempPassword, PASSWORD_BCRYPT), 'must_change_password' => 1], 'id = ?', [$userId]);
+        $resetPasswordNotice = 'New temporary password: ' . $tempPassword . ' — share this with the user securely. They will be required to set their own password the next time they log in.';
     }
 
     $status = postParam('status');
@@ -56,6 +56,8 @@ $users = $db->getAll($sql, $params);
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="../assets/images/favicon-32.png">
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
     <title>User Management | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

@@ -4,7 +4,7 @@
  */
 ?>
     <?php if (basename($_SERVER['SCRIPT_NAME'] ?? '') === 'index.php'): ?>
-        <a class="whatsapp-float" href="https://wa.me/254712345678?text=Hello%20ICTECH%2C%20I%20would%20like%20to%20learn%20more%20about%20your%20courses." target="_blank" rel="noopener noreferrer" aria-label="Talk to ICTECH on WhatsApp" title="Talk to ICTECH on WhatsApp">
+        <a class="whatsapp-float" href="https://wa.me/254733600326?text=Hello%20ICTECH%2C%20I%20would%20like%20to%20learn%20more%20about%20your%20courses." target="_blank" rel="noopener noreferrer" aria-label="Talk to ICTECH on WhatsApp" title="Talk to ICTECH on WhatsApp">
             <i class="fab fa-whatsapp"></i>
             <span>Talk to Us</span>
         </a>
@@ -46,7 +46,7 @@
                 <div class="col-md-3 mb-4">
                     <h6 class="mb-3">Contact Info</h6>
                     <p class="mb-2">
-                        <i class="fas fa-phone text-warning"></i> +254 712 345 678
+                        <i class="fas fa-phone text-warning"></i> +254 733 600 326
                     </p>
                     <p class="mb-2">
                         <i class="fas fa-envelope text-warning"></i> info@ictechsolutions.co.ke

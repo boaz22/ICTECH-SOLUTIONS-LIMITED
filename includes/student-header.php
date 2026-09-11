@@ -19,6 +19,9 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo SITE_DESCRIPTION; ?>">
+    <link rel="icon" type="image/png" sizes="32x32" href="<?php echo SITE_URL; ?>assets/images/favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="<?php echo SITE_URL; ?>assets/images/favicon-16.png">
+    <link rel="apple-touch-icon" href="<?php echo SITE_URL; ?>assets/images/apple-touch-icon.png">
     <title><?php echo isset($pageTitle) ? h($pageTitle) . ' - ' . SITE_NAME : SITE_NAME; ?></title>
 
     <!-- Bootstrap CSS -->

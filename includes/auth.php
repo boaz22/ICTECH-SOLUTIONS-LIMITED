@@ -246,7 +246,7 @@ class Auth
 
         // Get user
         $user = $db->getRow(
-            'SELECT id, name, email, password, role, status
+            'SELECT id, name, email, password, role, status, must_change_password
              FROM users
              WHERE email = ?',
             [$email]
@@ -309,6 +309,7 @@ class Auth
         $_SESSION['user_role'] = $user['role'];
         $_SESSION['logged_in'] = true;
         $_SESSION['last_activity'] = time();
+        $_SESSION['must_change_password'] = !empty($user['must_change_password']);
         self::$sessionUserValidated = true;
     }
 
@@ -324,7 +325,7 @@ class Auth
         $db = Database::getInstance();
 
         $user = $db->getRow(
-            'SELECT id, name, email, role, status FROM users WHERE email = ?',
+            'SELECT id, name, email, role, status, must_change_password FROM users WHERE email = ?',
             [$email]
         );
 
@@ -563,6 +564,28 @@ class Auth
 
             exit;
         }
+
+        self::enforcePasswordChange();
+    }
+
+    /**
+     * Redirect to the forced password-change page if the current user's
+     * password was set/reset directly by an admin and hasn't been replaced yet.
+     */
+    private static function enforcePasswordChange()
+    {
+        if (empty($_SESSION['must_change_password'])) {
+            return;
+        }
+
+        $currentScript = basename((string) ($_SERVER['SCRIPT_NAME'] ?? ''));
+
+        if (in_array($currentScript, ['force-password-change.php', 'logout.php'], true)) {
+            return;
+        }
+
+        header('Location: ' . SITE_URL . 'force-password-change.php');
+        exit;
     }
 
 
@@ -579,6 +602,8 @@ class Auth
 
             exit;
         }
+
+        self::enforcePasswordChange();
     }
 
 
@@ -596,6 +621,8 @@ class Auth
 
             exit;
         }
+
+        self::enforcePasswordChange();
     }
 
 
@@ -613,6 +640,8 @@ class Auth
 
             exit;
         }
+
+        self::enforcePasswordChange();
     }
 
 
@@ -649,11 +678,16 @@ class Auth
             $db->update(
                 'users',
                 [
-                    'password' => $hashedPassword
+                    'password' => $hashedPassword,
+                    'must_change_password' => 0
                 ],
                 'id = ?',
                 [$userId]
             );
+
+            if (isset($_SESSION['user_id']) && (int) $_SESSION['user_id'] === (int) $userId) {
+                $_SESSION['must_change_password'] = false;
+            }
 
             return [
                 'success' => true
@@ -788,7 +822,8 @@ class Auth
             [
                 'password' => self::hashPassword(
                     $password
-                )
+                ),
+                'must_change_password' => 0
             ],
             'id = ?',
             [

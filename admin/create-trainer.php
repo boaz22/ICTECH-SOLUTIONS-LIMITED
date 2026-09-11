@@ -14,8 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Generate a real temporary password and show it to the admin, since password-reset
             // emails are not deliverable unless MAIL_HOST/SMTP is configured in includes/config.php.
             $tempPassword = bin2hex(random_bytes(6));
-            $db->insert('users', ['name'=>$name, 'email'=>$email, 'phone'=>$phone, 'password'=>password_hash($tempPassword, PASSWORD_BCRYPT), 'role'=>'trainer', 'status'=>'active']);
-            $success = 'Trainer created. Temporary password: ' . $tempPassword . ' — share this with them securely; they can change it via Forgot Password after logging in.';
+            $db->insert('users', ['name'=>$name, 'email'=>$email, 'phone'=>$phone, 'password'=>password_hash($tempPassword, PASSWORD_BCRYPT), 'role'=>'trainer', 'status'=>'active', 'must_change_password'=>1]);
+            $success = 'Trainer created. Temporary password: ' . $tempPassword . ' — share this with them securely. They will be required to set their own password the first time they log in.';
         }
     }
 }
@@ -25,6 +25,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="../assets/images/favicon-32.png">
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
     <title>Create Trainer | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">

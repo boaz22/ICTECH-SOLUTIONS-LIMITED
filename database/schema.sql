@@ -10,6 +10,7 @@ CREATE TABLE users (
     password VARCHAR(255) NOT NULL,
     role ENUM('student', 'trainer', 'admin') DEFAULT 'student',
     status ENUM('active', 'inactive') DEFAULT 'active',
+    must_change_password TINYINT(1) NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_email (email),

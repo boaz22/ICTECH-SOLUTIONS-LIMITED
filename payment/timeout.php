@@ -5,6 +5,8 @@ require_once __DIR__ . '/../includes/helpers.php';
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/png" href="../assets/images/favicon-32.png">
+    <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
     <title>Payment Timeout | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>

@@ -18,7 +18,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone = trim((string) postParam('phone', ''));
     $subject = trim((string) postParam('subject', ''));
     $message = trim((string) postParam('message', ''));
-    
+
     // Validation
     $errors = [];
     if (!Auth::verifyCSRFToken(postParam('csrf_token'))) $errors[] = 'Security validation failed. Please try again.';
@@ -28,7 +28,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($message)) $errors[] = 'Message is required';
     if (strlen($name) > 100 || strlen($phone) > 32 || strlen($subject) > 150 || strlen($message) > 5000) $errors[] = 'One or more fields exceed the allowed length.';
     if (postParam('privacy_consent') !== '1') $errors[] = 'Please confirm that you have read the Privacy Policy.';
-    
+
     if (empty($errors)) {
         $db = Database::getInstance();
         try {
@@ -82,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <h2>Get in touch</h2>
                     <p>Tell us what you need and our team will help you find the right next step.</p>
                 </div>
-                
+
                 <div class="contact-detail">
                     <h6 class="text-primary mb-2">
                         <i class="fas fa-map-marker-alt text-secondary"></i> Address
@@ -92,17 +92,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Nairobi, Kenya
                     </p>
                 </div>
-                
+
                 <div class="contact-detail">
                     <h6 class="text-primary mb-2">
                         <i class="fas fa-phone text-secondary"></i> Phone
                     </h6>
                     <p>
-                        <a href="tel:+254712345678">+254 712 345 678</a><br>
+                        <a href="tel:+254733600326">+254 733 600 326</a><br>
                         <a href="tel:+254734567890">+254 734 567 890</a>
                     </p>
                 </div>
-                
+
                 <div class="contact-detail">
                     <h6 class="text-primary mb-2">
                         <i class="fas fa-envelope text-secondary"></i> Email
@@ -111,7 +111,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <a href="mailto:info@ictechsolutions.co.ke">info@ictechsolutions.co.ke</a>
                     </p>
                 </div>
-                
+
                 <div class="contact-detail">
                     <h6 class="text-primary mb-2">
                         <i class="fas fa-clock text-secondary"></i> Business Hours
@@ -122,10 +122,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         Sunday: Closed
                     </p>
                 </div>
-                
+
                 </div>
             </div>
-            
+
             <!-- Contact Form -->
             <div class="col-lg-8" data-scroll>
                 <div class="card contact-form-card shadow-sm border-0">
@@ -143,14 +143,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
-                        
+
                         <?php if ($errorMessage): ?>
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <i class="fas fa-exclamation-circle"></i> <?php echo h($errorMessage); ?>
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
-                        
+
                         <form method="POST" data-validate="true">
                             <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
                             <div class="row">
@@ -167,17 +167,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label" for="contact-phone">Phone Number</label>
                                 <input id="contact-phone" type="tel" name="phone" class="form-control" placeholder="+254 712 345 678" maxlength="32">
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label" for="contact-subject">Subject *</label>
                                 <input id="contact-subject" type="text" name="subject" class="form-control" placeholder="What is this regarding?" maxlength="150" required>
                             </div>
-                            
+
                             <div class="form-group">
                                 <label class="form-label" for="contact-message">Message *</label>
                                 <textarea id="contact-message" name="message" class="form-control" rows="6" placeholder="Your message..." maxlength="5000" required></textarea>
@@ -206,7 +206,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="section-header mb-5">
             <h2>How We Can Help</h2>
         </div>
-        
+
         <div class="row">
             <div class="col-md-4 mb-4" data-scroll>
                 <div class="contact-help-card">
@@ -217,7 +217,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Have questions about our courses? Get information about enrollment, pricing, and curriculum.</p>
                 </div>
             </div>
-            
+
             <div class="col-md-4 mb-4" data-scroll>
                 <div class="contact-help-card">
                     <div class="contact-help-icon">
@@ -227,7 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <p>Interested in customized training for your organization? Contact us for a consultation.</p>
                 </div>
             </div>
-            
+
             <div class="col-md-4 mb-4" data-scroll>
                 <div class="contact-help-card">
                     <div class="contact-help-icon">
