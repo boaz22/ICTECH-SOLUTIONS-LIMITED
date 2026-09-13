@@ -23,7 +23,7 @@ $pageTitle = 'Learning Resources';
     <div class="container">
         <div class="section-header mb-5">
             <h2>Available Resources</h2>
-            <p>We provide comprehensive learning materials to support your studies</p>
+            <p>Resources are shared through guided support. Contact us with your area of interest to request access.</p>
         </div>
         
         <div class="row">
@@ -35,7 +35,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Access comprehensive video tutorials covering all course materials. Learn at your own pace with clear, step-by-step instructions.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Explore Videos</a>
+                        <a href="contact.php?interest=video-tutorials" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -48,7 +48,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Downloadable study guides and lecture notes to complement your learning. Perfect for quick reference and exam preparation.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Download Guides</a>
+                        <a href="contact.php?interest=study-guides" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Practical code examples and project templates. Use these as references while building your own projects.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">View Samples</a>
+                        <a href="contact.php?interest=code-examples" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -74,7 +74,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Interactive quizzes and practice tests to evaluate your understanding and prepare for assessments.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Take Quiz</a>
+                        <a href="contact.php?interest=quizzes" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -87,7 +87,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Curated links to industry-leading resources, documentation, and tools relevant to your courses.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">View Links</a>
+                        <a href="contact.php?interest=external-links" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -100,7 +100,7 @@ $pageTitle = 'Learning Resources';
                     </div>
                     <div class="card-body resource-card-body">
                         <p>Connect with fellow students, share ideas, ask questions, and learn together in our active community forum.</p>
-                        <a href="#" class="btn btn-outline-primary btn-sm">Join Forum</a>
+                        <a href="contact.php?interest=community-forum" class="btn btn-outline-primary btn-sm">Request Via Contact</a>
                     </div>
                 </div>
             </div>
@@ -111,10 +111,12 @@ $pageTitle = 'Learning Resources';
 <!-- Call to Action -->
 <section class="cta-section">
     <div class="container">
-        <h2>Get the Most Out of Your Learning</h2>
-        <p>Utilize these resources to enhance your understanding and succeed in your courses</p>
-        <a href="courses.php" class="btn btn-primary btn-lg">
-            <i class="fas fa-graduation-cap"></i> Enroll in a Course
+        <h2>Interested in Learning Resources?</h2>
+        <p>Tell us what you need and our team will guide you on available materials and suitable courses.</p>
+        <!-- FUTURE FEATURE - SELF-SERVICE RESOURCE PORTAL -->
+        <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+        <a href="contact.php" class="btn btn-primary btn-lg">
+            <i class="fas fa-envelope"></i> Contact ICTECH
         </a>
     </div>
 </section>

@@ -214,8 +214,9 @@ function getPublishedCourses($limit = null, $offset = 0, $categoryId = null, $se
     }
 
     if ($search) {
-        $sql .= " AND (c.title LIKE ? OR c.description LIKE ?)";
+        $sql .= " AND (c.title LIKE ? OR c.description LIKE ? OR cat.name LIKE ?)";
         $searchTerm = '%' . $search . '%';
+        $params[] = $searchTerm;
         $params[] = $searchTerm;
         $params[] = $searchTerm;
     }
@@ -229,6 +230,33 @@ function getPublishedCourses($limit = null, $offset = 0, $categoryId = null, $se
     }
 
     return $db->getAll($sql, $params);
+}
+
+/**
+ * Count all published courses using the same filters as getPublishedCourses().
+ */
+function countPublishedCourses($categoryId = null, $search = null) {
+    $db = Database::getInstance();
+    $sql = "SELECT COUNT(*)
+            FROM courses c
+            LEFT JOIN categories cat ON c.category_id = cat.id
+            WHERE c.status = 'published'";
+    $params = [];
+
+    if ($categoryId) {
+        $sql .= " AND c.category_id = ?";
+        $params[] = $categoryId;
+    }
+
+    if ($search) {
+        $sql .= " AND (c.title LIKE ? OR c.description LIKE ? OR cat.name LIKE ?)";
+        $searchTerm = '%' . $search . '%';
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+        $params[] = $searchTerm;
+    }
+
+    return (int) $db->getValue($sql, $params);
 }
 
 /**
@@ -558,23 +586,52 @@ function redirect($url) {
 /**
  * Send a simple email notification.
  */
+function sendEmailWithPhpMail($to, $subject, $message, $from, $fromName) {
+    if (!function_exists('mail')) {
+        error_log('mail() is unavailable; cannot send email to ' . $to . ' subject: ' . $subject);
+        return false;
+    }
+
+    $safeSubject = trim((string) preg_replace('/[\r\n]+/', ' ', (string) $subject));
+    $safeFrom = trim((string) preg_replace('/[\r\n]+/', '', (string) $from));
+    $safeFromName = trim((string) preg_replace('/[\r\n]+/', '', (string) $fromName));
+    $encodedFromName = '=?UTF-8?B?' . base64_encode($safeFromName) . '?=';
+
+    $headers = [
+        'MIME-Version: 1.0',
+        'Content-Type: text/html; charset=UTF-8',
+        'From: ' . $encodedFromName . ' <' . $safeFrom . '>',
+        'Reply-To: ' . (defined('MAIL_REPLY_TO') && MAIL_REPLY_TO ? MAIL_REPLY_TO : $safeFrom),
+        'X-Mailer: PHP/' . phpversion(),
+    ];
+
+    $sent = @mail($to, $safeSubject, $message, implode("\r\n", $headers));
+    if (!$sent) {
+        error_log('mail() failed to send email to ' . $to . ' subject: ' . $subject);
+        return false;
+    }
+
+    return true;
+}
+
 function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
     if (empty($to)) {
         return false;
     }
 
-    if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
-        if (!loadComposerAutoload() || !class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
-            error_log('PHPMailer is not installed; skipping email to ' . $to . ' subject: ' . $subject);
-            return false;
-        }
-    }
-
     $from = $from ?? MAIL_FROM;
     $fromName = $fromName ?? MAIL_FROM_NAME;
+    $phpMailerAvailable = class_exists('PHPMailer\\PHPMailer\\PHPMailer')
+        || (loadComposerAutoload() && class_exists('PHPMailer\\PHPMailer\\PHPMailer'));
+
+    if (!$phpMailerAvailable) {
+        error_log('PHPMailer is not installed; falling back to mail() for ' . $to . ' subject: ' . $subject);
+        return sendEmailWithPhpMail($to, $subject, $message, $from, $fromName);
+    }
 
     try {
-        $mail = new PHPMailer\PHPMailer\PHPMailer(true);
+        $phpMailerClass = 'PHPMailer\\PHPMailer\\PHPMailer';
+        $mail = new $phpMailerClass(true);
         $mail->CharSet = 'UTF-8';
         $mail->isHTML(true);
         $mail->setFrom($from, $fromName);
@@ -598,13 +655,13 @@ function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
         $success = $mail->send();
         if (!$success) {
             error_log('PHPMailer failed to send email to ' . $to . ' subject: ' . $subject . ' - ' . $mail->ErrorInfo);
-            return false;
+            return sendEmailWithPhpMail($to, $subject, $message, $from, $fromName);
         }
 
         return true;
     } catch (Exception $e) {
         error_log('PHPMailer exception for ' . $to . ' subject: ' . $subject . ' - ' . $e->getMessage());
-        return false;
+        return sendEmailWithPhpMail($to, $subject, $message, $from, $fromName);
     }
 }
 

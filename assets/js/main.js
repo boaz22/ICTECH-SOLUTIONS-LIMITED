@@ -4,12 +4,67 @@
 
 // Document ready equivalent
 document.addEventListener('DOMContentLoaded', function() {
+    initializeCourseMenu();
     initializeSlider();
     initializeCarousels();
     initializeValidation();
     initializePasswordControls();
     initializeScrollEffects();
 });
+
+// ============================================
+// Public Course Menu (desktop hover + mobile tap)
+// ============================================
+function initializeCourseMenu() {
+    const courseMenus = [...document.querySelectorAll('.nav-course-dropdown')];
+    if (courseMenus.length === 0) return;
+
+    const desktopQuery = window.matchMedia('(min-width: 992px)');
+
+    function closeAllMenus() {
+        courseMenus.forEach(menu => {
+            menu.classList.remove('menu-open');
+            const toggle = menu.querySelector('[data-course-menu-toggle]');
+            if (toggle) {
+                toggle.setAttribute('aria-expanded', 'false');
+            }
+        });
+    }
+
+    courseMenus.forEach(menu => {
+        const toggle = menu.querySelector('[data-course-menu-toggle]');
+        if (!toggle) return;
+
+        toggle.addEventListener('click', function(event) {
+            if (desktopQuery.matches) {
+                return;
+            }
+
+            event.preventDefault();
+            const isOpen = menu.classList.contains('menu-open');
+            closeAllMenus();
+
+            if (!isOpen) {
+                menu.classList.add('menu-open');
+                toggle.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+
+    document.addEventListener('click', function(event) {
+        if (desktopQuery.matches) return;
+        const clickedInside = courseMenus.some(menu => menu.contains(event.target));
+        if (!clickedInside) {
+            closeAllMenus();
+        }
+    });
+
+    window.addEventListener('resize', function() {
+        if (desktopQuery.matches) {
+            closeAllMenus();
+        }
+    });
+}
 
 // ============================================
 // Slider Initialization

@@ -33,6 +33,7 @@ CREATE TABLE courses (
     title VARCHAR(255) NOT NULL,
     slug VARCHAR(255) NOT NULL UNIQUE,
     description LONGTEXT,
+    course_outline LONGTEXT,
     objectives LONGTEXT,
     requirements LONGTEXT,
     category_id INT NOT NULL,

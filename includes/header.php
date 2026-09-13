@@ -15,6 +15,10 @@ $seoTitle = isset($pageTitle) ? $pageTitle : SITE_NAME;
 $seoDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $currentPage === 'index.php' ? SITE_URL : SITE_URL . $currentPage;
 $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
+$publicCourseCategories = getCategories();
+$headerCourseSearch = trim((string) getParam('search', '', FILTER_UNSAFE_RAW));
+$activeCategoryId = getParam('category', null, FILTER_VALIDATE_INT);
+$isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-details.php' || $currentPage === 'course-enquiry.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -90,63 +94,73 @@ $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $isHomePage ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>"<?php echo $isHomePage ? ' aria-current="page"' : ''; ?>>Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $currentPage === 'about.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>about.php"<?php echo $currentPage === 'about.php' ? ' aria-current="page"' : ''; ?>>About</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $currentPage === 'courses.php' || $currentPage === 'course-details.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>courses.php"<?php echo $currentPage === 'courses.php' || $currentPage === 'course-details.php' ? ' aria-current="page"' : ''; ?>>Courses</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $currentPage === 'resources.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>resources.php"<?php echo $currentPage === 'resources.php' ? ' aria-current="page"' : ''; ?>>Resources</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link <?php echo $currentPage === 'contact.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>contact.php"<?php echo $currentPage === 'contact.php' ? ' aria-current="page"' : ''; ?>>Contact</a>
-                    </li>
-
-                    <?php if ($isLoggedIn && $currentUser['role'] === 'student'): ?>
                         <li class="nav-item">
-                            <a class="nav-link <?php echo $currentPage === 'student/my-courses.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>student/my-courses.php"<?php echo $currentPage === 'student/my-courses.php' ? ' aria-current="page"' : ''; ?>>My Courses</a>
+                            <a class="nav-link <?php echo $isHomePage ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>"<?php echo $isHomePage ? ' aria-current="page"' : ''; ?>>Home</a>
                         </li>
-                    <?php endif; ?>
-
-                    <?php if ($isLoggedIn): ?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                <i class="fas fa-user"></i> <?php echo h($currentUser['name']); ?>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo $currentPage === 'about.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>about.php"<?php echo $currentPage === 'about.php' ? ' aria-current="page"' : ''; ?>>About</a>
+                        </li>
+                        <li class="nav-item nav-course-dropdown <?php echo $isCoursesActive ? 'active' : ''; ?>">
+                            <a class="nav-link nav-course-toggle <?php echo $isCoursesActive ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>courses.php" data-course-menu-toggle aria-expanded="false"<?php echo $isCoursesActive ? ' aria-current="page"' : ''; ?>>
+                                Courses <i class="fas fa-chevron-down ms-1"></i>
                             </a>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <?php if ($currentUser['role'] === 'admin'): ?>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/index.php">Admin Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/settings.php">Admin Settings</a></li>
-                                <?php elseif ($currentUser['role'] === 'trainer'): ?>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>trainer/dashboard.php">Trainer Dashboard</a></li>
-                                <?php else: ?>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/dashboard.php">Student Dashboard</a></li>
-                                    <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/my-courses.php">My Courses</a></li>
-                                <?php endif; ?>
-                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>student/profile.php">Profile</a></li>
+                            <ul class="dropdown-menu nav-course-menu">
+                                <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>courses.php">All Courses</a></li>
                                 <li><hr class="dropdown-divider"></li>
-                                <li>
-                                    <form method="post" action="<?php echo SITE_URL; ?>logout.php">
-                                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
-                                        <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Logout</button>
-                                    </form>
-                                </li>
+                                <?php foreach ($publicCourseCategories as $category): ?>
+                                    <li>
+                                        <a class="dropdown-item <?php echo $currentPage === 'courses.php' && (int) $activeCategoryId === (int) $category['id'] ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>courses.php?category=<?php echo (int) $category['id']; ?>">
+                                            <?php echo h($category['name']); ?>
+                                        </a>
+                                    </li>
+                                <?php endforeach; ?>
                             </ul>
                         </li>
-                    <?php else: ?>
                         <li class="nav-item">
-                            <a class="nav-link" href="<?php echo SITE_URL; ?>login.php">Login</a>
+                            <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link btn btn-warning btn-sm ms-2" href="<?php echo SITE_URL; ?>register.php">Register</a>
+                            <a class="nav-link <?php echo $currentPage === 'students.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>students.php"<?php echo $currentPage === 'students.php' ? ' aria-current="page"' : ''; ?>>Learner Support</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo $currentPage === 'resources.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>resources.php"<?php echo $currentPage === 'resources.php' ? ' aria-current="page"' : ''; ?>>Resources</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo $currentPage === 'contact.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>contact.php"<?php echo $currentPage === 'contact.php' ? ' aria-current="page"' : ''; ?>>Contact</a>
+                        </li>
+
+                        <li class="nav-item nav-search-item">
+                            <!-- FUTURE FEATURE - STUDENT LOGIN / STUDENT REGISTRATION -->
+                            <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+                            <form method="get" action="<?php echo SITE_URL; ?>courses.php" class="header-course-search" role="search" aria-label="Search courses">
+                                <label class="visually-hidden" for="header-course-search">Search courses</label>
+                                <i class="fas fa-search" aria-hidden="true"></i>
+                                <input id="header-course-search" type="search" name="search" value="<?php echo h($headerCourseSearch); ?>" placeholder="Search courses..." maxlength="120">
+                                <button type="submit">Search</button>
+                            </form>
+                        </li>
+
+                        <?php if ($isLoggedIn && in_array($currentUser['role'], ['admin', 'trainer'], true)): ?>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
+                                    <i class="fas fa-user"></i> <?php echo h($currentUser['name']); ?>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <?php if ($currentUser['role'] === 'admin'): ?>
+                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/index.php">Admin Dashboard</a></li>
+                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/settings.php">Admin Settings</a></li>
+                                    <?php else: ?>
+                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>trainer/dashboard.php">Trainer Dashboard</a></li>
+                                    <?php endif; ?>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form method="post" action="<?php echo SITE_URL; ?>logout.php">
+                                            <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                            <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
                         <?php endif; ?>
                     </ul>
                 </div>

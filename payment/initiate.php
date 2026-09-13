@@ -3,6 +3,45 @@ require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 require_once __DIR__ . '/mpesa.php';
 
+if (defined('PUBLIC_ENQUIRY_MODE') && PUBLIC_ENQUIRY_MODE) {
+    // ==========================================
+    // FUTURE FEATURE - COURSE ENROLLMENT
+    // FUTURE FEATURE - M-PESA COURSE PAYMENT
+    // TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE
+    // ==========================================
+    ?>
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Online Enrollment Temporarily Unavailable | ICTECH</title>
+        <link rel="icon" type="image/png" href="../assets/images/favicon-32.png">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    </head>
+    <body class="bg-light">
+    <main class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-7">
+                <div class="card shadow-sm">
+                    <div class="card-body p-4 p-lg-5">
+                        <h1 class="h3 mb-3">Online Enrollment Is Temporarily Unavailable</h1>
+                        <p class="text-muted mb-4">Please browse available courses and send us an enquiry. ICTECH Solutions Limited will assist you with training options and next steps.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="<?php echo SITE_URL; ?>courses.php" class="btn btn-primary">Browse Courses</a>
+                            <a href="<?php echo SITE_URL; ?>contact.php" class="btn btn-outline-primary">Contact ICTECH</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </body>
+    </html>
+    <?php
+    exit;
+}
+
 Auth::requireStudent();
 
 $db = Database::getInstance();

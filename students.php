@@ -10,8 +10,8 @@ $pageTitle = 'For Students';
 <!-- Page Header -->
 <section class="bg-primary text-white py-5">
     <div class="container">
-        <h1>For Students</h1>
-        <p>Everything you need to succeed in your learning journey</p>
+        <h1 class="text-white">Learner Support</h1>
+        <p class="text-white-50">Guidance for selecting training and getting assistance from our team</p>
     </div>
 </section>
 
@@ -19,49 +19,50 @@ $pageTitle = 'For Students';
 <section class="py-5">
     <div class="container">
         <div class="section-header mb-5">
-            <h2>Student Resources & Support</h2>
+            <h2>Training Guidance & Support</h2>
+            <p class="mb-0">Online student account services are temporarily unavailable. You can still access course information and receive one-on-one support through our team.</p>
         </div>
         
-        <!-- How to Get Started -->
+        <!-- Support Steps -->
         <div class="row mb-5">
             <div class="col-lg-8" data-scroll>
-                <h3 class="mb-4">Getting Started with ICTECH</h3>
+                <h3 class="mb-4">How We Support You Right Now</h3>
                 
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">
-                            <i class="fas fa-check-circle text-success"></i> Step 1: Create Your Account
+                            <i class="fas fa-check-circle text-success"></i> Step 1: Explore Available Courses
                         </h5>
-                        <p>Sign up for a free ICTECH account to access courses and track your progress. It only takes a few minutes!</p>
-                        <a href="register.php" class="btn btn-primary btn-sm">Register Now</a>
+                        <p>Review course topics, outcomes, and requirements to identify the training path that matches your goals.</p>
+                        <a href="courses.php" class="btn btn-primary btn-sm">Browse Courses</a>
                     </div>
                 </div>
                 
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">
-                            <i class="fas fa-check-circle text-success"></i> Step 2: Browse Our Courses
+                            <i class="fas fa-check-circle text-success"></i> Step 2: Send an Enquiry
                         </h5>
-                        <p>Explore our comprehensive course catalog. Filter by category, read descriptions, and find courses that match your goals.</p>
-                        <a href="courses.php" class="btn btn-primary btn-sm">View Courses</a>
+                        <p>Tell us which course interests you and our team will share intake plans, schedules, and delivery options.</p>
+                        <a href="contact.php" class="btn btn-primary btn-sm">Contact ICTECH</a>
                     </div>
                 </div>
                 
                 <div class="card mb-4 border-0 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">
-                            <i class="fas fa-check-circle text-success"></i> Step 3: Enroll and Start Learning
+                            <i class="fas fa-check-circle text-success"></i> Step 3: Get Personalized Guidance
                         </h5>
-                        <p>Choose a course, complete the enrollment process with our secure M-Pesa payment, and start learning immediately.</p>
+                        <p>Our support team helps you prepare for the right program, including prerequisites and recommended learning sequence.</p>
                     </div>
                 </div>
                 
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">
-                            <i class="fas fa-check-circle text-success"></i> Step 4: Track Your Progress
+                            <i class="fas fa-check-circle text-success"></i> Step 4: Receive Next-Step Updates
                         </h5>
-                        <p>Use your student dashboard to monitor course progress, access materials, and view your certificates upon completion.</p>
+                        <p>We will notify you directly with updates on cohort openings and student platform availability.</p>
                     </div>
                 </div>
             </div>
@@ -71,12 +72,6 @@ $pageTitle = 'For Students';
                     <div class="card-body">
                         <h5 class="card-title mb-4">Quick Links</h5>
                         <div class="list-group list-group-flush">
-                            <a href="register.php" class="list-group-item list-group-item-action">
-                                <i class="fas fa-user-plus text-secondary"></i> Create Account
-                            </a>
-                            <a href="login.php" class="list-group-item list-group-item-action">
-                                <i class="fas fa-sign-in-alt text-secondary"></i> Login
-                            </a>
                             <a href="courses.php" class="list-group-item list-group-item-action">
                                 <i class="fas fa-graduation-cap text-secondary"></i> Browse Courses
                             </a>
@@ -101,12 +96,14 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                How long does it take to complete a course?
+                                Is student account creation currently available?
                             </button>
                         </h2>
                         <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                Course duration varies depending on the course and your pace. Most courses range from 4-12 weeks. You can find specific duration information on each course's details page.
+                                <!-- FUTURE FEATURE - STUDENT REGISTRATION -->
+                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+                                Not at the moment. Student account creation is temporarily unavailable while we finalize internal rollout plans.
                             </div>
                         </div>
                     </div>
@@ -114,12 +111,12 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
-                                Do I need any prior experience?
+                                Can I still enquire about courses now?
                             </button>
                         </h2>
                         <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                Prerequisites vary by course. Beginner courses require no prior experience, while advanced courses may require foundational knowledge. Check each course's requirements section.
+                                Yes. You can send a course enquiry through the contact page and our team will respond with recommendations and intake guidance.
                             </div>
                         </div>
                     </div>
@@ -127,12 +124,14 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                What payment methods do you accept?
+                                Can I track learning progress online?
                             </button>
                         </h2>
                         <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                We accept M-Pesa payments for secure and convenient transactions. You'll receive an STK push on your phone to complete the payment.
+                                <!-- FUTURE FEATURE - STUDENT DASHBOARD -->
+                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+                                Not yet. Online student dashboard tracking is temporarily unavailable. We currently provide updates directly through our support team.
                             </div>
                         </div>
                     </div>
@@ -140,12 +139,12 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
-                                Will I receive a certificate?
+                                What is the best way to get help quickly?
                             </button>
                         </h2>
                         <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                Yes! Upon successful completion of a course, you'll receive a certificate of completion that you can download and share on professional networks.
+                                Use the contact page and include the course you are interested in. This helps us respond with accurate information faster.
                             </div>
                         </div>
                     </div>
@@ -153,12 +152,12 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                                What if I need help during the course?
+                                How will I know when student services are re-opened?
                             </button>
                         </h2>
                         <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                Our support team is available to help! You can contact us through the contact page or reach out via email at support@ictech.co.ke. We also have a community forum where you can connect with other students.
+                                We will announce availability updates on the website and provide guidance through direct communication after your enquiry.
                             </div>
                         </div>
                     </div>
@@ -171,14 +170,14 @@ $pageTitle = 'For Students';
 <!-- Call to Action -->
 <section class="cta-section">
     <div class="container">
-        <h2>Start Your Learning Journey Today</h2>
-        <p>Join hundreds of students who are transforming their careers with ICTECH</p>
+        <h2>Need Help Choosing the Right Course?</h2>
+        <p>Browse available programs and contact our team for support while student account services remain temporarily unavailable.</p>
         <div>
-            <a href="register.php" class="btn btn-primary btn-lg me-2">
-                <i class="fas fa-user-plus"></i> Create Account
-            </a>
             <a href="courses.php" class="btn btn-outline-light btn-lg">
                 <i class="fas fa-graduation-cap"></i> Explore Courses
+            </a>
+            <a href="contact.php" class="btn btn-primary btn-lg me-2">
+                <i class="fas fa-envelope"></i> Contact ICTECH
             </a>
         </div>
     </div>

@@ -13,6 +13,41 @@ header('Pragma: no-cache');
 
 $pageTitle = 'Register - Create Your Account';
 
+if (defined('PUBLIC_ENQUIRY_MODE') && PUBLIC_ENQUIRY_MODE) {
+    // ==========================================
+    // FUTURE FEATURE - STUDENT REGISTRATION
+    // TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE
+    // ==========================================
+    ?>
+    <section class="auth-page-header">
+        <div class="container">
+            <div class="auth-page-header-content">
+                <div class="section-subtitle">Temporary Notice</div>
+                <h1>Online Student Registration Is Currently Unavailable</h1>
+                <p>Please browse our courses and send us an enquiry. ICTECH Solutions Limited will assist you directly.</p>
+            </div>
+        </div>
+    </section>
+    <section class="py-5 auth-section">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-7">
+                    <div class="alert alert-info mb-4">
+                        Thank you for your interest. Online account creation will be re-enabled once resources are available.
+                    </div>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="courses.php" class="btn btn-primary"><i class="fas fa-graduation-cap"></i> Browse Courses</a>
+                        <a href="contact.php" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> Contact ICTECH</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <?php
+    require_once __DIR__ . '/includes/footer.php';
+    return;
+}
+
 // If already logged in, redirect to dashboard
 if (Auth::isLoggedIn()) {
     header("Location: " . SITE_URL . "student/dashboard.php");

@@ -19,10 +19,8 @@ $perPage = 12;
 $offset = ($page - 1) * $perPage;
 
 // Get courses
-$db = Database::getInstance();
 $courses = getPublishedCourses($perPage, $offset, $categoryId, $search);
-$totalCourses = $db->count('courses',
-    $categoryId ? "status = 'published' AND category_id = $categoryId" : "status = 'published'");
+$totalCourses = countPublishedCourses($categoryId, $search);
 $totalPages = ceil($totalCourses / $perPage);
 
 // Get categories
@@ -111,24 +109,20 @@ $categories = getCategories();
                                             <span class="course-duration">
                                                 <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
                                             </span>
-                                            <span class="course-price"><?php echo formatCurrency($course['price']); ?></span>
+                                            <!-- FUTURE FEATURE: COURSE PRICE DISPLAY -->
+                                            <!-- TEMPORARILY DISABLED - ENABLE WHEN ENROLLMENT/PAYMENT IS REACTIVATED -->
                                         </div>
 
                                         <div class="course-footer">
                                             <a href="course-details.php?id=<?php echo $course['id']; ?>" class="btn btn-outline-primary btn-sm">
-                                                Details
+                                                View Course
                                             </a>
-                                            <?php if ($isLoggedIn && !isEnrolled($currentUser['id'], $course['id'])): ?>
-                                                <a href="payment/initiate.php?course_id=<?php echo $course['id']; ?>" class="btn btn-secondary btn-sm">
-                                                    Enroll
-                                                </a>
-                                            <?php elseif ($isLoggedIn && isEnrolled($currentUser['id'], $course['id'])): ?>
-                                                <span class="badge bg-success w-100 text-center">Enrolled</span>
-                                            <?php else: ?>
-                                                <a href="register.php" class="btn btn-secondary btn-sm">
-                                                    Enroll
-                                                </a>
-                                            <?php endif; ?>
+                                            <!-- FUTURE FEATURE - COURSE ENROLLMENT -->
+                                            <!-- FUTURE FEATURE - M-PESA PAYMENT -->
+                                            <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+                                            <a href="course-enquiry.php?course_id=<?php echo (int) $course['id']; ?>" class="btn btn-secondary btn-sm">
+                                                Enquire
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -178,7 +172,10 @@ $categories = getCategories();
                     <?php endif; ?>
                 <?php else: ?>
                     <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> No courses found. Try adjusting your filters.
+                        <i class="fas fa-info-circle"></i> No courses found matching your search.
+                        <div class="mt-2">
+                            <a href="courses.php" class="btn btn-outline-primary btn-sm">Browse All Courses</a>
+                        </div>
                     </div>
                 <?php endif; ?>
             </div>
@@ -189,13 +186,11 @@ $categories = getCategories();
 <!-- CTA -->
 <section class="cta-section">
     <div class="container">
-        <h2>Ready to Get Started?</h2>
-        <p>Choose a course and begin your learning journey today</p>
-        <?php if (!$isLoggedIn): ?>
-            <a href="register.php" class="btn btn-primary btn-lg">
-                <i class="fas fa-user-plus"></i> Create Account & Enroll
-            </a>
-        <?php endif; ?>
+        <h2>Need Help Choosing The Right Course?</h2>
+        <p>Send us an enquiry and our team will guide you on schedules, delivery options, and course fit.</p>
+        <a href="contact.php" class="btn btn-primary btn-lg">
+            <i class="fas fa-envelope"></i> Contact ICTECH
+        </a>
     </div>
 </section>
 

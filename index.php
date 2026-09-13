@@ -98,7 +98,7 @@ $totalCourses = $db->count('courses', "status = 'published'");
                     <p>Develop the communication, leadership, and people skills that help Kenyan organisations perform at their best.</p>
                     <div class="hero-buttons">
                         <a href="courses.php" class="btn btn-secondary">Browse Courses</a>
-                        <a href="register.php" class="btn btn-outline-light">Register Now</a>
+                        <a href="contact.php" class="btn btn-outline-light">Send Enquiry</a>
                     </div>
                 </div>
             </div>
@@ -207,24 +207,20 @@ $totalCourses = $db->count('courses', "status = 'published'");
                                 <span class="course-duration">
                                     <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
                                 </span>
-                                <span class="course-price"><?php echo formatCurrency($course['price']); ?></span>
+                                <!-- FUTURE FEATURE: COURSE PRICE DISPLAY -->
+                                <!-- TEMPORARILY DISABLED - ENABLE WHEN ENROLLMENT/PAYMENT IS REACTIVATED -->
                             </div>
 
                             <div class="course-footer">
                                 <a href="course-details.php?id=<?php echo $course['id']; ?>" class="btn btn-outline-primary btn-sm">
                                     View Course
                                 </a>
-                                <?php if ($isLoggedIn && !isEnrolled($currentUser['id'], $course['id'])): ?>
-                                    <a href="payment/initiate.php?course_id=<?php echo $course['id']; ?>" class="btn btn-secondary btn-sm">
-                                        Enroll Now
-                                    </a>
-                                <?php elseif ($isLoggedIn && isEnrolled($currentUser['id'], $course['id'])): ?>
-                                    <span class="badge bg-success w-100 text-center">Enrolled</span>
-                                <?php else: ?>
-                                    <a href="register.php" class="btn btn-secondary btn-sm">
-                                        Enroll Now
-                                    </a>
-                                <?php endif; ?>
+                                <!-- FUTURE FEATURE - COURSE ENROLLMENT -->
+                                <!-- FUTURE FEATURE - M-PESA PAYMENT -->
+                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
+                                <a href="course-enquiry.php?course_id=<?php echo (int) $course['id']; ?>" class="btn btn-secondary btn-sm">
+                                    Enquire
+                                </a>
                             </div>
                         </div>
                     </div>
