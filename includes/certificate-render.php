@@ -70,14 +70,21 @@ function certificateStyles() {
  * Streams the given certificate row as a downloadable PDF and terminates the request.
  */
 function streamCertificatePdf($certificate) {
-    require_once __DIR__ . '/../vendor/autoload.php';
+    if (!class_exists('Dompdf\\Dompdf')) {
+        if (!function_exists('loadComposerAutoload') || !loadComposerAutoload() || !class_exists('Dompdf\\Dompdf')) {
+            throw new RuntimeException('PDF export dependencies are not installed. Run composer install to enable certificate downloads.');
+        }
+    }
 
     $html = '<!doctype html><html><head><meta charset="utf-8"><style>' . certificateStyles() . '</style></head><body>'
         . renderCertificateHtml($certificate, true) . '</body></html>';
 
-    $options = new \Dompdf\Options();
+    $optionsClass = 'Dompdf\\Options';
+    $dompdfClass = 'Dompdf\\Dompdf';
+
+    $options = new $optionsClass();
     $options->set('isRemoteEnabled', true);
-    $dompdf = new \Dompdf\Dompdf($options);
+    $dompdf = new $dompdfClass($options);
     $dompdf->setPaper('A4', 'landscape');
     $dompdf->loadHtml($html);
     $dompdf->render();

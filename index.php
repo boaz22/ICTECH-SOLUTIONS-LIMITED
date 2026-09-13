@@ -21,15 +21,19 @@ $totalCourses = $db->count('courses', "status = 'published'");
 <!-- Hero Media Slider -->
 <section class="hero hero-slider" aria-label="ICTECH highlights">
     <div class="hero-track">
-        <article class="hero-slide active" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/slider-training-team.jpg'); ?>');">
+        <article class="hero-slide hero-video-slide hero-ai-slide active" style="--hero-image: url('<?php echo h(SITE_URL . 'assets/images/hero-tech.jpg'); ?>');">
+            <video class="hero-slide-media" muted playsinline loop autoplay preload="metadata" poster="<?php echo h(SITE_URL . 'assets/images/hero-tech.jpg'); ?>">
+                <source src="<?php echo h(SITE_URL . 'assets/video/AI.mp4'); ?>" type="video/mp4">
+            </video>
+            <div class="hero-slide-overlay"></div>
             <div class="container hero-slide-content">
                 <div class="hero-copy">
-                    <div class="hero-kicker">Empower. Learn. Succeed.</div>
-                    <h1>Professional Training<br>For A Digital Future</h1>
-                    <p>We offer industry-leading ICT training and digital solutions to empower individuals and organizations.</p>
+                    <div class="hero-kicker">AI Skills for the Next Economy</div>
+                    <h1>Artificial Intelligence<br>&amp; Machine Learning</h1>
+                    <p>Learn how to build smarter workflows, automate repetitive tasks, and apply practical AI tools in real business settings.</p>
                     <div class="hero-buttons">
                         <a href="courses.php" class="btn btn-secondary">View Courses</a>
-                        <a href="about.php" class="btn btn-outline-light">About Us</a>
+                        <a href="courses.php?search=machine%20learning" class="btn btn-outline-light">Explore AI Courses</a>
                     </div>
                 </div>
             </div>

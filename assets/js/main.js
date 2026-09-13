@@ -120,15 +120,17 @@ function initializeSlider() {
 
     if (prevBtn) {
         prevBtn.addEventListener('click', () => {
-            moveSlide('previous');
-            startAutoAdvance();
+            pauseAutoAdvance();
+            resumeAutoAdvance();
+            moveSlide('previous', startAutoAdvance);
         });
     }
 
     if (nextBtn) {
         nextBtn.addEventListener('click', () => {
-            nextSlide();
-            startAutoAdvance();
+            pauseAutoAdvance();
+            resumeAutoAdvance();
+            nextSlide(startAutoAdvance);
         });
     }
 
@@ -145,12 +147,14 @@ function initializeSlider() {
     }));
 
     const slider = document.querySelector('.hero-slider');
-    slider.addEventListener('pointerenter', pauseAutoAdvance);
-    slider.addEventListener('pointerleave', resumeAutoAdvance);
-    slider.addEventListener('focusin', pauseAutoAdvance);
-    slider.addEventListener('focusout', event => {
-        if (!slider.contains(event.relatedTarget)) resumeAutoAdvance();
-    });
+    if (slider) {
+        slider.addEventListener('pointerenter', pauseAutoAdvance);
+        slider.addEventListener('pointerleave', resumeAutoAdvance);
+        slider.addEventListener('focusin', pauseAutoAdvance);
+        slider.addEventListener('focusout', event => {
+            if (!slider.contains(event.relatedTarget)) resumeAutoAdvance();
+        });
+    }
 }
 
 // ============================================

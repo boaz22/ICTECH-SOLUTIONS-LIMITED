@@ -4,8 +4,24 @@
  * Common utility functions
  */
 
-require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/db.php';
+
+function loadComposerAutoload() {
+    static $loaded = false;
+
+    if ($loaded) {
+        return true;
+    }
+
+    $autoload = __DIR__ . '/../vendor/autoload.php';
+    if (is_file($autoload)) {
+        require_once $autoload;
+        $loaded = true;
+        return true;
+    }
+
+    return false;
+}
 
 /**
  * Sanitize HTML output
@@ -545,6 +561,13 @@ function redirect($url) {
 function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
     if (empty($to)) {
         return false;
+    }
+
+    if (!class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+        if (!loadComposerAutoload() || !class_exists('PHPMailer\\PHPMailer\\PHPMailer')) {
+            error_log('PHPMailer is not installed; skipping email to ' . $to . ' subject: ' . $subject);
+            return false;
+        }
     }
 
     $from = $from ?? MAIL_FROM;
