@@ -69,7 +69,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260917">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260918">
 </head>
 <body>
     <header class="site-header">

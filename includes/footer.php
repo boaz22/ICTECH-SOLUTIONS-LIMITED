@@ -77,8 +77,17 @@
     </footer>
 
     <aside id="cookie-notice" class="cookie-notice" aria-label="Cookie notice" hidden>
-        <p class="mb-2">We use only essential session cookies to provide secure sign-in and forms. <a href="<?php echo SITE_URL; ?>cookies.php">Read our Cookie Policy</a>.</p>
-        <button id="dismiss-cookie-notice" type="button" class="btn btn-warning btn-sm">Dismiss</button>
+        <div class="cookie-notice-icon" aria-hidden="true">
+            <i class="fas fa-shield-halved"></i>
+        </div>
+        <div class="cookie-notice-content">
+            <h2 class="cookie-notice-title">Your privacy matters</h2>
+            <p>We use essential session cookies to keep sign-in and forms secure. <a href="<?php echo SITE_URL; ?>cookies.php">Read our Cookie Policy</a>.</p>
+        </div>
+        <button id="dismiss-cookie-notice" type="button" class="cookie-notice-dismiss">
+            <span>Got it</span>
+            <i class="fas fa-check" aria-hidden="true"></i>
+        </button>
     </aside>
 
     <!-- Bootstrap JS -->
