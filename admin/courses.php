@@ -5,7 +5,6 @@ require_once __DIR__ . '/../includes/helpers.php';
 Auth::requireAdmin();
 
 $db = Database::getInstance();
-$publicEnquiryMode = defined('PUBLIC_ENQUIRY_MODE') && PUBLIC_ENQUIRY_MODE;
 $errors = [];
 $editId = getParam('edit', null, FILTER_VALIDATE_INT);
 $course = $editId ? $db->getRow('SELECT * FROM courses WHERE id = ?', [$editId]) : null;
@@ -24,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $objectives = trim(postParam('objectives'));
     $requirements = trim(postParam('requirements'));
     $categoryId = postParam('category_id', null, FILTER_VALIDATE_INT);
-    $price = (float) postParam('price', 0);
     $duration = trim(postParam('duration'));
     $status = postParam('status', 'draft');
     $isFeatured = postParam('is_featured') ? 1 : 0;
@@ -48,10 +46,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!in_array($status, ['published', 'draft', 'archived'], true)) {
         $errors[] = 'Invalid course status.';
-    }
-
-    if (!$publicEnquiryMode && $price < 0) {
-        $errors[] = 'Price cannot be negative.';
     }
 
     if (!$db->getRow('SELECT id FROM categories WHERE id = ?', [$categoryId])) {
@@ -87,7 +81,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $storedPrice = $publicEnquiryMode && $courseId ? (float) ($course['price'] ?? 0) : $price;
         $data = [
             'title' => $title,
             'slug' => $slug,
@@ -96,7 +89,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'objectives' => $objectives,
             'requirements' => $requirements,
             'category_id' => $categoryId,
-            'price' => $storedPrice,
             'duration' => $duration,
             'status' => $status,
             'is_featured' => $isFeatured,
@@ -154,7 +146,6 @@ $courses = $db->getAll($sql, $params);
                 <a href="courses.php" class="<?php echo $page === 'courses.php' ? 'active' : ''; ?>"><i class="fas fa-book-open"></i> Courses</a>
                 <a href="categories.php" class="<?php echo $page === 'categories.php' ? 'active' : ''; ?>"><i class="fas fa-tags"></i> Categories</a>
                 <a href="certificates.php" class="<?php echo $page === 'certificates.php' ? 'active' : ''; ?>"><i class="fas fa-certificate"></i> Certificates</a>
-                <a href="payments.php" class="<?php echo $page === 'payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> Payments</a>
                 <a href="reports.php" class="<?php echo $page === 'reports.php' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a>
                 <a href="testimonials.php" class="<?php echo $page === 'testimonials.php' ? 'active' : ''; ?>"><i class="fas fa-comments"></i> Testimonials</a>
                 <a href="partners.php" class="<?php echo $page === 'partners.php' ? 'active' : ''; ?>"><i class="fas fa-handshake"></i> Partners</a>
@@ -198,12 +189,6 @@ $courses = $db->getAll($sql, $params);
                     <div class="alert alert-success">Course changes saved.</div>
                 <?php endif; ?>
 
-                <?php if ($publicEnquiryMode): ?>
-                    <div class="alert alert-info">
-                        Public enquiry mode is active: price editing and admin price visibility are temporarily hidden. Existing stored prices are preserved for edited records.
-                    </div>
-                <?php endif; ?>
-
                 <?php foreach ($errors as $error): ?>
                     <div class="alert alert-danger"><?php echo h($error); ?></div>
                 <?php endforeach; ?>
@@ -237,21 +222,10 @@ $courses = $db->getAll($sql, $params);
                                 </select>
                             </div>
 
-                            <?php if (!$publicEnquiryMode): ?>
-                                <div class="col-md-3">
-                                    <label class="form-label">Price (KES)</label>
-                                    <input class="form-control" type="number" min="0" step="0.01" name="price" value="<?php echo h($course['price'] ?? '0'); ?>">
-                                </div>
-                                <div class="col-md-3">
-                                    <label class="form-label">Duration</label>
-                                    <input class="form-control" name="duration" value="<?php echo h($course['duration'] ?? ''); ?>" placeholder="8 weeks">
-                                </div>
-                            <?php else: ?>
-                                <div class="col-md-6">
-                                    <label class="form-label">Duration</label>
-                                    <input class="form-control" name="duration" value="<?php echo h($course['duration'] ?? ''); ?>" placeholder="8 weeks">
-                                </div>
-                            <?php endif; ?>
+                            <div class="col-md-6">
+                                <label class="form-label">Duration</label>
+                                <input class="form-control" name="duration" value="<?php echo h($course['duration'] ?? ''); ?>" placeholder="8 weeks">
+                            </div>
 
                             <div class="col-12">
                                 <label class="form-label">Description</label>
@@ -334,9 +308,6 @@ $courses = $db->getAll($sql, $params);
                         <tr>
                             <th>Course</th>
                             <th>Category</th>
-                            <?php if (!$publicEnquiryMode): ?>
-                                <th>Price</th>
-                            <?php endif; ?>
                             <th>Status</th>
                             <th>Featured</th>
                             <th></th>
@@ -347,9 +318,6 @@ $courses = $db->getAll($sql, $params);
                             <tr>
                                 <td><?php echo h($item['title']); ?></td>
                                 <td><?php echo h($item['category_name']); ?></td>
-                                <?php if (!$publicEnquiryMode): ?>
-                                    <td>KES <?php echo number_format((float) $item['price'], 2); ?></td>
-                                <?php endif; ?>
                                 <td>
                                     <span class="badge text-bg-<?php echo $item['status'] === 'published' ? 'success' : ($item['status'] === 'draft' ? 'warning' : 'secondary'); ?>">
                                         <?php echo h($item['status']); ?>

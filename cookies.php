@@ -12,9 +12,9 @@ require_once __DIR__ . '/includes/header.php';
         <h2>Notice preference</h2>
         <p>If you dismiss the cookie notice, this choice is stored in your browser so the notice is not shown repeatedly. You can remove this preference through your browser's site-data settings.</p>
         <h2>Third-party services</h2>
-        <p>Google sign-in and M-Pesa payment interactions are provided by their respective services and may apply their own cookies or similar technologies. Please review their privacy information before using those services.</p>
+        <p>Google sign-in is provided by Google and may apply its own cookies or similar technologies. Please review Google's privacy information before using that service.</p>
         <h2>Managing cookies</h2>
-        <p>You can control cookies in your browser settings. Blocking essential cookies may prevent account and payment features from working correctly.</p>
+        <p>You can control cookies in your browser settings. Blocking essential cookies may prevent account features from working correctly.</p>
         <h2>Contact</h2>
         <p>For questions about cookies or privacy, contact <a href="mailto:info@ictechsolutions.co.ke">info@ictechsolutions.co.ke</a>.</p>
     </article>

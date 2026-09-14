@@ -113,7 +113,6 @@ $admins = $db->getAll("SELECT id, name, email, phone, status, created_at FROM us
                 <a href="courses.php" class="<?php echo $page === 'courses.php' ? 'active' : ''; ?>"><i class="fas fa-book-open"></i> Courses</a>
                 <a href="categories.php" class="<?php echo $page === 'categories.php' ? 'active' : ''; ?>"><i class="fas fa-tags"></i> Categories</a>
                 <a href="certificates.php" class="<?php echo $page === 'certificates.php' ? 'active' : ''; ?>"><i class="fas fa-certificate"></i> Certificates</a>
-                <a href="payments.php" class="<?php echo $page === 'payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> Payments</a>
                 <a href="reports.php" class="<?php echo $page === 'reports.php' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a>
                 <a href="testimonials.php" class="<?php echo $page === 'testimonials.php' ? 'active' : ''; ?>"><i class="fas fa-comments"></i> Testimonials</a>
                 <a href="partners.php" class="<?php echo $page === 'partners.php' ? 'active' : ''; ?>"><i class="fas fa-handshake"></i> Partners</a>
@@ -167,19 +166,18 @@ $admins = $db->getAll("SELECT id, name, email, phone, status, created_at FROM us
         <div class="col-lg-6">
             <div class="card admin-panel-card h-100">
                 <div class="card-body">
-                    <h2 class="h4 mb-3">M-Pesa Configuration</h2>
+                    <h2 class="h4 mb-3">Email Configuration</h2>
                     <dl class="row mb-0">
-                        <dt class="col-sm-5">Consumer key</dt>
-                        <dd class="col-sm-7"><?php echo MPESA_CONSUMER_KEY !== 'your-mpesa-consumer-key' ? 'Configured' : 'Placeholder only'; ?></dd>
-                        <dt class="col-sm-5">Business shortcode</dt>
-                        <dd class="col-sm-7"><?php echo MPESA_BUSINESS_SHORTCODE !== 'your-business-shortcode' ? h(MPESA_BUSINESS_SHORTCODE) : 'Not set'; ?></dd>
-                        <dt class="col-sm-5">Callback URL</dt>
-                        <dd class="col-sm-7"><code><?php echo h(MPESA_CALLBACK_URL); ?></code></dd>
-                        <dt class="col-sm-5">Timeout URL</dt>
-                        <dd class="col-sm-7"><code><?php echo h(MPESA_TIMEOUT_URL); ?></code></dd>
+                        <dt class="col-sm-5">Mail host</dt>
+                        <dd class="col-sm-7"><?php echo h(MAIL_HOST); ?></dd>
+                        <dt class="col-sm-5">Mail sender</dt>
+                        <dd class="col-sm-7"><?php echo h(MAIL_FROM); ?></dd>
+                        <dt class="col-sm-5">SMTP status</dt>
+                        <dd class="col-sm-7"><?php echo MAIL_HOST !== 'mail.example.com' ? 'Configured' : 'Placeholder only'; ?></dd>
                     </dl>
                 </div>
             </div>
+        </div>
         </div>
     </div>
 

@@ -2,19 +2,71 @@
 require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../includes/helpers.php';
 Auth::requireAdmin();
+
+$db = Database::getInstance();
 $errors = [];
+$success = '';
+
+$courses = $db->getAll("SELECT id, title FROM courses WHERE status = 'published' ORDER BY title ASC");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) $errors[] = 'Security validation failed.';
-    $name = postParam('name'); $email = postParam('email'); $phone = postParam('phone');
-    if (!$name || !filter_var($email, FILTER_VALIDATE_EMAIL)) $errors[] = 'Name and valid email are required.';
+    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) {
+        $errors[] = 'Security validation failed.';
+    }
+
+    $name = trim((string) postParam('name'));
+    $email = strtolower(trim((string) postParam('email')));
+    $phone = trim((string) postParam('phone'));
+    $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
+
+    if ($name === '' || strlen($name) > 100) {
+        $errors[] = 'Name is required and must not exceed 100 characters.';
+    }
+
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL) || strlen($email) > 254) {
+        $errors[] = 'A valid email address is required.';
+    }
+
+    if ($phone !== '' && (!isValidPhone($phone) || strlen($phone) > 32)) {
+        $errors[] = 'Use a valid Kenyan phone number.';
+    }
+
+    if ($courseId && !$db->getRow("SELECT id FROM courses WHERE id = ? AND status = 'published'", [$courseId])) {
+        $errors[] = 'Select a published course or leave the course field empty.';
+    }
+
     if (!$errors) {
-        $db = Database::getInstance();
-        if ($db->getRow('SELECT id FROM users WHERE email = ?', [$email])) $errors[] = 'Email already registered.';
-        else {
-            $tempPassword = bin2hex(random_bytes(6));
-            $db->insert('users', ['name'=>$name, 'email'=>$email, 'phone'=>$phone, 'password'=>password_hash($tempPassword, PASSWORD_BCRYPT), 'role'=>'trainer', 'status'=>'active', 'must_change_password'=>1]);
-            $emailSent = sendFirstTimePasswordEmail($email, $name, $tempPassword);
-            $success = 'Trainer created.' . ($emailSent ? ' A login email with the temporary password has been sent to ' . h($email) . '.' : ' The login email could not be sent - share this temporary password with them securely: ' . $tempPassword);
+        if ($db->getRow('SELECT id FROM users WHERE email = ?', [$email])) {
+            $errors[] = 'Email already registered.';
+        } else {
+            $tempPassword = bin2hex(random_bytes(12));
+            $userId = $db->insert('users', [
+                'name' => $name,
+                'email' => $email,
+                'phone' => $phone,
+                'password' => password_hash($tempPassword, PASSWORD_BCRYPT),
+                'role' => 'student',
+                'status' => 'active',
+                'must_change_password' => 1,
+            ]);
+
+            $enrollmentNote = '';
+            if ($courseId) {
+                $enrollResult = createEnrollment($userId, $courseId);
+                if ($enrollResult['success']) {
+                    approveEnrollment($enrollResult['enrollment_id'], Auth::getCurrentUserId());
+                    $enrollmentNote = ' The student has also been enrolled and activated for the selected course.';
+                } else {
+                    $enrollmentNote = ' The account was created, but enrollment failed: ' . $enrollResult['error'];
+                }
+            }
+
+            $studentLoginUrl = SITE_URL . 'login.php?student_access=1';
+            $emailSent = sendFirstTimePasswordEmail($email, $name, $tempPassword, $studentLoginUrl);
+            $success = 'Student account created.' . ($emailSent
+                ? ' A login email with the temporary password has been sent to ' . h($email) . '.'
+                : ' The login email could not be sent - share this temporary password with them securely: ' . $tempPassword)
+                . $enrollmentNote;
         }
     }
 }
@@ -26,10 +78,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="../assets/images/favicon-32.png">
     <link rel="apple-touch-icon" href="../assets/images/apple-touch-icon.png">
-    <title>Create Trainer | ICTECH</title>
+    <title>Create Student | ICTECH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css?v=20260910b">
+    <link rel="stylesheet" href="../assets/css/style.css?v=20260919">
 </head>
 <body class="admin-shell">
 <div class="admin-app">
@@ -68,7 +120,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="admin-page-header d-flex justify-content-between align-items-center gap-3 flex-wrap">
                     <div>
                         <p class="eyebrow mb-2">ADMIN CONSOLE</p>
-                        <h1>Create Trainer Account</h1>
+                        <h1>Create Student Account</h1>
+                        <p class="text-muted mb-0">Create a student account once a training agreement is reached and optionally enroll them directly into a course.</p>
                     </div>
                     <a href="index.php" class="btn btn-outline-primary">Back to Dashboard</a>
                 </div>
@@ -82,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php if (!empty($success)): ?>
                             <div class="alert alert-success"><?php echo h($success); ?></div>
                             <div class="d-flex gap-2">
-                                <a href="create-trainer.php" class="btn btn-primary">Create Another Trainer</a>
+                                <a href="create-student.php" class="btn btn-primary">Create Another Student</a>
                                 <a href="index.php" class="btn btn-outline-secondary">Return to Dashboard</a>
                             </div>
                         <?php else: ?>
@@ -94,8 +147,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <input class="form-control mb-3" type="email" name="email" required>
                                 <label class="form-label">Phone</label>
                                 <input class="form-control mb-3" name="phone">
+                                <label class="form-label">Enroll into course (optional)</label>
+                                <select class="form-select mb-3" name="course_id">
+                                    <option value="">No course yet</option>
+                                    <?php foreach ($courses as $course): ?>
+                                        <option value="<?php echo (int) $course['id']; ?>"><?php echo h($course['title']); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                                 <div class="d-flex gap-2">
-                                    <button class="btn btn-primary">Create Trainer</button>
+                                    <button class="btn btn-primary">Create Student</button>
                                     <a href="index.php" class="btn btn-outline-secondary">Cancel</a>
                                 </div>
                             </form>

@@ -16,11 +16,18 @@ if (!Auth::isLoggedIn() || !Auth::verifyCSRFToken(postParam('csrf_token'))) {
     exit;
 }
 
+// Remember the role so students are sent back to the student login view
+$wasStudent = Auth::getCurrentUser()['role'] === 'student';
+
 // Logout user
 Auth::logout();
 
-// Redirect to home
-header("Location: " . SITE_URL . "?logout=1");
+// Redirect to the login page (student logins go back to the student-facing form)
+$loginUrl = SITE_URL . 'login.php?logout=1';
+if ($wasStudent) {
+    $loginUrl .= '&student_access=1';
+}
+header("Location: " . $loginUrl);
 exit;
 
 ?>

@@ -3,9 +3,9 @@
  * ICTECH Solutions - Student Profile Page
  */
 
+$pageTitle = 'Profile Settings';
 require_once __DIR__ . '/../includes/student-header.php';
 
-$pageTitle = 'Profile Settings';
 $userId = Auth::getCurrentUserId();
 $db = Database::getInstance();
 

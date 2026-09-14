@@ -1,227 +1,39 @@
 <?php
 /**
- * ICTECH Solutions - Student Registration Page
+ * ICTECH Solutions - Student Account Information
+ *
+ * Student accounts are provisioned only by an administrator after a training
+ * agreement has been reached.
  */
 
-ob_start();
 require_once __DIR__ . '/includes/header.php';
-require_once __DIR__ . '/includes/auth.php';
 
-// Prevent the browser from caching a filled-in registration form
-header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-header('Pragma: no-cache');
-
-$pageTitle = 'Register - Create Your Account';
-
-if (defined('PUBLIC_ENQUIRY_MODE') && PUBLIC_ENQUIRY_MODE) {
-    // ==========================================
-    // FUTURE FEATURE - STUDENT REGISTRATION
-    // TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE
-    // ==========================================
-    ?>
-    <section class="auth-page-header">
-        <div class="container">
-            <div class="auth-page-header-content">
-                <div class="section-subtitle">Temporary Notice</div>
-                <h1>Online Student Registration Is Currently Unavailable</h1>
-                <p>Please browse our courses and send us an enquiry. ICTECH Solutions Limited will assist you directly.</p>
-            </div>
-        </div>
-    </section>
-    <section class="py-5 auth-section">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-7">
-                    <div class="alert alert-info mb-4">
-                        Thank you for your interest. Online account creation will be re-enabled once resources are available.
-                    </div>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="courses.php" class="btn btn-primary"><i class="fas fa-graduation-cap"></i> Browse Courses</a>
-                        <a href="contact.php" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> Contact ICTECH</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <?php
-    require_once __DIR__ . '/includes/footer.php';
-    return;
-}
-
-// If already logged in, redirect to dashboard
-if (Auth::isLoggedIn()) {
-    header("Location: " . SITE_URL . "student/dashboard.php");
-    exit;
-}
-
-$errors = [];
-$successMessage = '';
-
-// Handle registration
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $name = postParam('name');
-    $email = postParam('email');
-    $phone = postParam('phone');
-    $accountType = postParam('account_type', 'student');
-    $password = postParam('password');
-    $confirmPassword = postParam('confirm_password');
-    $csrf_token = postParam('csrf_token');
-
-    // Verify CSRF
-    if (!Auth::verifyCSRFToken($csrf_token)) {
-        $errors[] = 'Security validation failed. Please try again.';
-    }
-
-    if ($accountType !== 'student') {
-        $errors[] = 'Only student accounts can be created here. Please contact ICTECH administration for trainer accounts.';
-    }
-
-    if (postParam('terms') !== '1') {
-        $errors[] = 'You must agree to the Terms of Service and Privacy Policy.';
-    }
-
-    if (empty($errors)) {
-        $result = Auth::register($name, $email, $phone, $password, $confirmPassword);
-
-        if ($result['success']) {
-            header('Location: ' . SITE_URL . 'login.php?registered=1');
-            exit;
-        } else {
-            $errors = $result['errors'];
-        }
-    }
-}
+$pageTitle = 'Student Accounts';
 ?>
 
-<!-- Page Header -->
 <section class="auth-page-header">
     <div class="container">
         <div class="auth-page-header-content">
-            <div class="section-subtitle">Start here</div>
-            <h1>Build your next chapter with ICTECH</h1>
-            <p>Create your student account and begin learning with ICTECH.</p>
+            <div class="section-subtitle">Student accounts</div>
+            <h1>Accounts are created by ICTECH</h1>
+            <p>After agreeing your course, schedule, and fees with ICTECH, an administrator will create your account and send your access details by email.</p>
         </div>
     </div>
 </section>
 
-<!-- Registration Section -->
-<section class="py-5 registration-section auth-section">
+<section class="py-5 auth-section">
     <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-8 col-lg-6">
+            <div class="col-lg-7">
                 <div class="card auth-card shadow-sm border-0">
-                    <div class="auth-card-header">
-                        <div class="auth-card-icon"><i class="fas fa-user-plus"></i></div>
-                        <div>
-                            <div class="section-subtitle">Create your profile</div>
-                            <h2 class="mb-0">Student registration</h2>
+                    <div class="card-body p-4">
+                        <h2 class="h4">Ready to begin?</h2>
+                        <p class="text-muted mb-4">Browse our courses or contact ICTECH to arrange your enrollment. Student portal access details are sent after your account has been created.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="courses.php" class="btn btn-primary"><i class="fas fa-graduation-cap"></i> Browse Courses</a>
+                            <a href="contact.php" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> Contact ICTECH</a>
                         </div>
                     </div>
-                    <div class="card-body p-4">
-                        <?php if (!empty($errors)): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <strong>Registration Failed:</strong>
-                                <ul class="mb-0 mt-2">
-                                    <?php foreach ($errors as $error): ?>
-                                        <li><?php echo h($error); ?></li>
-                                    <?php endforeach; ?>
-                                </ul>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <?php if ($successMessage): ?>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check-circle"></i> <?php echo $successMessage; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
-                            </div>
-                        <?php endif; ?>
-
-                        <div class="alert alert-info"><i class="fas fa-info-circle"></i> Trainer accounts are created by an administrator. To become a trainer, please contact ICTECH administration.</div>
-                        <form method="POST" data-validate="true" autocomplete="off">
-                            <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
-                            <div class="form-group mb-3"><label class="form-label" for="account-type">Account type</label><select id="account-type" name="account_type" class="form-control" required><option value="student">Student</option><option value="trainer">Trainer (contact admin)</option></select></div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="registration-name">Full Name *</label>
-                                <input id="registration-name" type="text" name="name" class="form-control" placeholder="Your full name" maxlength="100"
-                                       value="" autocomplete="off" required>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="registration-email">Email Address *</label>
-                                <input id="registration-email" type="email" name="email" class="form-control" placeholder="your@email.com" maxlength="254"
-                                       value="" autocomplete="off" required>
-                                <small class="text-muted">We'll use this to send course updates</small>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="registration-phone">Phone Number</label>
-                                <input id="registration-phone" type="tel" name="phone" class="form-control" placeholder="+254 712 345 678" maxlength="32"
-                                       value="" autocomplete="off">
-                                <small class="text-muted">For M-Pesa payments and notifications</small>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="registration-password">Password *</label>
-                                <div class="password-field"><input id="registration-password" type="password" name="password" class="form-control" placeholder="Create a strong password" data-password-rules="#registration-password-rules" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
-                                <div id="registration-password-rules" class="password-rules"><span data-rule="length"><i class="fas fa-check-circle"></i> 8+ characters</span><span data-rule="uppercase"><i class="fas fa-check-circle"></i> Uppercase letter</span><span data-rule="number"><i class="fas fa-check-circle"></i> Number</span><span data-rule="special"><i class="fas fa-check-circle"></i> Special character</span></div>
-                            </div>
-
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="registration-confirm-password">Confirm Password *</label>
-                                <div class="password-field"><input id="registration-confirm-password" type="password" name="confirm_password" class="form-control" placeholder="Re-enter password" value="" autocomplete="new-password" readonly onfocus="this.removeAttribute('readonly');" required><button type="button" class="password-toggle" data-password-toggle="registration-confirm-password" aria-label="Show password"><i class="fas fa-eye"></i></button></div>
-                            </div>
-
-                            <div class="form-group mb-4">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="terms" name="terms" value="1" required>
-                                    <label class="form-check-label" for="terms">
-                                        I agree to the <a href="terms.php" target="_blank">Terms of Service</a> and
-                                        <a href="privacy.php" target="_blank">Privacy Policy</a>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <button type="submit" class="btn btn-primary w-100 mb-3">
-                                <i class="fas fa-user-plus"></i> Create Account
-                            </button>
-                        </form>
-
-                        <hr>
-
-                        <p class="text-center mb-0">
-                            Already have an account?
-                            <a href="login.php" class="text-primary fw-bold">Login here</a>
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Benefits -->
-                <div class="mt-4">
-                    <h6 class="mb-3">Why Join ICTECH?</h6>
-                    <ul class="list-unstyled">
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Access to professional courses</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Explore professional courses</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Receive course completion certificates</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Track your progress easily</span>
-                        </li>
-                        <li class="mb-2">
-                            <i class="fas fa-check text-success"></i>
-                            <span>Join our community</span>
-                        </li>
-                    </ul>
                 </div>
             </div>
         </div>

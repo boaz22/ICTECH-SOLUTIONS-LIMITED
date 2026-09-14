@@ -404,14 +404,6 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// Format currency
-function formatCurrency(amount) {
-    return 'KES ' + parseFloat(amount).toLocaleString('en-US', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-    });
-}
-
 // Format date
 function formatDate(date) {
     return new Date(date).toLocaleDateString('en-US', {
@@ -565,7 +557,6 @@ function initPopovers() {
 // Export functions for global use
 window.ICTECH = {
     showNotification,
-    formatCurrency,
     formatDate,
     showModal,
     hideModal,

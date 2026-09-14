@@ -153,13 +153,6 @@ function isValidPhone($phone) {
 }
 
 /**
- * Format currency
- */
-function formatCurrency($amount) {
-    return 'KES ' . number_format($amount, 2);
-}
-
-/**
  * Format date
  */
 function formatDate($date, $format = 'M d, Y') {
@@ -314,7 +307,7 @@ function isEnrolled($userId, $courseId) {
 function getStudentEnrollments($userId) {
     $db = Database::getInstance();
     return $db->getAll(
-        "SELECT e.*, c.title as course_title, c.image, c.duration, c.price, u.name as trainer_name
+        "SELECT e.*, c.title as course_title, c.image, c.duration, u.name as trainer_name
          FROM enrollments e
          JOIN courses c ON e.course_id = c.id
          LEFT JOIN users u ON e.trainer_id = u.id
@@ -345,36 +338,20 @@ function assignTrainer($enrollmentId, $trainerId) {
 function updateEnrollmentProgress($enrollmentId, $studentId, $progress) {
     $db = Database::getInstance();
     $progress = max(0, min(100, (int) $progress));
-    return $db->update('enrollments', ['progress' => $progress], 'id = ? AND user_id = ? AND status = ?', [$enrollmentId, $studentId, 'active']);
-}
 
-function markStudentCompleted($enrollmentId, $studentId) {
-    $db = Database::getInstance();
-    $updated = $db->update('enrollments', ['student_completed_at' => date('Y-m-d H:i:s')], 'id = ? AND user_id = ? AND status = ? AND progress = 100', [$enrollmentId, $studentId, 'active']);
+    // Once the trainer sets progress to 100%, the course is automatically
+    // considered student-complete - no separate student action needed.
+    $data = ['progress' => $progress];
+    $data['student_completed_at'] = $progress === 100 ? date('Y-m-d H:i:s') : null;
 
-    if ($updated) {
-        $enrollment = $db->getRow(
-            'SELECT e.id, e.user_id, e.trainer_id, c.title, s.name AS student_name
-             FROM enrollments e
-             JOIN courses c ON c.id = e.course_id
-             JOIN users s ON s.id = e.user_id
-             WHERE e.id = ?',
-            [$enrollmentId]
-        );
-
-        if ($enrollment && !empty($enrollment['trainer_id'])) {
-            $message = '<p>Student <strong>' . h($enrollment['student_name']) . '</strong> has marked the course <strong>' . h($enrollment['title']) . '</strong> as complete.</p>'
-                . '<p>Please review the learner progress and approve the completion when ready.</p>';
-            sendUserEmail($enrollment['trainer_id'], 'Course completion submitted for approval', $message);
-        }
-    }
-
-    return $updated;
+    return $db->update('enrollments', $data, 'id = ? AND user_id = ? AND status = ?', [$enrollmentId, $studentId, 'active']);
 }
 
 function approveTrainerCompletion($enrollmentId, $trainerId) {
     $db = Database::getInstance();
-    $updated = $db->update('enrollments', ['trainer_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_id = ? AND progress = 100 AND student_completed_at IS NOT NULL', [$enrollmentId, $trainerId]);
+    // Guard against duplicate approvals (e.g. a stale page resubmitting the form)
+    // re-sending notifications for a completion that was already approved.
+    $updated = $db->update('enrollments', ['trainer_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_id = ? AND progress = 100 AND student_completed_at IS NOT NULL AND trainer_approved_at IS NULL', [$enrollmentId, $trainerId]);
 
     if ($updated) {
         $enrollment = $db->getRow(
@@ -406,7 +383,9 @@ function approveTrainerCompletion($enrollmentId, $trainerId) {
 
 function approveAdminCompletion($enrollmentId) {
     $db = Database::getInstance();
-    $updated = $db->update('enrollments', ['status' => 'completed', 'admin_approved_at' => date('Y-m-d H:i:s')], 'id = ? AND trainer_approved_at IS NOT NULL AND progress = 100', [$enrollmentId]);
+    // Guard against duplicate approvals (e.g. re-clicking after the row is
+    // already completed) re-sending the certificate email again.
+    $updated = $db->update('enrollments', ['status' => 'completed', 'admin_approved_at' => date('Y-m-d H:i:s')], "id = ? AND trainer_approved_at IS NOT NULL AND progress = 100 AND status != 'completed'", [$enrollmentId]);
     if ($updated) {
         createCertificateForEnrollment($enrollmentId);
         $enrollment = $db->getRow('SELECT e.user_id, c.title FROM enrollments e JOIN courses c ON c.id = e.course_id WHERE e.id = ?', [$enrollmentId]);
@@ -435,7 +414,7 @@ function createEnrollment($userId, $courseId) {
             return ['success' => false, 'error' => 'Already enrolled in this course'];
         }
 
-        // Allow retrying enrollment/payment after a pending attempt stalled or was cancelled
+        // An admin can reactivate a pending or cancelled enrollment.
         $db->update('enrollments', ['status' => 'pending'], 'id = ?', [$existing['id']]);
         return ['success' => true, 'enrollment_id' => $existing['id']];
     }
@@ -679,6 +658,22 @@ function sendUserEmail($userId, $subject, $message) {
 }
 
 /**
+ * Email a newly created (or admin-reset) account its temporary password
+ * along with an external link to the login page. The account is required
+ * to choose its own password on first login (see Auth::enforcePasswordChange).
+ */
+function sendFirstTimePasswordEmail($email, $name, $tempPassword, $loginUrl = null) {
+    $loginUrl = $loginUrl ?? (defined('SITE_URL') ? SITE_URL . 'login.php?student_access=1' : '');
+    $message = '<p>Hello ' . h($name) . ',</p>'
+        . '<p>An account has been created for you on the ICTECH Solutions Limited training portal.</p>'
+        . '<p><strong>Temporary password:</strong> ' . h($tempPassword) . '</p>'
+        . '<p>Log in here: <a href="' . h($loginUrl) . '">' . h($loginUrl) . '</a></p>'
+        . '<p>For your security, you will be asked to set your own password the first time you log in.</p>';
+
+    return sendEmail($email, 'Your ICTECH Solutions Limited account is ready', $message);
+}
+
+/**
  * Create a certificate for a completed enrollment if one does not already exist.
  */
 function createCertificateForEnrollment($enrollmentId) {
@@ -697,10 +692,14 @@ function createCertificateForEnrollment($enrollmentId) {
     }
 
     $certificateNumber = 'ICTECH-' . date('Y') . '-' . str_pad((int) $enrollmentId, 6, '0', STR_PAD_LEFT);
+    $existingCertificate = $db->getRow('SELECT id FROM certificates WHERE enrollment_id = ?', [$enrollmentId]);
     $db->query('INSERT IGNORE INTO certificates (enrollment_id, certificate_number) VALUES (?, ?)', [$enrollmentId, $certificateNumber]);
 
     $certificate = $db->getRow('SELECT * FROM certificates WHERE enrollment_id = ?', [$enrollmentId]);
-    if ($certificate && !empty($record['email'])) {
+    // Only email the student when the certificate is newly issued, so
+    // re-running this (e.g. an admin re-saving the enrollment) doesn't spam
+    // a "certificate issued" email for a certificate that already exists.
+    if ($certificate && !$existingCertificate && !empty($record['email'])) {
         $body = '<p>Congratulations ' . h($record['name']) . ',</p>'
             . '<p>Your course completion certificate is ready for <strong>' . h($record['title']) . '</strong>.</p>'
             . '<p>Certificate Number: <strong>' . h($certificate['certificate_number']) . '</strong></p>'

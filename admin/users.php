@@ -25,11 +25,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors && $action === 'reset_password' && $userId) {
-        // Set a real usable password directly since password-reset emails aren't
-        // deliverable unless MAIL_HOST/SMTP is configured in includes/config.php.
         $tempPassword = bin2hex(random_bytes(6));
+        $targetUser = $db->getRow('SELECT name, email FROM users WHERE id = ?', [$userId]);
         $db->update('users', ['password' => password_hash($tempPassword, PASSWORD_BCRYPT), 'must_change_password' => 1], 'id = ?', [$userId]);
-        $resetPasswordNotice = 'New temporary password: ' . $tempPassword . ' — share this with the user securely. They will be required to set their own password the next time they log in.';
+        $emailSent = $targetUser ? sendFirstTimePasswordEmail($targetUser['email'], $targetUser['name'], $tempPassword) : false;
+        $resetPasswordNotice = $emailSent ? 'A login email with the new temporary password has been sent to ' . h($targetUser['email']) . '.' : 'New temporary password: ' . $tempPassword . ' - share this with the user securely. They will be required to set their own password the next time they log in.';
     }
 
     $status = postParam('status');
@@ -84,7 +84,6 @@ $users = $db->getAll($sql, $params);
                 <a href="courses.php" class="<?php echo $page === 'courses.php' ? 'active' : ''; ?>"><i class="fas fa-book-open"></i> Courses</a>
                 <a href="categories.php" class="<?php echo $page === 'categories.php' ? 'active' : ''; ?>"><i class="fas fa-tags"></i> Categories</a>
                 <a href="certificates.php" class="<?php echo $page === 'certificates.php' ? 'active' : ''; ?>"><i class="fas fa-certificate"></i> Certificates</a>
-                <a href="payments.php" class="<?php echo $page === 'payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> Payments</a>
                 <a href="reports.php" class="<?php echo $page === 'reports.php' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a>
                 <a href="testimonials.php" class="<?php echo $page === 'testimonials.php' ? 'active' : ''; ?>"><i class="fas fa-comments"></i> Testimonials</a>
                 <a href="partners.php" class="<?php echo $page === 'partners.php' ? 'active' : ''; ?>"><i class="fas fa-handshake"></i> Partners</a>

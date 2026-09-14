@@ -7,8 +7,6 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/helpers.php';
 
-$isLoggedIn = Auth::isLoggedIn();
-$currentUser = Auth::getCurrentUser();
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 $isHomePage = in_array($currentPage, ['', 'index.php'], true);
 $seoTitle = isset($pageTitle) ? $pageTitle : SITE_NAME;
@@ -130,8 +128,6 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                         </li>
 
                         <li class="nav-item nav-search-item">
-                            <!-- FUTURE FEATURE - STUDENT LOGIN / STUDENT REGISTRATION -->
-                            <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
                             <form method="get" action="<?php echo SITE_URL; ?>courses.php" class="header-course-search" role="search" aria-label="Search courses">
                                 <label class="visually-hidden" for="header-course-search">Search courses</label>
                                 <i class="fas fa-search" aria-hidden="true"></i>
@@ -139,29 +135,6 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                                 <button type="submit">Search</button>
                             </form>
                         </li>
-
-                        <?php if ($isLoggedIn && in_array($currentUser['role'], ['admin', 'trainer'], true)): ?>
-                            <li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown">
-                                    <i class="fas fa-user"></i> <?php echo h($currentUser['name']); ?>
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end">
-                                    <?php if ($currentUser['role'] === 'admin'): ?>
-                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/index.php">Admin Dashboard</a></li>
-                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>admin/settings.php">Admin Settings</a></li>
-                                    <?php else: ?>
-                                        <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>trainer/dashboard.php">Trainer Dashboard</a></li>
-                                    <?php endif; ?>
-                                    <li><hr class="dropdown-divider"></li>
-                                    <li>
-                                        <form method="post" action="<?php echo SITE_URL; ?>logout.php">
-                                            <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
-                                            <button type="submit" class="dropdown-item border-0 bg-transparent w-100 text-start">Logout</button>
-                                        </form>
-                                    </li>
-                                </ul>
-                            </li>
-                        <?php endif; ?>
                     </ul>
                 </div>
             </div>

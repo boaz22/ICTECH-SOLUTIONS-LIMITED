@@ -3,6 +3,10 @@
  * ICTECH Solutions - Course Details Page
  */
 
+// Buffer output so redirects (invalid/unpublished course) still work even
+// though includes/header.php has already sent some output.
+ob_start();
+
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
 
@@ -22,6 +26,16 @@ if (!$course || $course['status'] !== 'published') {
 }
 
 $pageTitle = h($course['title']);
+
+// If the logged-in student is enrolled in this course, show their
+// enrollment status/progress instead of the public enquiry call-to-action.
+$studentEnrollment = null;
+if (Auth::isStudent()) {
+    $studentEnrollment = $db->getRow(
+        "SELECT * FROM enrollments WHERE user_id = ? AND course_id = ?",
+        [Auth::getCurrentUserId(), $courseId]
+    );
+}
 
 // Get related courses
 $relatedCourses = $db->getAll(
@@ -60,8 +74,6 @@ $relatedCourses = $db->getAll(
             </div>
             <div class="col-lg-4 text-end">
                 <div class="bg-dark p-3 rounded" style="background: rgba(0,0,0,0.3) !important;">
-                    <!-- FUTURE FEATURE: COURSE PRICE DISPLAY -->
-                    <!-- TEMPORARILY DISABLED - ENABLE WHEN ENROLLMENT/PAYMENT IS REACTIVATED -->
                     <div class="text-light" style="font-size: 1rem; font-weight: 600;">
                         Course Enquiries Open
                     </div>
@@ -158,32 +170,81 @@ $relatedCourses = $db->getAll(
 
             <!-- Sidebar -->
             <div class="col-lg-4">
-                <!-- Enquiry Card -->
-                <div class="card">
-                    <div class="card-body">
-                        <!-- Course Meta -->
-                        <div class="mb-4">
-                            <div class="d-flex justify-content-between mb-3">
-                                <span><i class="fas fa-clock text-secondary"></i> Duration</span>
-                                <strong><?php echo h($course['duration']); ?></strong>
+                <?php if ($studentEnrollment): ?>
+                    <!-- Learning Progress Card (enrolled students) -->
+                    <div class="card" id="learning-progress">
+                        <div class="card-body">
+                            <h5 class="card-title mb-3"><i class="fas fa-chart-line text-primary"></i> Your Learning Progress</h5>
+
+                            <?php
+                            $statusLabels = ['pending' => 'Pending', 'active' => 'Active', 'completed' => 'Completed', 'cancelled' => 'Cancelled'];
+                            $statusClasses = ['pending' => 'text-warning', 'active' => 'text-primary', 'completed' => 'text-success', 'cancelled' => 'text-muted'];
+                            $enrollmentStatus = $studentEnrollment['status'];
+                            ?>
+
+                            <div class="d-flex justify-content-between mb-2">
+                                <span><i class="fas fa-info-circle text-secondary"></i> Status</span>
+                                <strong class="<?php echo h($statusClasses[$enrollmentStatus] ?? ''); ?>"><?php echo h($statusLabels[$enrollmentStatus] ?? ucfirst($enrollmentStatus)); ?></strong>
                             </div>
-                            <div class="d-flex justify-content-between">
-                                <span><i class="fas fa-folder text-secondary"></i> Category</span>
-                                <strong><?php echo h($course['category_name']); ?></strong>
-                            </div>
+
+                            <?php if (in_array($enrollmentStatus, ['active', 'completed'], true)): ?>
+                                <div class="course-progress mb-1">
+                                    <div class="course-progress-bar" style="width: <?php echo (int) $studentEnrollment['progress']; ?>%;"></div>
+                                </div>
+                                <small class="text-muted d-block mb-3"><?php echo (int) $studentEnrollment['progress']; ?>% complete</small>
+                            <?php endif; ?>
+
+                            <hr>
+
+                            <?php if ($enrollmentStatus === 'pending'): ?>
+                                <p class="text-muted mb-0">Your enrollment is awaiting activation by ICTECH. You'll be notified once it's active.</p>
+                            <?php elseif ($enrollmentStatus === 'active'): ?>
+                                <?php if ($studentEnrollment['student_completed_at'] && empty($studentEnrollment['trainer_approved_at'])): ?>
+                                    <p class="text-warning mb-0"><i class="fas fa-hourglass-half"></i> Awaiting trainer approval.</p>
+                                <?php elseif ($studentEnrollment['trainer_approved_at']): ?>
+                                    <p class="text-info mb-0"><i class="fas fa-hourglass-half"></i> Awaiting final admin approval.</p>
+                                <?php else: ?>
+                                    <p class="text-muted mb-0">Your trainer updates your progress as you advance through the course.</p>
+                                <?php endif; ?>
+                            <?php elseif ($enrollmentStatus === 'completed'): ?>
+                                <p class="text-success mb-2"><i class="fas fa-certificate"></i> Course completed!</p>
+                                <a href="<?php echo SITE_URL; ?>student/certificate.php?id=<?php echo (int) $studentEnrollment['id']; ?>" class="btn btn-primary w-100">
+                                    <i class="fas fa-download"></i> View Certificate
+                                </a>
+                            <?php elseif ($enrollmentStatus === 'cancelled'): ?>
+                                <p class="text-muted mb-0">This enrollment was cancelled. Contact ICTECH if you believe this is a mistake.</p>
+                            <?php endif; ?>
+
+                            <a href="<?php echo SITE_URL; ?>student/my-courses.php" class="btn btn-outline-primary w-100 mt-3">
+                                <i class="fas fa-arrow-left"></i> Back to My Courses
+                            </a>
                         </div>
-
-                        <hr>
-
-                        <!-- FUTURE FEATURE - COURSE ENROLLMENT -->
-                        <!-- FUTURE FEATURE - M-PESA PAYMENT -->
-                        <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
-                        <p class="text-muted">Interested in this course? Send us an enquiry and our team will assist you with availability and training options.</p>
-                        <a href="course-enquiry.php?course_id=<?php echo (int) $courseId; ?>" class="btn btn-secondary w-100">
-                            <i class="fas fa-envelope"></i> Enquire About This Course
-                        </a>
                     </div>
-                </div>
+                <?php else: ?>
+                    <!-- Enquiry Card -->
+                    <div class="card">
+                        <div class="card-body">
+                            <!-- Course Meta -->
+                            <div class="mb-4">
+                                <div class="d-flex justify-content-between mb-3">
+                                    <span><i class="fas fa-clock text-secondary"></i> Duration</span>
+                                    <strong><?php echo h($course['duration']); ?></strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span><i class="fas fa-folder text-secondary"></i> Category</span>
+                                    <strong><?php echo h($course['category_name']); ?></strong>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <p class="text-muted">Interested in this course? Send us an enquiry and our team will assist you with availability and training options.</p>
+                            <a href="course-enquiry.php?course_id=<?php echo (int) $courseId; ?>" class="btn btn-secondary w-100">
+                                <i class="fas fa-envelope"></i> Enquire About This Course
+                            </a>
+                        </div>
+                    </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -216,8 +277,6 @@ $relatedCourses = $db->getAll(
 
                                 <div class="course-meta">
                                     <span class="course-duration"><?php echo h($related['duration']); ?></span>
-                                    <!-- FUTURE FEATURE: COURSE PRICE DISPLAY -->
-                                    <!-- TEMPORARILY DISABLED - ENABLE WHEN ENROLLMENT/PAYMENT IS REACTIVATED -->
                                 </div>
 
                                 <div class="course-footer">

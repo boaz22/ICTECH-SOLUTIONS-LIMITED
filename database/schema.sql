@@ -37,7 +37,6 @@ CREATE TABLE courses (
     objectives LONGTEXT,
     requirements LONGTEXT,
     category_id INT NOT NULL,
-    price DECIMAL(10, 2) DEFAULT 0,
     duration VARCHAR(100),
     image VARCHAR(255),
     status ENUM('published', 'draft', 'archived') DEFAULT 'draft',
@@ -96,26 +95,6 @@ CREATE TABLE password_resets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     INDEX idx_reset_user (user_id),
     INDEX idx_reset_expiry (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Payments table
-CREATE TABLE payments (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    enrollment_id INT,
-    amount DECIMAL(10, 2) NOT NULL,
-    method ENUM('mpesa', 'card', 'bank') DEFAULT 'mpesa',
-    status ENUM('pending', 'paid', 'failed', 'cancelled') DEFAULT 'pending',
-    reference VARCHAR(255),
-    checkout_request_id VARCHAR(255),
-    merchant_request_id VARCHAR(255),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (enrollment_id) REFERENCES enrollments(id) ON DELETE SET NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_status (status),
-    INDEX idx_reference (reference)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Testimonials table
@@ -183,42 +162,42 @@ INSERT INTO categories (name, slug) VALUES
 ('Business & Management', 'business-management');
 
 -- Insert sample courses
-INSERT INTO courses (title, slug, description, objectives, requirements, category_id, price, image, duration, status, is_featured) VALUES
+INSERT INTO courses (title, slug, description, objectives, requirements, category_id, image, duration, status, is_featured) VALUES
 ('PHP Web Development Fundamentals', 'php-web-development',
 'Learn to build dynamic websites using PHP. This comprehensive course covers PHP basics, database integration, and best practices for web development.',
 'Understand PHP syntax; Build database-driven websites; Implement secure authentication; Work with forms and sessions',
 'Basic HTML/CSS knowledge; Computer with PHP installed; Text editor or IDE',
-1, 4500, 'course-web-development.jpg', '8 weeks', 'published', TRUE),
+1, 'course-web-development.jpg', '8 weeks', 'published', TRUE),
 
 ('Advanced MySQL Database Design', 'advanced-mysql',
 'Master database design, optimization, and management using MySQL. Perfect for aspiring database administrators and developers.',
 'Design normalized databases; Write efficient queries; Implement indexing; Backup and recovery strategies',
 'Basic SQL knowledge; Understanding of data structures',
-1, 3500, 'course-cloud-computing.jpg', '6 weeks', 'published', TRUE),
+1, 'course-cloud-computing.jpg', '6 weeks', 'published', TRUE),
 
 ('JavaScript ES6+ Modern JavaScript', 'javascript-es6',
 'Comprehensive guide to modern JavaScript with ES6+, async/await, and best practices. Build interactive web applications.',
 'Master ES6 syntax; Understand async programming; Work with APIs; Build responsive interfaces',
 'Basic programming knowledge; Familiarity with HTML/CSS',
-1, 4000, 'course-javascript.jpg', '8 weeks', 'published', TRUE),
+1, 'course-javascript.jpg', '8 weeks', 'published', TRUE),
 
 ('React.js for Frontend Development', 'reactjs-frontend',
 'Build modern, scalable user interfaces with React. Learn components, hooks, state management, and deployment.',
 'Build React applications; Manage state effectively; Create reusable components; Deploy React apps',
 'JavaScript fundamentals; Understanding of HTML/CSS',
-1, 5000, 'course-data-science.jpg', '10 weeks', 'published', TRUE),
+1, 'course-data-science.jpg', '10 weeks', 'published', TRUE),
 
 ('Flutter Mobile App Development', 'flutter-mobile-dev',
 'Create beautiful, natively compiled applications for mobile, web, and desktop using Flutter and Dart.',
 'Create Flutter applications; Design mobile UIs; Integrate APIs; Deploy to Play Store and App Store',
 'Dart programming basics; Understanding of mobile development concepts',
-2, 5500, 'course-mobile-development.jpg', '12 weeks', 'published', TRUE),
+2, 'course-mobile-development.jpg', '12 weeks', 'published', TRUE),
 
 ('Data Science with Python', 'data-science-python',
 'Learn data analysis, visualization, and machine learning using Python. Industry-ready skills for data professionals.',
 'Analyze data using pandas; Create visualizations; Build ML models; Work with real datasets',
 'Python basics; Mathematical foundation; Statistics knowledge helpful',
-3, 6000, 'course-cybersecurity.jpg', '12 weeks', 'published', TRUE);
+3, 'course-cybersecurity.jpg', '12 weeks', 'published', TRUE);
 
 -- Insert testimonials
 INSERT INTO testimonials (name, role, message, photo, type, is_featured) VALUES

@@ -113,8 +113,6 @@ $pageTitle = 'Learning Resources';
     <div class="container">
         <h2>Interested in Learning Resources?</h2>
         <p>Tell us what you need and our team will guide you on available materials and suitable courses.</p>
-        <!-- FUTURE FEATURE - SELF-SERVICE RESOURCE PORTAL -->
-        <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
         <a href="contact.php" class="btn btn-primary btn-lg">
             <i class="fas fa-envelope"></i> Contact ICTECH
         </a>

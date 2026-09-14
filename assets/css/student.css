@@ -6,20 +6,28 @@
     --primary: #001a4d;
     --secondary: #ff9800;
     --light-50: rgba(255, 255, 255, 0.5);
+    --portal-bg: #f3f6fb;
+    --portal-surface: #ffffff;
+    --portal-border: #dbe4f0;
+    --portal-text: #132238;
 }
 
-/* Student Portal Layout */
-.d-flex {
+.student-portal-body {
+    margin: 0;
+    background: var(--portal-bg);
+    color: var(--portal-text);
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.student-portal-shell {
     display: flex;
+    min-height: 100vh;
 }
 
-.flex-grow-1 {
-    flex-grow: 1;
-}
-
-/* Sidebar */
-nav.bg-primary {
-    box-shadow: 2px 0 4px rgba(0, 0, 0, 0.1);
+.student-sidebar {
+    width: 280px;
+    background: linear-gradient(180deg, #001a4d 0%, #022561 100%);
+    color: #fff;
     position: fixed;
     top: 0;
     left: 0;
@@ -27,34 +35,164 @@ nav.bg-primary {
     overflow-y: auto;
     display: flex;
     flex-direction: column;
+    padding: 1.5rem;
+    box-shadow: 8px 0 24px rgba(0, 0, 0, 0.12);
 }
 
-nav.bg-primary + .flex-grow-1 {
-    margin-left: 250px;
+.student-sidebar-brand {
+    margin-bottom: 1.5rem;
 }
 
-nav.bg-primary > ul:last-of-type {
+.student-sidebar-logo {
+    width: 100%;
+    max-width: 180px;
+    height: auto;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.student-sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.student-sidebar-subtitle,
+.student-sidebar-user-email {
+    color: var(--light-50);
+}
+
+.student-sidebar-user {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.student-sidebar-user-name {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.student-sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.student-sidebar-link {
+    color: rgba(255, 255, 255, 0.82);
+    text-decoration: none;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.student-sidebar-link:hover,
+.student-sidebar-link.active {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.12);
+    transform: translateX(2px);
+}
+
+.student-sidebar-support {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.student-sidebar-support-title {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.student-sidebar-support-link {
+    color: #fff;
+    text-decoration: none;
+    word-break: break-word;
+}
+
+.student-sidebar-support-link:hover {
+    text-decoration: underline;
+}
+
+.student-logout-form {
     margin-top: auto;
+    padding-top: 1rem;
 }
 
-nav.bg-primary a {
-    color: rgba(255, 255, 255, 0.8) !important;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    transition: all 0.3s ease;
+.student-sidebar-logout {
+    width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: transparent;
+    color: #fff;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+    text-align: left;
 }
 
-nav.bg-primary a:hover,
-nav.bg-primary a.active {
+.student-sidebar-logout:hover {
     background: rgba(255, 255, 255, 0.1);
-    color: white !important;
 }
 
-.text-light-50 {
-    color: var(--light-50) !important;
+.student-portal-main {
+    flex: 1;
+    margin-left: 280px;
+    min-width: 0;
 }
 
-/* Dashboard Cards */
+.student-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--portal-border);
+}
+
+.student-topbar-eyebrow {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    color: #6a7a90;
+    text-transform: uppercase;
+}
+
+.student-topbar-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.student-topbar-user {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--portal-border);
+    border-radius: 999px;
+    background: var(--portal-surface);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.student-portal-content {
+    padding: 1.5rem;
+    min-height: calc(100vh - 73px);
+}
+
+.student-portal-content h1,
+.student-portal-content h2,
+.student-portal-content h3 {
+    color: var(--primary);
+}
+
 .dashboard-card {
     border: none;
     border-radius: 8px;
@@ -79,7 +217,6 @@ nav.bg-primary a.active {
     color: var(--primary);
 }
 
-/* Tables in Portal */
 .portal-table {
     background: white;
     border-radius: 8px;
@@ -110,41 +247,46 @@ nav.bg-primary a.active {
     background: #f5f5f5;
 }
 
-/* Status Badges */
-.status-active {
-    background: #e8f5e9;
-    color: #2e7d32;
+.status-active,
+.status-pending,
+.status-completed,
+.status-cancelled {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 0.5rem 1rem;
     border-radius: 20px;
     font-size: 0.85rem;
     font-weight: 600;
+}
+
+.status-active {
+    background: #e8f5e9;
+    color: #2e7d32;
 }
 
 .status-pending {
     background: #fff3e0;
     color: #e65100;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
 }
 
 .status-completed {
     background: #e3f2fd;
     color: #1565c0;
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
 }
 
-/* Course Cards in Portal */
+.status-cancelled {
+    background: #eceff3;
+    color: #607080;
+}
+
 .portal-course-card {
     border: none;
     border-radius: 8px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     overflow: hidden;
     transition: all 0.3s ease;
+    background: var(--portal-surface);
 }
 
 .portal-course-card:hover {
@@ -166,39 +308,6 @@ nav.bg-primary a.active {
     transition: width 0.3s ease;
 }
 
-/* Sidebar Responsive */
-@media (max-width: 768px) {
-    .d-flex {
-        flex-direction: column;
-    }
-
-    nav.bg-primary {
-        position: static;
-        width: 100% !important;
-        height: auto;
-        max-height: none;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    nav.bg-primary + .flex-grow-1 {
-        margin-left: 0;
-    }
-}
-
-/* Main Content Area */
-main {
-    background: #f5f5f5;
-    min-height: calc(100vh - 56px);
-}
-
-main h1,
-main h2,
-main h3 {
-    color: var(--primary);
-    margin-bottom: 1.5rem;
-}
-
-/* Empty State */
 .empty-state {
     text-align: center;
     padding: 3rem 1rem;
@@ -216,17 +325,16 @@ main h3 {
 }
 
 .empty-state p {
-    color: #bbb;
+    color: #6a7a90;
 }
 
-/* Quick Stats */
 .quick-stat {
     display: flex;
     align-items: center;
     padding: 1.5rem;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 16px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
     margin-bottom: 1rem;
 }
 
@@ -238,7 +346,7 @@ main h3 {
 
 .quick-stat-content h6 {
     margin: 0;
-    color: #999;
+    color: #6a7a90;
     font-size: 0.9rem;
     text-transform: uppercase;
 }
@@ -250,14 +358,12 @@ main h3 {
     margin: 0.5rem 0 0 0;
 }
 
-/* Button Customization for Portal */
 .btn-portal {
     border-radius: 6px;
     font-weight: 600;
     font-size: 0.9rem;
 }
 
-/* Profile Section */
 .profile-section {
     background: white;
     border-radius: 8px;
@@ -273,7 +379,6 @@ main h3 {
     border-bottom: 2px solid var(--secondary);
 }
 
-/* Form in Portal */
 .portal-form .form-control {
     border-radius: 6px;
     border: 1px solid #ddd;
@@ -289,9 +394,231 @@ main h3 {
     font-weight: 600;
 }
 
-/* Alert Customization */
 .alert-custom {
     border: none;
     border-radius: 8px;
     border-left: 4px solid var(--secondary);
+}
+
+.student-course-hero,
+.student-detail-card {
+    background: var(--portal-surface);
+    border: 1px solid var(--portal-border);
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(10, 35, 66, 0.08);
+}
+
+.student-course-hero {
+    overflow: hidden;
+}
+
+.student-course-hero-image {
+    min-height: 220px;
+    background: linear-gradient(135deg, var(--primary) 0%, #003d99 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+}
+
+.student-course-hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.student-course-hero-body {
+    padding: 1.5rem;
+}
+
+.student-course-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.student-course-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.85rem;
+    border-radius: 999px;
+    background: #edf3fb;
+    color: var(--primary);
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.student-detail-card {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.student-detail-card h2,
+.student-detail-card h3,
+.student-detail-card h4,
+.student-detail-card h5 {
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .student-portal-shell {
+        display: block;
+    }
+
+    .student-sidebar {
+        position: static;
+        width: auto;
+        height: auto;
+        box-shadow: none;
+    }
+
+    .student-portal-main {
+        margin-left: 0;
+    }
+
+    .student-topbar {
+        padding: 1rem;
+    }
+
+    .student-topbar-user {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .student-portal-content {
+        padding: 1rem;
+    }
+}
+
+/* Certificate Page (embedded in the portal shell) */
+.student-certificate-actions {
+    max-width: 850px;
+    margin: 0 auto 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.certificate-page-wrapper {
+    font-family: Georgia, 'Times New Roman', serif;
+}
+
+.certificate-page-wrapper .certificate {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+.certificate-page-wrapper .cert-border {
+    background: #ffffff;
+    border: 10px solid #001a4d;
+    outline: 2px solid #ff9800;
+    outline-offset: -18px;
+    padding: 60px 50px;
+    text-align: center;
+    position: relative;
+    color: #001a4d;
+}
+
+.certificate-page-wrapper .cert-logo {
+    max-height: 60px;
+    margin-bottom: 18px;
+}
+
+.certificate-page-wrapper .eyebrow {
+    letter-spacing: 3px;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 0 0 10px;
+}
+
+.certificate-page-wrapper .accent {
+    color: #ff9800;
+}
+
+.certificate-page-wrapper h1 {
+    font-size: 40px;
+    margin: 0 0 20px;
+    color: #001a4d;
+}
+
+.certificate-page-wrapper .lead {
+    font-size: 16px;
+    margin: 6px 0;
+    color: #333;
+}
+
+.certificate-page-wrapper .recipient {
+    font-size: 30px;
+    margin: 8px 0 18px;
+    border-bottom: 2px solid #ff9800;
+    display: inline-block;
+    padding-bottom: 8px;
+    color: #001a4d;
+}
+
+.certificate-page-wrapper .course-title {
+    font-size: 24px;
+    margin: 6px 0 10px;
+}
+
+.certificate-page-wrapper .meta {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 30px;
+}
+
+.certificate-page-wrapper .cert-footer {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.certificate-page-wrapper .cert-footer-col {
+    text-align: left;
+}
+
+.certificate-page-wrapper .cert-footer-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #888;
+    margin: 0;
+}
+
+.certificate-page-wrapper .cert-footer-value {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 4px 0 0;
+}
+
+@media print {
+    .student-sidebar,
+    .student-topbar,
+    .student-certificate-actions {
+        display: none !important;
+    }
+
+    .student-portal-main {
+        margin-left: 0 !important;
+    }
+
+    .student-portal-content {
+        padding: 0 !important;
+        background: #fff !important;
+        min-height: 0 !important;
+    }
+
+    .student-portal-body {
+        background: #fff !important;
+    }
+
+    .certificate-page-wrapper .cert-border {
+        border-width: 8px;
+    }
 }

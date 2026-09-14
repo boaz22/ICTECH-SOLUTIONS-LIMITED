@@ -3,9 +3,9 @@
  * ICTECH Solutions - Student Dashboard
  */
 
+$pageTitle = 'Dashboard';
 require_once __DIR__ . '/../includes/student-header.php';
 
-$pageTitle = 'Dashboard';
 $userId = Auth::getCurrentUserId();
 $db = Database::getInstance();
 
@@ -13,15 +13,16 @@ $db = Database::getInstance();
 $totalEnrollments = $db->count('enrollments', 'user_id = ?', [$userId]);
 $activeEnrollments = $db->count('enrollments', "user_id = ? AND status IN ('active', 'pending')", [$userId]);
 $completedEnrollments = $db->count('enrollments', "user_id = ? AND status = 'completed'", [$userId]);
-$totalSpent = $db->getValue(
-    "SELECT SUM(p.amount) FROM payments p 
-     WHERE p.user_id = ? AND p.status = 'paid'",
+$certificatesEarned = (int) $db->getValue(
+    "SELECT COUNT(*) FROM certificates cert
+     JOIN enrollments e ON e.id = cert.enrollment_id
+     WHERE e.user_id = ?",
     [$userId]
-) ?? 0;
+);
 
 // Get recent enrollments
 $recentEnrollments = $db->getAll(
-    "SELECT e.*, c.title as course_title, c.image, c.duration, c.price
+    "SELECT e.*, c.title as course_title, c.image, c.duration
      FROM enrollments e
      JOIN courses c ON e.course_id = c.id
      WHERE e.user_id = ?
@@ -85,11 +86,11 @@ $userProfile = getUserProfile($userId);
         <div class="col-md-3 mb-3">
             <div class="quick-stat">
                 <div class="quick-stat-icon">
-                    <i class="fas fa-credit-card"></i>
+                    <i class="fas fa-certificate"></i>
                 </div>
                 <div class="quick-stat-content">
-                    <h6>Total Spent</h6>
-                    <p class="value"><?php echo formatCurrency($totalSpent); ?></p>
+                    <h6>Certificates Earned</h6>
+                    <p class="value"><?php echo $certificatesEarned; ?></p>
                 </div>
             </div>
         </div>
@@ -146,7 +147,7 @@ $userProfile = getUserProfile($userId);
                                                 <small><?php echo formatDate($enrollment['enrolled_at'], 'M d, Y'); ?></small>
                                             </td>
                                             <td>
-                                                <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $enrollment['course_id']; ?>" 
+                                                <a href="course.php?enrollment=<?php echo (int) $enrollment['id']; ?>"
                                                    class="btn btn-sm btn-outline-primary">
                                                     View
                                                 </a>
@@ -162,10 +163,7 @@ $userProfile = getUserProfile($userId);
                                 <i class="fas fa-book"></i>
                             </div>
                             <h4>No Courses Yet</h4>
-                            <p class="text-muted">You haven't enrolled in any courses yet.</p>
-                            <a href="<?php echo SITE_URL; ?>courses.php" class="btn btn-primary mt-3">
-                                <i class="fas fa-graduation-cap me-2"></i> Explore Courses
-                            </a>
+                            <p class="text-muted">Your administrator will add agreed courses to your portal once enrollment is confirmed.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -207,17 +205,14 @@ $userProfile = getUserProfile($userId);
                     <h5 class="mb-0"><i class="fas fa-bolt me-2"></i> Quick Actions</h5>
                 </div>
                 <div class="list-group list-group-flush">
-                    <a href="<?php echo SITE_URL; ?>courses.php" class="list-group-item list-group-item-action">
-                        <i class="fas fa-search text-secondary me-2"></i> Browse Courses
-                    </a>
                     <a href="my-courses.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-book text-secondary me-2"></i> My Courses
                     </a>
-                    <a href="payments.php" class="list-group-item list-group-item-action">
-                        <i class="fas fa-history text-secondary me-2"></i> Payment History
-                    </a>
                     <a href="profile.php" class="list-group-item list-group-item-action">
                         <i class="fas fa-cog text-secondary me-2"></i> Account Settings
+                    </a>
+                    <a href="mailto:<?php echo h(MAIL_REPLY_TO); ?>" class="list-group-item list-group-item-action">
+                        <i class="fas fa-life-ring text-secondary me-2"></i> Contact Support
                     </a>
                 </div>
             </div>

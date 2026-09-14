@@ -12,20 +12,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     $enrollmentId = postParam('enrollment_id', null, FILTER_VALIDATE_INT);
-    $status = postParam('status');
-    if (!$errors && $enrollmentId && in_array($status, ['pending', 'active', 'completed', 'cancelled'], true)) {
-        $db->update('enrollments', ['status' => $status], 'id = ?', [$enrollmentId]);
-        // Ensure a certificate is issued whenever an enrollment is marked completed,
-        // even when the admin sets status directly instead of going through the
-        // student -> trainer -> admin approval chain.
-        if ($status === 'completed') {
-            createCertificateForEnrollment($enrollmentId);
-        }
+    $action = postParam('action');
+
+    if (!$errors && $enrollmentId && $action === 'approve_enrollment') {
+        approveEnrollment($enrollmentId, Auth::getCurrentUserId());
         header('Location: enrollments.php?updated=1');
         exit;
     }
 
-    if (!$errors && $enrollmentId && postParam('action') === 'assign_trainer') {
+    if (!$errors && $enrollmentId && $action === 'assign_trainer') {
         $trainerId = postParam('trainer_id', null, FILTER_VALIDATE_INT);
         if ($trainerId) {
             if (assignTrainer($enrollmentId, $trainerId)) {
@@ -36,6 +31,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             $errors[] = 'Please select a trainer to assign.';
         }
+    }
+
+    if (!$errors && $enrollmentId && $action === 'approve_completion') {
+        approveAdminCompletion($enrollmentId);
+        header('Location: enrollments.php?updated=1');
+        exit;
+    }
+
+    if (!$errors && $enrollmentId && $action === 'cancel_enrollment') {
+        $db->update('enrollments', ['status' => 'cancelled'], "id = ? AND status != 'completed'", [$enrollmentId]);
+        header('Location: enrollments.php?updated=1');
+        exit;
     }
 }
 
@@ -82,7 +89,6 @@ $enrollments = $db->getAll($sql, $params);
                 <a href="courses.php" class="<?php echo $page === 'courses.php' ? 'active' : ''; ?>"><i class="fas fa-book-open"></i> Courses</a>
                 <a href="categories.php" class="<?php echo $page === 'categories.php' ? 'active' : ''; ?>"><i class="fas fa-tags"></i> Categories</a>
                 <a href="certificates.php" class="<?php echo $page === 'certificates.php' ? 'active' : ''; ?>"><i class="fas fa-certificate"></i> Certificates</a>
-                <a href="payments.php" class="<?php echo $page === 'payments.php' ? 'active' : ''; ?>"><i class="fas fa-credit-card"></i> Payments</a>
                 <a href="reports.php" class="<?php echo $page === 'reports.php' ? 'active' : ''; ?>"><i class="fas fa-chart-bar"></i> Reports</a>
                 <a href="testimonials.php" class="<?php echo $page === 'testimonials.php' ? 'active' : ''; ?>"><i class="fas fa-comments"></i> Testimonials</a>
                 <a href="partners.php" class="<?php echo $page === 'partners.php' ? 'active' : ''; ?>"><i class="fas fa-handshake"></i> Partners</a>
@@ -167,29 +173,32 @@ $enrollments = $db->getAll($sql, $params);
                             </td>
                             <td><?php echo h(date('M d, Y', strtotime($enrollment['enrolled_at']))); ?></td>
                             <td>
-                                <form method="post" class="d-flex gap-2 align-items-center mb-2">
-                                    <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
-                                    <input type="hidden" name="enrollment_id" value="<?php echo (int) $enrollment['id']; ?>">
-                                    <select name="status" class="form-select form-select-sm">
-                                        <option value="pending" <?php echo $enrollment['status'] === 'pending' ? 'selected' : ''; ?>>Pending</option>
-                                        <option value="active" <?php echo $enrollment['status'] === 'active' ? 'selected' : ''; ?>>Active</option>
-                                        <option value="completed" <?php echo $enrollment['status'] === 'completed' ? 'selected' : ''; ?>>Completed</option>
-                                        <option value="cancelled" <?php echo $enrollment['status'] === 'cancelled' ? 'selected' : ''; ?>>Cancelled</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                                </form>
-                                <?php if ($enrollment['status'] === 'active'): ?>
-                                    <form method="post" class="d-flex gap-2 align-items-center">
+                                <?php if (in_array($enrollment['status'], ['completed', 'cancelled'], true)): ?>
+                                    <span class="badge text-bg-<?php echo $enrollment['status'] === 'completed' ? 'success' : 'secondary'; ?>">
+                                        <?php echo $enrollment['status'] === 'completed' ? 'Completed - certificate issued' : 'Cancelled'; ?>
+                                    </span>
+                                <?php elseif ($enrollment['status'] === 'pending'): ?>
+                                    <form method="post" class="d-flex gap-2 flex-wrap">
                                         <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
                                         <input type="hidden" name="enrollment_id" value="<?php echo (int) $enrollment['id']; ?>">
-                                        <input type="hidden" name="action" value="assign_trainer">
+                                        <button type="submit" name="action" value="approve_enrollment" class="btn btn-sm btn-primary">Approve</button>
+                                        <button type="submit" name="action" value="cancel_enrollment" class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </form>
+                                <?php else: ?>
+                                    <form method="post" class="d-flex gap-2 flex-wrap align-items-center">
+                                        <input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>">
+                                        <input type="hidden" name="enrollment_id" value="<?php echo (int) $enrollment['id']; ?>">
                                         <select name="trainer_id" class="form-select form-select-sm">
-                                            <option value="">Select trainer...</option>
+                                            <option value="">Assign trainer</option>
                                             <?php foreach ($trainers as $trainer): ?>
                                                 <option value="<?php echo (int) $trainer['id']; ?>" <?php echo (int) $enrollment['trainer_id'] === (int) $trainer['id'] ? 'selected' : ''; ?>><?php echo h($trainer['name']); ?></option>
                                             <?php endforeach; ?>
                                         </select>
-                                        <button type="submit" class="btn btn-sm btn-outline-secondary">Assign</button>
+                                        <button type="submit" name="action" value="assign_trainer" class="btn btn-sm btn-outline-primary">Assign</button>
+                                        <?php if ($enrollment['trainer_approved_at']): ?>
+                                            <button type="submit" name="action" value="approve_completion" class="btn btn-sm btn-success">Approve Completion</button>
+                                        <?php endif; ?>
+                                        <button type="submit" name="action" value="cancel_enrollment" class="btn btn-sm btn-outline-danger">Cancel</button>
                                     </form>
                                 <?php endif; ?>
                             </td>

@@ -28,8 +28,6 @@
                         <li><a href="<?php echo SITE_URL; ?>" class="text-light-footer">Home</a></li>
                         <li><a href="<?php echo SITE_URL; ?>courses.php" class="text-light-footer">Courses</a></li>
                         <li><a href="<?php echo SITE_URL; ?>about.php" class="text-light-footer">About Us</a></li>
-                        <!-- FUTURE FEATURE - STUDENT PORTAL -->
-                        <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
                         <li><a href="<?php echo SITE_URL; ?>students.php" class="text-light-footer">Learner Support</a></li>
                     </ul>
                 </div>

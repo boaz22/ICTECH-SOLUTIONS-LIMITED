@@ -207,17 +207,12 @@ $totalCourses = $db->count('courses', "status = 'published'");
                                 <span class="course-duration">
                                     <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
                                 </span>
-                                <!-- FUTURE FEATURE: COURSE PRICE DISPLAY -->
-                                <!-- TEMPORARILY DISABLED - ENABLE WHEN ENROLLMENT/PAYMENT IS REACTIVATED -->
                             </div>
 
                             <div class="course-footer">
                                 <a href="course-details.php?id=<?php echo $course['id']; ?>" class="btn btn-outline-primary btn-sm">
                                     View Course
                                 </a>
-                                <!-- FUTURE FEATURE - COURSE ENROLLMENT -->
-                                <!-- FUTURE FEATURE - M-PESA PAYMENT -->
-                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
                                 <a href="course-enquiry.php?course_id=<?php echo (int) $course['id']; ?>" class="btn btn-secondary btn-sm">
                                     Enquire
                                 </a>

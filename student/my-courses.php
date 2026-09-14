@@ -10,34 +10,10 @@ require_once __DIR__ . '/../includes/helpers.php';
 // Require login before any output so redirects work correctly
 Auth::requireStudent();
 
+$pageTitle = 'My Courses';
 $userId = Auth::getCurrentUserId();
-$db = Database::getInstance();
-
-// Handle enrollment (state-changing action requires POST + CSRF)
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'enroll') {
-    if (!Auth::verifyCSRFToken(postParam('csrf_token'))) {
-        $enrollError = 'Security validation failed. Please try again.';
-    } else {
-        $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
-
-        if ($courseId) {
-            $result = createEnrollment($userId, $courseId);
-            if ($result['success']) {
-                header("Location: " . SITE_URL . "student/my-courses.php?enrollment=pending");
-                exit;
-            }
-            $enrollError = $result['error'];
-        }
-    }
-}
 
 require_once __DIR__ . '/../includes/student-header.php';
-
-$pageTitle = 'My Courses';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && postParam('action') === 'mark_completed' && Auth::verifyCSRFToken(postParam('csrf_token'))) {
-    markStudentCompleted(postParam('enrollment_id', null, FILTER_VALIDATE_INT), $userId);
-}
 
 // Get all enrollments
 $enrollments = getStudentEnrollments($userId);
@@ -82,7 +58,6 @@ $enrollments = getStudentEnrollments($userId);
                         <thead class="table-light">
                             <tr>
                                 <th>Course</th>
-                                <th>Price</th>
                                 <th>Status</th>
                                 <th>Enrolled Date</th>
                                 <th>Action</th>
@@ -96,7 +71,6 @@ $enrollments = getStudentEnrollments($userId);
                                         <br>
                                         <small class="text-muted"><?php echo h($course['duration']); ?></small>
                                     </td>
-                                    <td><?php echo formatCurrency($course['price']); ?></td>
                                     <td>
                                         <?php
                                         $status = $course['status'];
@@ -117,7 +91,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </td>
                                     <td><?php echo formatDate($course['enrolled_at'], 'M d, Y'); ?></td>
                                     <td>
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>#learning-progress"
+                                        <a href="course.php?enrollment=<?php echo (int) $course['id']; ?>"
                                            class="btn btn-sm btn-outline-primary">
                                             View
                                         </a>
@@ -134,10 +108,7 @@ $enrollments = getStudentEnrollments($userId);
                             <i class="fas fa-list"></i>
                         </div>
                         <h4>No Courses Yet</h4>
-                        <p class="text-muted">You haven't enrolled in any courses yet.</p>
-                        <a href="<?php echo SITE_URL; ?>courses.php" class="btn btn-primary mt-3">
-                            <i class="fas fa-graduation-cap me-2"></i> Explore Courses
-                        </a>
+                        <p class="text-muted">Your administrator will add agreed courses to your portal.</p>
                     </div>
                 </div>
             <?php endif; ?>
@@ -178,13 +149,11 @@ $enrollments = getStudentEnrollments($userId);
                                     </div>
                                      <small class="text-muted"><?php echo (int) $course['progress']; ?>% Complete</small>
                                     <div class="mt-3">
-                                        <a href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo $course['course_id']; ?>#learning-progress"
+                                        <a href="course.php?enrollment=<?php echo (int) $course['id']; ?>"
                                            class="btn btn-primary btn-sm w-100">
                                             <i class="fas fa-arrow-right me-1"></i> Continue Learning
                                         </a>
-                                            <?php if ((int) $course['progress'] === 100 && empty($course['student_completed_at'])): ?>
-                                                <form method="post" class="mt-2"><input type="hidden" name="csrf_token" value="<?php echo h(Auth::generateCSRFToken()); ?>"><input type="hidden" name="enrollment_id" value="<?php echo (int) $course['id']; ?>"><button name="action" value="mark_completed" class="btn btn-outline-success btn-sm w-100">Mark Course Complete</button></form>
-                                            <?php elseif ($course['student_completed_at'] && empty($course['trainer_approved_at'])): ?>
+                                            <?php if ($course['student_completed_at'] && empty($course['trainer_approved_at'])): ?>
                                                 <small class="d-block text-warning mt-2">Awaiting trainer approval</small>
                                             <?php endif; ?>
                                     </div>
@@ -199,10 +168,7 @@ $enrollments = getStudentEnrollments($userId);
                                 <i class="fas fa-book"></i>
                             </div>
                             <h4>No Active Courses</h4>
-                            <p class="text-muted">You're not currently enrolled in any active courses.</p>
-                            <a href="<?php echo SITE_URL; ?>courses.php" class="btn btn-primary mt-3">
-                                <i class="fas fa-graduation-cap me-2"></i> Explore Courses
-                            </a>
+                            <p class="text-muted">You're not currently enrolled in any active courses. Please contact ICTECH if an agreed course is missing.</p>
                         </div>
                     </div>
                 <?php endif; ?>
@@ -244,7 +210,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </div>
                                     <small class="text-success">100% Complete</small>
                                     <div class="mt-3">
-                                        <a href="<?php echo SITE_URL; ?>student/certificate.php?id=<?php echo (int) $course['id']; ?>" class="btn btn-outline-primary btn-sm w-100">
+                                        <a href="certificate.php?id=<?php echo (int) $course['id']; ?>" class="btn btn-outline-primary btn-sm w-100">
                                             <i class="fas fa-certificate me-1"></i> Download Certificate
                                         </a>
                                     </div>

@@ -1,19 +1,18 @@
 <?php
 /**
- * ICTECH Solutions - Student Login Page
+ * ICTECH Solutions - Staff and Student Login Page
  */
 
 ob_start();
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
-require_once __DIR__ . '/includes/google-auth.php';
 
 // Prevent the browser from caching a filled-in login form
 header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
 header('Pragma: no-cache');
 
-$pageTitle = 'Login - Student or Trainer Portal';
-$publicEnquiryMode = defined('PUBLIC_ENQUIRY_MODE') && PUBLIC_ENQUIRY_MODE;
+$studentAccess = getParam('student_access', '') === '1';
+$pageTitle = $studentAccess ? 'Student Portal Login' : 'Staff Login';
 
 // If already logged in, redirect to the dashboard matching their role
 if (Auth::isLoggedIn()) {
@@ -26,18 +25,8 @@ if (Auth::isLoggedIn()) {
 
 $error = '';
 $successMessage = '';
-if (isset($_GET['registered']) && $_GET['registered'] == '1') {
-    $successMessage = 'Registration successful. Please log in to access your account.';
-}
-
-$googleErrors = [
-    'unavailable' => 'Google sign-in is not available right now.',
-    'failed' => 'Google sign-in failed. Please try again.',
-    'not_registered' => 'No ICTECH account is registered with that Google email. Please register first.',
-];
-$googleError = getParam('google_error', '');
-if ($googleError && isset($googleErrors[$googleError])) {
-    $error = $googleErrors[$googleError];
+if (getParam('logout') === '1') {
+    $successMessage = 'You have been logged out successfully.';
 }
 
 
@@ -51,12 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verify CSRF
     if (!Auth::verifyCSRFToken($csrf_token)) {
         $error = 'Security validation failed. Please try again.';
-    } elseif ($publicEnquiryMode && $loginRole === 'student') {
-        // ==========================================
-        // FUTURE FEATURE - STUDENT LOGIN
-        // TEMPORARILY DISABLED
-        // ==========================================
-        $error = 'Online student login is currently unavailable. Please browse courses and submit an enquiry.';
+    } elseif (!$studentAccess && $loginRole === 'student') {
+        $error = 'Student portal access requires the login link sent by ICTECH.';
     } else {
         $result = Auth::login($email, $password, $loginRole);
 
@@ -80,8 +65,8 @@ $redirect = getParam('redirect', '');
     <div class="container">
         <div class="auth-page-header-content">
             <div class="section-subtitle">Welcome back</div>
-            <h1>Continue your learning journey</h1>
-            <p><?php echo $publicEnquiryMode ? 'Trainer and administrator access remains available while student portal access is temporarily paused.' : 'Access your student portal, courses, and progress in one place.'; ?></p>
+            <h1><?php echo $studentAccess ? 'Access your learning portal' : 'Staff portal access'; ?></h1>
+            <p><?php echo $studentAccess ? 'Log in with the account details sent by ICTECH.' : 'Administrators and trainers can sign in to manage learning delivery.'; ?></p>
         </div>
     </div>
 </section>
@@ -100,11 +85,10 @@ $redirect = getParam('redirect', '');
                         </div>
                     </div>
                     <div class="card-body p-4">
-                        <?php if ($publicEnquiryMode): ?>
-                            <div class="alert alert-info">
-                                <!-- FUTURE FEATURE - STUDENT PORTAL -->
-                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
-                                Online student login is temporarily disabled. This page is currently for trainer and admin access.
+                        <?php if ($successMessage): ?>
+                            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
                             </div>
                         <?php endif; ?>
 
@@ -115,29 +99,23 @@ $redirect = getParam('redirect', '');
                             </div>
                         <?php endif; ?>
 
-                        <?php if ($successMessage): ?>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
-                            </div>
-                        <?php endif; ?>
-
                         <form method="POST" data-validate="true" autocomplete="off">
                             <input type="hidden" name="csrf_token" value="<?php echo Auth::generateCSRFToken(); ?>">
                             <?php if ($redirect): ?>
                                 <input type="hidden" name="redirect" value="<?php echo h($redirect); ?>">
                             <?php endif; ?>
 
-                            <div class="form-group mb-3">
-                                <label class="form-label" for="login-role">Login as</label>
-                                <select id="login-role" name="login_role" class="form-control" required>
-                                    <?php if (!$publicEnquiryMode): ?>
-                                        <option value="student">Student</option>
-                                    <?php endif; ?>
-                                    <option value="trainer">Trainer</option>
-                                    <option value="admin">Administrator</option>
-                                </select>
-                            </div>
+                            <?php if ($studentAccess): ?>
+                                <input type="hidden" name="login_role" value="student">
+                            <?php else: ?>
+                                <div class="form-group mb-3">
+                                    <label class="form-label" for="login-role">Login as</label>
+                                    <select id="login-role" name="login_role" class="form-control" required>
+                                        <option value="trainer">Trainer</option>
+                                        <option value="admin">Administrator</option>
+                                    </select>
+                                </div>
+                            <?php endif; ?>
 
                             <div class="form-group mb-3">
                                 <label class="form-label" for="login-email">Email Address</label>
@@ -164,26 +142,12 @@ $redirect = getParam('redirect', '');
                             </button>
                         </form>
 
-                        <?php if (!$publicEnquiryMode): ?>
-                            <div class="text-center text-muted mb-3">or</div>
-                            <a href="google-login.php" class="btn btn-outline-secondary w-100 mb-3">
-                                <i class="fab fa-google"></i> Sign in with Google
-                            </a>
-                            <p class="text-center"><small class="text-muted">Google sign-in works only for existing ICTECH accounts.</small></p>
-                        <?php endif; ?>
-
                         <hr>
 
                         <p class="text-center mb-3">
                             <a href="forgot-password.php" class="text-primary fw-bold">Forgot Password?</a>
                         </p>
 
-                        <?php if (!$publicEnquiryMode): ?>
-                            <p class="text-center mb-0">
-                                Don't have an account?
-                                <a href="register.php" class="text-primary fw-bold">Register here</a>
-                            </p>
-                        <?php endif; ?>
                     </div>
                 </div>
 

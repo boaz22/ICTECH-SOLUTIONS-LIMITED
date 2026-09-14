@@ -20,7 +20,7 @@ $pageTitle = 'For Students';
     <div class="container">
         <div class="section-header mb-5">
             <h2>Training Guidance & Support</h2>
-            <p class="mb-0">Online student account services are temporarily unavailable. You can still access course information and receive one-on-one support through our team.</p>
+            <p class="mb-0">Once you enquire and agree on a course with our team, we guide you through enrollment and getting started.</p>
         </div>
         
         <!-- Support Steps -->
@@ -60,9 +60,9 @@ $pageTitle = 'For Students';
                 <div class="card border-0 shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title text-primary mb-3">
-                            <i class="fas fa-check-circle text-success"></i> Step 4: Receive Next-Step Updates
+                            <i class="fas fa-check-circle text-success"></i> Step 4: Confirm Your Enrollment
                         </h5>
-                        <p>We will notify you directly with updates on cohort openings and student platform availability.</p>
+                        <p>Once you agree to join a course, our team confirms the details with you directly and keeps you updated as you get started.</p>
                     </div>
                 </div>
             </div>
@@ -96,14 +96,12 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
-                                Is student account creation currently available?
+                                How do I enroll in a course?
                             </button>
                         </h2>
                         <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                <!-- FUTURE FEATURE - STUDENT REGISTRATION -->
-                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
-                                Not at the moment. Student account creation is temporarily unavailable while we finalize internal rollout plans.
+                                Send us a course enquiry through the contact page. Our team will guide you through course details, schedules, and next steps, then confirm your enrollment directly with you.
                             </div>
                         </div>
                     </div>
@@ -124,14 +122,12 @@ $pageTitle = 'For Students';
                     <div class="accordion-item">
                         <h2 class="accordion-header">
                             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
-                                Can I track learning progress online?
+                                What happens after I agree to join a course?
                             </button>
                         </h2>
                         <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
                             <div class="accordion-body">
-                                <!-- FUTURE FEATURE - STUDENT DASHBOARD -->
-                                <!-- TEMPORARILY DISABLED - ENABLE WHEN RESOURCES ARE AVAILABLE -->
-                                Not yet. Online student dashboard tracking is temporarily unavailable. We currently provide updates directly through our support team.
+                                Our team confirms the enrollment details with you directly and keeps you informed on schedules and what to expect as training begins.
                             </div>
                         </div>
                     </div>
@@ -148,19 +144,6 @@ $pageTitle = 'For Students';
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="accordion-item">
-                        <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5">
-                                How will I know when student services are re-opened?
-                            </button>
-                        </h2>
-                        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
-                            <div class="accordion-body">
-                                We will announce availability updates on the website and provide guidance through direct communication after your enquiry.
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -171,7 +154,7 @@ $pageTitle = 'For Students';
 <section class="cta-section">
     <div class="container">
         <h2>Need Help Choosing the Right Course?</h2>
-        <p>Browse available programs and contact our team for support while student account services remain temporarily unavailable.</p>
+        <p>Browse available programs and contact our team to get started.</p>
         <div>
             <a href="courses.php" class="btn btn-outline-light btn-lg">
                 <i class="fas fa-graduation-cap"></i> Explore Courses
