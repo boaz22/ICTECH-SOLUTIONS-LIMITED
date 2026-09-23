@@ -98,8 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <i class="fas fa-phone text-secondary"></i> Phone
                     </h6>
                     <p>
-                        <a href="tel:+254733600326">+254 733 600 326</a><br>
-                        <a href="tel:+254734567890">+254 734 567 890</a>
+                        <a href="tel:+254733600326">+254 733 600 326</a>
                     </p>
                 </div>
 

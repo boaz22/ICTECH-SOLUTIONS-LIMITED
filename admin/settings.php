@@ -7,6 +7,8 @@ $db = Database::getInstance();
 $currentAdminId = Auth::getCurrentUserId();
 $errors = [];
 $success = '';
+$mailHost = defined('MAIL_HOST') ? MAIL_HOST : 'Not configured';
+$mailStatus = defined('MAIL_HOST') && MAIL_HOST !== 'mail.example.com' ? 'Configured' : 'Not configured';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && Auth::verifyCSRFToken(postParam('csrf_token'))) {
     $action = postParam('action');
@@ -169,11 +171,11 @@ $admins = $db->getAll("SELECT id, name, email, phone, status, created_at FROM us
                     <h2 class="h4 mb-3">Email Configuration</h2>
                     <dl class="row mb-0">
                         <dt class="col-sm-5">Mail host</dt>
-                        <dd class="col-sm-7"><?php echo h(MAIL_HOST); ?></dd>
+                        <dd class="col-sm-7"><?php echo h($mailHost); ?></dd>
                         <dt class="col-sm-5">Mail sender</dt>
                         <dd class="col-sm-7"><?php echo h(MAIL_FROM); ?></dd>
                         <dt class="col-sm-5">SMTP status</dt>
-                        <dd class="col-sm-7"><?php echo MAIL_HOST !== 'mail.example.com' ? 'Configured' : 'Placeholder only'; ?></dd>
+                        <dd class="col-sm-7"><?php echo h($mailStatus); ?></dd>
                     </dl>
                 </div>
             </div>
