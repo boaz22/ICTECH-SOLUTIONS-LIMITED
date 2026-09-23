@@ -207,11 +207,9 @@ function getPublishedCourses($limit = null, $offset = 0, $categoryId = null, $se
     }
 
     if ($search) {
-        $sql .= " AND (c.title LIKE ? OR c.description LIKE ? OR cat.name LIKE ?)";
-        $searchTerm = '%' . $search . '%';
-        $params[] = $searchTerm;
-        $params[] = $searchTerm;
-        $params[] = $searchTerm;
+        $filter = buildCourseSearchFilter($search);
+        $sql .= " AND " . $filter['sql'];
+        $params = array_merge($params, $filter['params']);
     }
 
     $sql .= " ORDER BY c.created_at DESC";
@@ -242,14 +240,46 @@ function countPublishedCourses($categoryId = null, $search = null) {
     }
 
     if ($search) {
-        $sql .= " AND (c.title LIKE ? OR c.description LIKE ? OR cat.name LIKE ?)";
-        $searchTerm = '%' . $search . '%';
-        $params[] = $searchTerm;
-        $params[] = $searchTerm;
-        $params[] = $searchTerm;
+        $filter = buildCourseSearchFilter($search);
+        $sql .= " AND " . $filter['sql'];
+        $params = array_merge($params, $filter['params']);
     }
 
     return (int) $db->getValue($sql, $params);
+}
+
+/**
+ * Build the shared course-search WHERE fragment + bound params: matches
+ * title, course code, subcategory, category name, or the homepage grouping
+ * label (e.g. searching "business" finds courses tagged Business Programs,
+ * directly or via their category). Free-text description is intentionally
+ * excluded to avoid unrelated words inside long descriptions causing
+ * false-positive matches.
+ */
+function buildCourseSearchFilter($search) {
+    $searchTerm = '%' . $search . '%';
+    $conditions = [
+        'c.title LIKE ?',
+        'c.course_code LIKE ?',
+        'c.subcategory LIKE ?',
+        'cat.name LIKE ?',
+    ];
+    $params = array_fill(0, count($conditions), $searchTerm);
+
+    $matchingGroups = [];
+    foreach (getProgramGroups() as $key => $label) {
+        if (stripos($label, $search) !== false) {
+            $matchingGroups[] = $key;
+        }
+    }
+
+    if (!empty($matchingGroups)) {
+        $placeholders = implode(',', array_fill(0, count($matchingGroups), '?'));
+        $conditions[] = "COALESCE(c.program_group, cat.program_group) IN ($placeholders)";
+        $params = array_merge($params, $matchingGroups);
+    }
+
+    return ['sql' => '(' . implode(' OR ', $conditions) . ')', 'params' => $params];
 }
 
 /**
@@ -286,6 +316,58 @@ function getCategories() {
     return $db->getAll(
         "SELECT * FROM categories ORDER BY name ASC"
     );
+}
+
+/**
+ * Homepage/menu grouping keys and labels, shared by admin forms and the
+ * public mega-menu. Assignment is optional at both category and course level.
+ */
+function getProgramGroups() {
+    return [
+        'role_based' => 'Role Based Programs',
+        'technical' => 'Technical Courses',
+        'business' => 'Business Programs',
+    ];
+}
+
+/**
+ * Build the public "Courses" mega-menu structure: one entry per program
+ * group (always in Role Based -> Technical -> Business order), each
+ * containing categories and individual published courses that were
+ * optionally tagged by the admin. A course's own tag overrides its
+ * category's tag so it isn't listed twice. Empty groups are kept (so admins
+ * see the placeholder column while they're still adding courses to it); the
+ * whole menu is only omitted by the caller when every group is empty.
+ */
+function getProgramGroupMenu() {
+    $db = Database::getInstance();
+    $groups = getProgramGroups();
+    $menu = [];
+    foreach ($groups as $key => $label) {
+        $menu[$key] = ['label' => $label, 'categories' => [], 'courses' => []];
+    }
+
+    $categories = $db->getAll(
+        "SELECT id, name, program_group FROM categories WHERE program_group IS NOT NULL ORDER BY name ASC"
+    );
+    foreach ($categories as $category) {
+        if (isset($menu[$category['program_group']])) {
+            $menu[$category['program_group']]['categories'][] = $category;
+        }
+    }
+
+    $courses = $db->getAll(
+        "SELECT id, title, slug, program_group FROM courses
+         WHERE status = 'published' AND program_group IS NOT NULL
+         ORDER BY title ASC"
+    );
+    foreach ($courses as $course) {
+        if (isset($menu[$course['program_group']])) {
+            $menu[$course['program_group']]['courses'][] = $course;
+        }
+    }
+
+    return $menu;
 }
 
 /**

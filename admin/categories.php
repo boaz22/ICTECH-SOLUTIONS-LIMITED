@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $categoryId = postParam('category_id', null, FILTER_VALIDATE_INT);
     $name = trim(postParam('name'));
     $slug = trim(postParam('slug'));
+    $programGroup = postParam('program_group');
+    $programGroup = array_key_exists($programGroup, getProgramGroups()) ? $programGroup : null;
 
     if (!$errors && $action === 'delete' && $categoryId) {
         $db->delete('categories', 'id = ?', [$categoryId]);
@@ -43,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (!$errors) {
-        $data = ['name' => $name, 'slug' => $slug];
+        $data = ['name' => $name, 'slug' => $slug, 'program_group' => $programGroup];
         if ($categoryId) {
             $db->update('categories', $data, 'id = ?', [$categoryId]);
             $message = 'Category updated successfully.';
@@ -59,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $categories = $db->getAll(
     'SELECT c.*, COUNT(cr.id) AS course_count FROM categories c LEFT JOIN courses cr ON cr.category_id = c.id GROUP BY c.id ORDER BY c.name ASC'
 );
+$programGroups = getProgramGroups();
 ?>
 <!doctype html>
 <html lang="en">
@@ -129,6 +132,15 @@ $categories = $db->getAll(
                     <label class="form-label">Slug</label>
                     <input type="text" class="form-control" name="slug" value="<?php echo h($category['slug'] ?? ''); ?>">
                 </div>
+                <div class="col-md-6">
+                    <label class="form-label">Homepage grouping (optional)</label>
+                    <select class="form-select" name="program_group">
+                        <option value="">Not shown in grouped menu</option>
+                        <?php foreach ($programGroups as $groupKey => $groupLabel): ?>
+                            <option value="<?php echo h($groupKey); ?>" <?php echo (($category['program_group'] ?? '') === $groupKey) ? 'selected' : ''; ?>><?php echo h($groupLabel); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
                 <div class="col-12">
                     <button type="submit" name="action" value="save" class="btn btn-primary">Save category</button>
                     <?php if ($category): ?>
@@ -151,6 +163,7 @@ $categories = $db->getAll(
                     <tr>
                         <th>Name</th>
                         <th>Slug</th>
+                        <th>Grouping</th>
                         <th>Courses</th>
                         <th>Actions</th>
                     </tr>
@@ -160,6 +173,7 @@ $categories = $db->getAll(
                         <tr>
                             <td><?php echo h($row['name']); ?></td>
                             <td><code><?php echo h($row['slug']); ?></code></td>
+                            <td><?php echo $row['program_group'] ? h($programGroups[$row['program_group']]) : '<span class="text-muted">—</span>'; ?></td>
                             <td><?php echo (int) $row['course_count']; ?></td>
                             <td class="text-nowrap">
                                 <a href="categories.php?edit=<?php echo (int) $row['id']; ?>" class="btn btn-sm btn-outline-primary">Edit</a>

@@ -14,6 +14,14 @@ $seoDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $currentPage === 'index.php' ? SITE_URL : SITE_URL . $currentPage;
 $socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
 $publicCourseCategories = getCategories();
+$publicProgramGroups = getProgramGroupMenu();
+$hasProgramGroupItems = false;
+foreach ($publicProgramGroups as $group) {
+    if (!empty($group['categories']) || !empty($group['courses'])) {
+        $hasProgramGroupItems = true;
+        break;
+    }
+}
 $headerCourseSearch = trim((string) getParam('search', '', FILTER_UNSAFE_RAW));
 $activeCategoryId = getParam('category', null, FILTER_VALIDATE_INT);
 $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-details.php' || $currentPage === 'course-enquiry.php';
@@ -67,7 +75,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260918">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260923b">
 </head>
 <body>
     <header class="site-header">
@@ -100,8 +108,31 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                         </li>
                         <li class="nav-item nav-course-dropdown <?php echo $isCoursesActive ? 'active' : ''; ?>">
                             <a class="nav-link nav-course-toggle <?php echo $isCoursesActive ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>courses.php" data-course-menu-toggle aria-expanded="false"<?php echo $isCoursesActive ? ' aria-current="page"' : ''; ?>>
-                                Courses <i class="fas fa-chevron-down ms-1"></i>
+                                Courses
                             </a>
+                            <?php if ($hasProgramGroupItems): ?>
+                            <div class="dropdown-menu nav-course-menu nav-course-mega">
+                                <div class="nav-course-mega-header">
+                                    <a class="dropdown-item fw-bold" href="<?php echo SITE_URL; ?>courses.php">All Courses</a>
+                                </div>
+                                <div class="nav-course-mega-columns">
+                                    <?php foreach ($publicProgramGroups as $group): ?>
+                                        <div class="nav-course-mega-col">
+                                            <p class="nav-course-mega-title"><?php echo h($group['label']); ?></p>
+                                            <?php if (empty($group['categories']) && empty($group['courses'])): ?>
+                                                <p class="nav-course-mega-empty">Coming soon</p>
+                                            <?php endif; ?>
+                                            <?php foreach ($group['categories'] as $category): ?>
+                                                <a class="dropdown-item" href="<?php echo SITE_URL; ?>courses.php?category=<?php echo (int) $category['id']; ?>"><?php echo h($category['name']); ?></a>
+                                            <?php endforeach; ?>
+                                            <?php foreach ($group['courses'] as $groupCourse): ?>
+                                                <a class="dropdown-item" href="<?php echo SITE_URL; ?>course-details.php?id=<?php echo (int) $groupCourse['id']; ?>"><?php echo h($groupCourse['title']); ?></a>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            </div>
+                            <?php else: ?>
                             <ul class="dropdown-menu nav-course-menu">
                                 <li><a class="dropdown-item" href="<?php echo SITE_URL; ?>courses.php">All Courses</a></li>
                                 <li><hr class="dropdown-divider"></li>
@@ -113,6 +144,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                                     </li>
                                 <?php endforeach; ?>
                             </ul>
+                            <?php endif; ?>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>

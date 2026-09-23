@@ -18,14 +18,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $courseId = postParam('course_id', null, FILTER_VALIDATE_INT);
     $title = trim(postParam('title'));
     $slug = trim(postParam('slug'));
+    $courseCode = trim(postParam('course_code'));
     $description = trim(postParam('description'));
     $courseOutline = trim(postParam('course_outline'));
     $objectives = trim(postParam('objectives'));
     $requirements = trim(postParam('requirements'));
     $categoryId = postParam('category_id', null, FILTER_VALIDATE_INT);
+    $subcategory = trim(postParam('subcategory'));
     $duration = trim(postParam('duration'));
     $status = postParam('status', 'draft');
     $isFeatured = postParam('is_featured') ? 1 : 0;
+    $programGroup = postParam('program_group');
+    $programGroup = array_key_exists($programGroup, getProgramGroups()) ? $programGroup : null;
 
     if ($courseId) {
         $course = $db->getRow('SELECT * FROM courses WHERE id = ?', [$courseId]);
@@ -57,6 +61,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'That slug is already in use.';
     }
 
+    if ($courseCode !== '') {
+        $duplicateCode = $db->getRow('SELECT id FROM courses WHERE course_code = ? AND id <> ?', [$courseCode, $courseId ?: 0]);
+        if ($duplicateCode) {
+            $errors[] = 'That course code is already in use.';
+        }
+    }
+
     $image = $course['image'] ?? null;
     if (isset($_FILES['image']) && $_FILES['image']['error'] !== UPLOAD_ERR_NO_FILE) {
         if ($_FILES['image']['error'] !== UPLOAD_ERR_OK || $_FILES['image']['size'] > 5242880) {
@@ -84,15 +95,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data = [
             'title' => $title,
             'slug' => $slug,
+            'course_code' => $courseCode !== '' ? $courseCode : null,
             'description' => $description,
             'course_outline' => $courseOutline,
             'objectives' => $objectives,
             'requirements' => $requirements,
             'category_id' => $categoryId,
+            'subcategory' => $subcategory !== '' ? $subcategory : null,
             'duration' => $duration,
             'status' => $status,
             'is_featured' => $isFeatured,
             'image' => $image,
+            'program_group' => $programGroup,
         ];
 
         if ($courseId) {
@@ -107,6 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $categories = getCategories();
+$programGroups = getProgramGroups();
 $statusFilter = getParam('status', 'all');
 $sql = 'SELECT c.*, cat.name AS category_name FROM courses c JOIN categories cat ON cat.id = c.category_id WHERE 1 = 1';
 $params = [];
@@ -210,6 +225,11 @@ $courses = $db->getAll($sql, $params);
                                 <input class="form-control" id="course-slug" name="slug" value="<?php echo h($course['slug'] ?? ''); ?>" required>
                             </div>
 
+                            <div class="col-md-4">
+                                <label class="form-label">Course code (optional)</label>
+                                <input class="form-control" name="course_code" value="<?php echo h($course['course_code'] ?? ''); ?>" placeholder="e.g. WD101">
+                            </div>
+
                             <div class="col-md-6">
                                 <label class="form-label">Category</label>
                                 <select class="form-select" name="category_id" required>
@@ -220,6 +240,11 @@ $courses = $db->getAll($sql, $params);
                                         </option>
                                     <?php endforeach; ?>
                                 </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Subcategory (optional)</label>
+                                <input class="form-control" name="subcategory" value="<?php echo h($course['subcategory'] ?? ''); ?>" placeholder="e.g. Frontend Frameworks">
                             </div>
 
                             <div class="col-md-6">
@@ -268,6 +293,17 @@ $courses = $db->getAll($sql, $params);
                                 </label>
                             </div>
 
+                            <div class="col-md-6">
+                                <label class="form-label">Homepage grouping (optional)</label>
+                                <select class="form-select" name="program_group">
+                                    <option value="">Not shown in grouped menu</option>
+                                    <?php foreach ($programGroups as $groupKey => $groupLabel): ?>
+                                        <option value="<?php echo h($groupKey); ?>" <?php echo (($course['program_group'] ?? '') === $groupKey) ? 'selected' : ''; ?>><?php echo h($groupLabel); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small class="text-muted">Overrides the category's grouping, if any, in the public Courses menu.</small>
+                            </div>
+
                             <div class="col-12">
                                 <button class="btn btn-primary" name="action" value="save">Save Course</button>
                                 <?php if ($course): ?>
@@ -307,7 +343,9 @@ $courses = $db->getAll($sql, $params);
                         <thead>
                         <tr>
                             <th>Course</th>
+                            <th>Code</th>
                             <th>Category</th>
+                            <th>Grouping</th>
                             <th>Status</th>
                             <th>Featured</th>
                             <th></th>
@@ -317,7 +355,9 @@ $courses = $db->getAll($sql, $params);
                         <?php foreach ($courses as $item): ?>
                             <tr>
                                 <td><?php echo h($item['title']); ?></td>
+                                <td><?php echo $item['course_code'] ? '<code>' . h($item['course_code']) . '</code>' : '<span class="text-muted">&mdash;</span>'; ?></td>
                                 <td><?php echo h($item['category_name']); ?></td>
+                                <td><?php echo $item['program_group'] ? h($programGroups[$item['program_group']]) : '<span class="text-muted">&mdash;</span>'; ?></td>
                                 <td>
                                     <span class="badge text-bg-<?php echo $item['status'] === 'published' ? 'success' : ($item['status'] === 'draft' ? 'warning' : 'secondary'); ?>">
                                         <?php echo h($item['status']); ?>
