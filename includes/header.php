@@ -26,6 +26,7 @@ $headerCourseSearch = trim((string) getParam('search', '', FILTER_UNSAFE_RAW));
 $headerCourseSuggestions = getPublishedCourses(50);
 $activeCategoryId = getParam('category', null, FILTER_VALIDATE_INT);
 $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-details.php' || $currentPage === 'course-enquiry.php';
+$isScheduleActive = $currentPage === 'schedule.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -76,7 +77,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260924b">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260924c">
 </head>
 <body>
     <header class="site-header">
@@ -146,6 +147,9 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                                 <?php endforeach; ?>
                             </ul>
                             <?php endif; ?>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link <?php echo $isScheduleActive ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>schedule.php"<?php echo $isScheduleActive ? ' aria-current="page"' : ''; ?>>Schedule</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>
