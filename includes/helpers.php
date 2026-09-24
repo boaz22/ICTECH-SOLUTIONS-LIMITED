@@ -51,14 +51,14 @@ function consumeFlashMessage($key) {
 /**
  * Display course durations consistently in hours, including legacy values.
  */
-function formatCourseDurationHours($duration) {
+function courseDurationHoursValue($duration) {
     $duration = trim((string) $duration);
     if ($duration === '') {
-        return '';
+        return null;
     }
 
     if (!preg_match('/^([0-9]+(?:\.[0-9]+)?)\s*(hours?|hrs?|h|weeks?|w|days?|d|months?|m)?$/i', $duration, $matches)) {
-        return $duration;
+        return null;
     }
 
     $amount = (float) $matches[1];
@@ -71,8 +71,17 @@ function formatCourseDurationHours($duration) {
         $amount *= 160;
     }
 
-    $formattedAmount = rtrim(rtrim(number_format($amount, 2, '.', ''), '0'), '.');
-    return $formattedAmount . ' hour' . ((float) $amount === 1.0 ? '' : 's');
+    return $amount;
+}
+
+function formatCourseDurationHours($duration) {
+    $hours = courseDurationHoursValue($duration);
+    if ($hours === null) {
+        return trim((string) $duration);
+    }
+
+    $formattedAmount = rtrim(rtrim(number_format($hours, 2, '.', ''), '0'), '.');
+    return $formattedAmount . ' hour' . ((float) $hours === 1.0 ? '' : 's');
 }
 
 /**
