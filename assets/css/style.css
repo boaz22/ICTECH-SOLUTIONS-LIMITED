@@ -370,6 +370,19 @@ a:hover {
 }
 
 @media (min-width: 992px) {
+    .navbar-nav {
+        align-items: center;
+    }
+
+    .navbar-nav .nav-link {
+        margin-inline: 0.38rem;
+        white-space: nowrap;
+    }
+
+    .header-course-search {
+        min-width: 270px;
+    }
+
     .nav-course-dropdown:hover > .nav-course-menu {
         display: block;
     }

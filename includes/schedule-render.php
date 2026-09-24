@@ -57,6 +57,10 @@ function getScheduleEntries($db, $monthStart = null, $filters = []) {
 }
 
 function scheduleLogoDataUri() {
+    if (!extension_loaded('gd')) {
+        return '';
+    }
+
     $logoPath = __DIR__ . '/../assets/images/ictech-logo-transparent.png';
     if (!is_file($logoPath)) {
         return '';
