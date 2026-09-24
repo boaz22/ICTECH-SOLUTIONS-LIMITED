@@ -45,8 +45,10 @@ foreach ($publicProgramGroups as $group) {
     }
 }
 $headerCourseSearch = trim((string) getParam('search', '', FILTER_UNSAFE_RAW));
+$headerCourseSuggestions = getPublishedCourses(50);
 $activeCategoryId = getParam('category', null, FILTER_VALIDATE_INT);
 $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-details.php' || $currentPage === 'course-enquiry.php';
+$isScheduleActive = $currentPage === 'schedule.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -86,7 +88,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260923b">
+    <link rel="stylesheet" href="<?php echo SITE_URL; ?>assets/css/style.css?v=20260924c">
 </head>
 <body>
     <header class="site-header">
@@ -158,6 +160,9 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                             <?php endif; ?>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link <?php echo $isScheduleActive ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>schedule.php"<?php echo $isScheduleActive ? ' aria-current="page"' : ''; ?>>Schedule</a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link <?php echo $currentPage === 'services.php' ? 'active' : ''; ?>" href="<?php echo SITE_URL; ?>services.php"<?php echo $currentPage === 'services.php' ? ' aria-current="page"' : ''; ?>>Services</a>
                         </li>
                         <li class="nav-item">
@@ -171,10 +176,16 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
                         </li>
 
                         <li class="nav-item nav-search-item">
-                            <form method="get" action="<?php echo SITE_URL; ?>courses.php" class="header-course-search" role="search" aria-label="Search courses">
+                            <form method="get" action="<?php echo SITE_URL; ?>courses.php" class="header-course-search" role="search" aria-label="Search courses"<?php echo $currentPage === 'courses.php' && $headerCourseSearch !== '' ? ' data-clear-search-on-load="true"' : ''; ?>>
                                 <label class="visually-hidden" for="header-course-search">Search courses</label>
                                 <i class="fas fa-search" aria-hidden="true"></i>
-                                <input id="header-course-search" type="search" name="search" value="<?php echo h($headerCourseSearch); ?>" placeholder="Search courses..." maxlength="120">
+                                <input id="header-course-search" type="search" name="search" value="<?php echo h($headerCourseSearch); ?>" placeholder="Search courses..." maxlength="120" autocomplete="off" aria-controls="header-course-suggestion-list" aria-autocomplete="list">
+                                <datalist id="header-course-suggestions">
+                                    <?php foreach ($headerCourseSuggestions as $suggestion): ?>
+                                        <option value="<?php echo h($suggestion['title']); ?>" label="<?php echo h($suggestion['course_code'] ?? ($suggestion['category_name'] ?? '')); ?>" data-course-url="<?php echo h(SITE_URL . 'course-details.php?id=' . (int) $suggestion['id']); ?>"></option>
+                                    <?php endforeach; ?>
+                                </datalist>
+                                <div id="header-course-suggestion-list" class="header-course-suggestion-list" role="listbox" hidden></div>
                                 <button type="submit">Search</button>
                             </form>
                         </li>

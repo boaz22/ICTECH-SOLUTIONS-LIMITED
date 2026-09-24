@@ -5,6 +5,7 @@
 
 $pageTitle = 'Contact Us';
 $pageDescription = 'Contact ICTECH Solutions Limited about professional ICT training, certification courses, corporate training, and technology services in Kenya.';
+ob_start();
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
 
@@ -47,9 +48,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 . '<p><strong>Message:</strong></p>'
                 . '<p>' . nl2br(h($message)) . '</p>';
 
-            sendEmail(MAIL_FROM, 'New website enquiry: ' . $subject, $body);
+            $adminEmailSent = sendEmail(MAIL_NOTIFICATION_TO, 'New website enquiry: ' . $subject, $body);
             sendEmail($email, 'We received your message', '<p>Thank you for contacting ICTECH Solutions Limited.</p><p>We have received your message and our team will respond soon.</p>');
-            $successMessage = 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.';
+            if ($adminEmailSent) {
+                setFlashMessage('success', 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.');
+                ob_end_clean();
+                header('Location: ' . SITE_URL . 'courses.php');
+                exit;
+            } else {
+                $errorMessage = 'Your message was saved, but we could not deliver the notification email. Please contact us by phone.';
+            }
         } catch (Exception $e) {
             $errorMessage = 'Failed to send message. Please try again.';
         }

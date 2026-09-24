@@ -6,6 +6,7 @@
 $pageTitle = 'Course Enquiry';
 $pageDescription = 'Send an enquiry about ICTECH Solutions Limited professional technology training courses in Kenya.';
 $pageRobots = 'noindex, nofollow';
+ob_start();
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
 
@@ -88,10 +89,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 . '<p><strong>Message:</strong></p>'
                 . '<p>' . nl2br(h($message)) . '</p>';
 
-            sendEmail('info@ictechsolutions.co.ke', $subject, $emailBody, MAIL_FROM, MAIL_FROM_NAME);
+            $adminEmailSent = sendEmail(MAIL_NOTIFICATION_TO, $subject, $emailBody, MAIL_FROM, MAIL_FROM_NAME);
             sendEmail($email, 'We received your course enquiry', '<p>Thank you for your enquiry about <strong>' . h($course['title']) . '</strong>.</p><p>ICTECH Solutions Limited will contact you shortly.</p>');
 
-            $successMessage = 'Thank you for your enquiry. ICTECH Solutions Limited will get back to you shortly.';
+            if ($adminEmailSent) {
+                setFlashMessage('success', 'Thank you for your enquiry. ICTECH Solutions Limited will get back to you shortly.');
+                ob_end_clean();
+                header('Location: ' . SITE_URL . 'courses.php');
+                exit;
+            } else {
+                $errorMessage = 'Your enquiry was saved, but we could not deliver the notification email. Please contact us by phone.';
+            }
             $name = '';
             $email = '';
             $phone = '';

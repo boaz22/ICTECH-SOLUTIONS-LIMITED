@@ -44,7 +44,7 @@ $userProfile = getUserProfile($userId);
             <p class="text-muted">Here's your learning dashboard</p>
         </div>
     </div>
-    
+
     <!-- Quick Stats -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
@@ -58,7 +58,7 @@ $userProfile = getUserProfile($userId);
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-3 mb-3">
             <div class="quick-stat">
                 <div class="quick-stat-icon">
@@ -70,7 +70,7 @@ $userProfile = getUserProfile($userId);
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-3 mb-3">
             <div class="quick-stat">
                 <div class="quick-stat-icon">
@@ -82,7 +82,7 @@ $userProfile = getUserProfile($userId);
                 </div>
             </div>
         </div>
-        
+
         <div class="col-md-3 mb-3">
             <div class="quick-stat">
                 <div class="quick-stat-icon">
@@ -95,7 +95,7 @@ $userProfile = getUserProfile($userId);
             </div>
         </div>
     </div>
-    
+
     <!-- Recent Enrollments -->
     <div class="row align-items-start">
         <div class="col-md-8">
@@ -122,15 +122,15 @@ $userProfile = getUserProfile($userId);
                                                 <div>
                                                     <strong><?php echo h($enrollment['course_title']); ?></strong>
                                                     <br>
-                                                    <small class="text-muted"><?php echo h($enrollment['duration']); ?></small>
+                                                    <small class="text-muted"><?php echo h(formatCourseDurationHours($enrollment['duration'])); ?></small>
                                                 </div>
                                             </td>
                                             <td>
-                                                <?php 
+                                                <?php
                                                 $status = $enrollment['status'];
                                                 $statusClass = 'status-pending';
                                                 $statusLabel = 'Pending';
-                                                
+
                                                 if ($status === 'active') {
                                                     $statusClass = 'status-active';
                                                     $statusLabel = 'Active';
@@ -169,7 +169,7 @@ $userProfile = getUserProfile($userId);
                 </div>
             </div>
         </div>
-        
+
         <!-- Profile Card -->
         <div class="col-md-4">
             <div class="card shadow-sm border-0 mb-3">
@@ -198,7 +198,7 @@ $userProfile = getUserProfile($userId);
                     </a>
                 </div>
             </div>
-            
+
             <!-- Quick Actions -->
             <div class="card shadow-sm border-0">
                 <div class="card-header bg-primary text-white">

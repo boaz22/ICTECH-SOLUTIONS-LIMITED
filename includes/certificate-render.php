@@ -26,7 +26,7 @@ function renderCertificateHtml($certificate, $forPdf = false) {
                 <p class="meta">
                     <?php echo h($certificate['category_name'] ?? ''); ?>
                     <?php if (!empty($certificate['category_name']) && !empty($certificate['duration'])): ?> &middot; <?php endif; ?>
-                    <?php echo h($certificate['duration'] ?? ''); ?>
+                    <?php echo h(formatCourseDurationHours($certificate['duration'] ?? '')); ?>
                 </p>
             <?php endif; ?>
 

@@ -2,6 +2,10 @@
 
 # Configuration files (should not be committed)
 includes/config.php
+includes/config.local.php
+includes/*-local.php
+*.secret.php
+*.credentials.php
 
 # Uploads
 uploads/*

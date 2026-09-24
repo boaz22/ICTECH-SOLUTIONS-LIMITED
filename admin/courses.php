@@ -25,7 +25,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $requirements = trim(postParam('requirements'));
     $categoryId = postParam('category_id', null, FILTER_VALIDATE_INT);
     $subcategory = trim(postParam('subcategory'));
-    $duration = trim(postParam('duration'));
+    $durationInput = trim(postParam('duration'));
+    $duration = '';
+    if ($durationInput !== '') {
+        $durationValue = filter_var($durationInput, FILTER_VALIDATE_FLOAT);
+        if ($durationValue === false || $durationValue <= 0) {
+            $errors[] = 'Duration must be a positive number of hours.';
+        } else {
+            $duration = rtrim(rtrim(number_format((float) $durationValue, 2, '.', ''), '0'), '.') . ' hours';
+        }
+    }
     $status = postParam('status', 'draft');
     $isFeatured = postParam('is_featured') ? 1 : 0;
     $programGroup = postParam('program_group');
@@ -248,8 +257,9 @@ $courses = $db->getAll($sql, $params);
                             </div>
 
                             <div class="col-md-6">
-                                <label class="form-label">Duration</label>
-                                <input class="form-control" name="duration" value="<?php echo h($course['duration'] ?? ''); ?>" placeholder="8 weeks">
+                                <label class="form-label" for="course-duration">Duration (hours)</label>
+                                <input id="course-duration" class="form-control" type="number" name="duration" value="<?php echo h((string) (courseDurationHoursValue($course['duration'] ?? '') ?? '')); ?>" min="0.5" step="0.5" placeholder="320" aria-describedby="course-duration-help">
+                                <small id="course-duration-help" class="text-muted">Enter the total learning time in hours.</small>
                             </div>
 
                             <div class="col-12">

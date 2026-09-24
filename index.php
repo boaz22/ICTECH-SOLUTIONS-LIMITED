@@ -205,7 +205,7 @@ $totalCourses = $db->count('courses', "status = 'published'");
 
                             <div class="course-meta">
                                 <span class="course-duration">
-                                    <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
+                                    <i class="fas fa-clock"></i> <?php echo h(formatCourseDurationHours($course['duration'])); ?>
                                 </span>
                             </div>
 
