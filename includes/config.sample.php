@@ -30,6 +30,7 @@ define('UPLOAD_DIR', __DIR__ . '/../uploads/');
 define('MAIL_FROM', 'noreply@example.com');
 define('MAIL_FROM_NAME', 'ICTECH Solutions Limited');
 define('MAIL_REPLY_TO', 'info@example.com');
+define('MAIL_NOTIFICATION_TO', 'info@example.com');
 define('MAIL_HOST', 'mail.example.com');
 define('MAIL_PORT', 465);
 define('MAIL_USERNAME', 'noreply@example.com');

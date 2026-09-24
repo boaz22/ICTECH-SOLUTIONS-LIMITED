@@ -249,7 +249,7 @@ $courses = $db->getAll($sql, $params);
 
                             <div class="col-md-6">
                                 <label class="form-label">Duration</label>
-                                <input class="form-control" name="duration" value="<?php echo h($course['duration'] ?? ''); ?>" placeholder="8 weeks">
+                                <input class="form-control" name="duration" value="<?php echo h(formatCourseDurationHours($course['duration'] ?? '')); ?>" placeholder="320 hours">
                             </div>
 
                             <div class="col-12">

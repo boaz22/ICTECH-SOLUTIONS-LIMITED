@@ -90,82 +90,97 @@ $relatedCourses = $db->getAll(
         <div class="row">
             <!-- Course Details -->
             <div class="col-lg-8">
-                <!-- Course Overview -->
-                <div class="card mb-4">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0"><i class="fas fa-book"></i> Course Overview</h5>
+                <!-- Course Content -->
+                <div class="accordion course-details-accordion" id="courseContentAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="courseOverviewHeading">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#courseOverview" aria-expanded="false" aria-controls="courseOverview">
+                                <i class="fas fa-book me-2"></i> Course Overview
+                            </button>
+                        </h2>
+                        <div id="courseOverview" class="accordion-collapse collapse" aria-labelledby="courseOverviewHeading">
+                            <div class="accordion-body">
+                                <p class="mb-0"><?php echo nl2br(h($course['description'])); ?></p>
+                            </div>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p><?php echo nl2br(h($course['description'])); ?></p>
-                    </div>
+
+                    <?php if ($course['objectives']): ?>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="courseObjectivesHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#courseObjectives" aria-expanded="false" aria-controls="courseObjectives">
+                                    <i class="fas fa-check-circle me-2"></i> Learning Objectives
+                                </button>
+                            </h2>
+                            <div id="courseObjectives" class="accordion-collapse collapse" aria-labelledby="courseObjectivesHeading">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <?php
+                                        $objectives = array_filter(array_map('trim', explode("\n", $course['objectives'])));
+                                        foreach ($objectives as $objective):
+                                        ?>
+                                            <li class="list-group-item px-0">
+                                                <i class="fas fa-check text-success me-2"></i> <?php echo h($objective); ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if (!empty($course['course_outline'])): ?>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="courseOutlineHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#courseOutline" aria-expanded="false" aria-controls="courseOutline">
+                                    <i class="fas fa-list me-2"></i> Full Course Outline
+                                </button>
+                            </h2>
+                            <div id="courseOutline" class="accordion-collapse collapse" aria-labelledby="courseOutlineHeading">
+                                <div class="accordion-body">
+                                    <?php
+                                    $outlineItems = array_filter(array_map('trim', explode("\n", (string) $course['course_outline'])));
+                                    ?>
+                                    <?php if (!empty($outlineItems)): ?>
+                                        <ul class="list-group list-group-flush">
+                                            <?php foreach ($outlineItems as $outlineItem): ?>
+                                                <li class="list-group-item px-0">
+                                                    <i class="fas fa-angle-right me-2 text-secondary"></i> <?php echo h($outlineItem); ?>
+                                                </li>
+                                            <?php endforeach; ?>
+                                        </ul>
+                                    <?php else: ?>
+                                        <p class="mb-0"><?php echo nl2br(h((string) $course['course_outline'])); ?></p>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+
+                    <?php if ($course['requirements']): ?>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="courseRequirementsHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#courseRequirements" aria-expanded="false" aria-controls="courseRequirements">
+                                    <i class="fas fa-exclamation-circle me-2"></i> Prerequisites
+                                </button>
+                            </h2>
+                            <div id="courseRequirements" class="accordion-collapse collapse" aria-labelledby="courseRequirementsHeading">
+                                <div class="accordion-body">
+                                    <ul class="list-group list-group-flush">
+                                        <?php
+                                        $requirements = array_filter(array_map('trim', explode("\n", $course['requirements'])));
+                                        foreach ($requirements as $requirement):
+                                        ?>
+                                            <li class="list-group-item px-0">
+                                                <i class="fas fa-arrow-right me-2 text-secondary"></i> <?php echo h($requirement); ?>
+                                            </li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
                 </div>
-
-                <!-- Learning Objectives -->
-                <?php if ($course['objectives']): ?>
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-check-circle"></i> Learning Objectives</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <?php
-                                $objectives = array_filter(array_map('trim', explode("\n", $course['objectives'])));
-                                foreach ($objectives as $objective):
-                                ?>
-                                    <li class="list-group-item">
-                                        <i class="fas fa-check text-success me-2"></i> <?php echo h($objective); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Course Outline -->
-                <?php if (!empty($course['course_outline'])): ?>
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-list"></i> Full Course Outline</h5>
-                        </div>
-                        <div class="card-body">
-                            <?php
-                            $outlineItems = array_filter(array_map('trim', explode("\n", (string) $course['course_outline'])));
-                            ?>
-                            <?php if (!empty($outlineItems)): ?>
-                                <ul class="list-group list-group-flush">
-                                    <?php foreach ($outlineItems as $outlineItem): ?>
-                                        <li class="list-group-item">
-                                            <i class="fas fa-angle-right me-2 text-secondary"></i> <?php echo h($outlineItem); ?>
-                                        </li>
-                                    <?php endforeach; ?>
-                                </ul>
-                            <?php else: ?>
-                                <p><?php echo nl2br(h((string) $course['course_outline'])); ?></p>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                <?php endif; ?>
-
-                <!-- Requirements -->
-                <?php if ($course['requirements']): ?>
-                    <div class="card mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0"><i class="fas fa-exclamation-circle"></i> Prerequisites</h5>
-                        </div>
-                        <div class="card-body">
-                            <ul class="list-group list-group-flush">
-                                <?php
-                                $requirements = array_filter(array_map('trim', explode("\n", $course['requirements'])));
-                                foreach ($requirements as $requirement):
-                                ?>
-                                    <li class="list-group-item">
-                                        <i class="fas fa-arrow-right me-2 text-secondary"></i> <?php echo h($requirement); ?>
-                                    </li>
-                                <?php endforeach; ?>
-                            </ul>
-                        </div>
-                    </div>
-                <?php endif; ?>
             </div>
 
             <!-- Sidebar -->
@@ -228,7 +243,7 @@ $relatedCourses = $db->getAll(
                             <div class="mb-4">
                                 <div class="d-flex justify-content-between mb-3">
                                     <span><i class="fas fa-clock text-secondary"></i> Duration</span>
-                                    <strong><?php echo h($course['duration']); ?></strong>
+                                    <strong><?php echo h(formatCourseDurationHours($course['duration'])); ?></strong>
                                 </div>
                                 <div class="d-flex justify-content-between">
                                     <span><i class="fas fa-folder text-secondary"></i> Category</span>
@@ -276,7 +291,7 @@ $relatedCourses = $db->getAll(
                                 <p class="course-description"><?php echo truncateText($related['description'], 80); ?></p>
 
                                 <div class="course-meta">
-                                    <span class="course-duration"><?php echo h($related['duration']); ?></span>
+                                    <span class="course-duration"><?php echo h(formatCourseDurationHours($related['duration'])); ?></span>
                                 </div>
 
                                 <div class="course-footer">

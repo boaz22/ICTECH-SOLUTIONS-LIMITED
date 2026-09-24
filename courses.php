@@ -7,6 +7,7 @@ require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
 
 $pageTitle = 'Courses';
+$successMessage = consumeFlashMessage('success');
 
 // Get filters
 $categoryId = getParam('category', null, FILTER_VALIDATE_INT);
@@ -38,6 +39,13 @@ $categories = getCategories();
 <!-- Main Content -->
 <section class="py-5">
     <div class="container">
+        <?php if ($successMessage): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle"></i> <?php echo h($successMessage); ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close alert"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="row">
             <!-- Sidebar -->
             <div class="col-lg-3 mb-4 courses-sidebar">
@@ -107,7 +115,7 @@ $categories = getCategories();
 
                                         <div class="course-meta">
                                             <span class="course-duration">
-                                                <i class="fas fa-clock"></i> <?php echo h($course['duration']); ?>
+                                                <i class="fas fa-clock"></i> <?php echo h(formatCourseDurationHours($course['duration'])); ?>
                                             </span>
                                         </div>
 

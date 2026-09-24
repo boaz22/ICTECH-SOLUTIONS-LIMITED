@@ -30,6 +30,51 @@ function h($text) {
     return htmlspecialchars($text, ENT_QUOTES, 'UTF-8');
 }
 
+function setFlashMessage($key, $message) {
+    if (session_status() !== PHP_SESSION_ACTIVE) {
+        return;
+    }
+
+    $_SESSION['flash_messages'][$key] = $message;
+}
+
+function consumeFlashMessage($key) {
+    if (session_status() !== PHP_SESSION_ACTIVE || empty($_SESSION['flash_messages'][$key])) {
+        return '';
+    }
+
+    $message = $_SESSION['flash_messages'][$key];
+    unset($_SESSION['flash_messages'][$key]);
+    return $message;
+}
+
+/**
+ * Display course durations consistently in hours, including legacy values.
+ */
+function formatCourseDurationHours($duration) {
+    $duration = trim((string) $duration);
+    if ($duration === '') {
+        return '';
+    }
+
+    if (!preg_match('/^([0-9]+(?:\.[0-9]+)?)\s*(hours?|hrs?|h|weeks?|w|days?|d|months?|m)?$/i', $duration, $matches)) {
+        return $duration;
+    }
+
+    $amount = (float) $matches[1];
+    $unit = strtolower($matches[2] ?? 'hours');
+    if (str_starts_with($unit, 'week') || $unit === 'w') {
+        $amount *= 40;
+    } elseif (str_starts_with($unit, 'day') || $unit === 'd') {
+        $amount *= 8;
+    } elseif (str_starts_with($unit, 'month') || $unit === 'm') {
+        $amount *= 160;
+    }
+
+    $formattedAmount = rtrim(rtrim(number_format($amount, 2, '.', ''), '0'), '.');
+    return $formattedAmount . ' hour' . ((float) $amount === 1.0 ? '' : 's');
+}
+
 /**
  * Send baseline browser protections before a page produces output.
  */
@@ -710,6 +755,15 @@ function sendEmail($to, $subject, $message, $from = null, $fromName = null) {
             $mail->Password = MAIL_PASSWORD;
             $mail->SMTPSecure = defined('MAIL_ENCRYPTION') && MAIL_ENCRYPTION ? MAIL_ENCRYPTION : false;
             $mail->Port = defined('MAIL_PORT') ? (int) MAIL_PORT : 587;
+            if (defined('MAIL_ALLOW_SELF_SIGNED') && MAIL_ALLOW_SELF_SIGNED) {
+                $mail->SMTPOptions = [
+                    'ssl' => [
+                        'verify_peer' => false,
+                        'verify_peer_name' => false,
+                        'allow_self_signed' => true,
+                    ],
+                ];
+            }
             $mail->SMTPDebug = 0;
         }
 

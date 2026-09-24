@@ -77,7 +77,7 @@ $requirementItems = array_filter(array_map('trim', explode("\n", (string) $enrol
                     <div class="student-course-meta">
                         <div class="student-course-meta-item">
                             <i class="fas fa-clock"></i>
-                            <span><?php echo h($enrollment['duration']); ?></span>
+                            <span><?php echo h(formatCourseDurationHours($enrollment['duration'])); ?></span>
                         </div>
                         <div class="student-course-meta-item">
                             <i class="fas fa-folder-open"></i>

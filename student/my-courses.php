@@ -69,7 +69,7 @@ $enrollments = getStudentEnrollments($userId);
                                     <td>
                                         <strong><?php echo h($course['course_title']); ?></strong>
                                         <br>
-                                        <small class="text-muted"><?php echo h($course['duration']); ?></small>
+                                        <small class="text-muted"><?php echo h(formatCourseDurationHours($course['duration'])); ?></small>
                                     </td>
                                     <td>
                                         <?php
@@ -141,7 +141,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </h5>
                                     <p class="text-muted mb-2">
                                         <small>
-                                            <i class="fas fa-clock me-1"></i> <?php echo h($course['duration']); ?>
+                                            <i class="fas fa-clock me-1"></i> <?php echo h(formatCourseDurationHours($course['duration'])); ?>
                                         </small>
                                     </p>
                                     <div class="course-progress mb-3">
@@ -202,7 +202,7 @@ $enrollments = getStudentEnrollments($userId);
                                     </h5>
                                     <p class="text-muted mb-2">
                                         <small>
-                                            <i class="fas fa-clock me-1"></i> <?php echo h($course['duration']); ?>
+                                            <i class="fas fa-clock me-1"></i> <?php echo h(formatCourseDurationHours($course['duration'])); ?>
                                         </small>
                                     </p>
                                     <div class="course-progress mb-3">

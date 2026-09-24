@@ -5,12 +5,88 @@
 // Document ready equivalent
 document.addEventListener('DOMContentLoaded', function() {
     initializeCourseMenu();
+    initializeHeaderCourseSearch();
     initializeSlider();
     initializeCarousels();
     initializeValidation();
     initializePasswordControls();
     initializeScrollEffects();
 });
+
+// ============================================
+// Header Course Search
+// ============================================
+function initializeHeaderCourseSearch() {
+    const searchForm = document.querySelector('.header-course-search');
+    if (!searchForm) return;
+
+    const searchInput = searchForm.querySelector('input[type="search"]');
+    const suggestions = searchForm.querySelectorAll('datalist option[data-course-url]');
+    const suggestionList = searchForm.querySelector('.header-course-suggestion-list');
+    if (!searchInput) return;
+
+    const courseSuggestions = [...suggestions].map(option => ({
+        title: option.value,
+        label: option.label,
+        url: option.dataset.courseUrl
+    }));
+
+    function closeSuggestions() {
+        if (!suggestionList) return;
+        suggestionList.hidden = true;
+        suggestionList.replaceChildren();
+    }
+
+    function openCourse(courseUrl) {
+        searchInput.value = '';
+        closeSuggestions();
+        window.location.assign(courseUrl);
+    }
+
+    function renderSuggestions() {
+        if (!suggestionList) return;
+
+        const query = searchInput.value.trim().toLowerCase();
+        const matches = query === ''
+            ? []
+            : courseSuggestions.filter(course => course.title.toLowerCase().includes(query)).slice(0, 8);
+
+        suggestionList.replaceChildren();
+        matches.forEach(course => {
+            const suggestionButton = document.createElement('button');
+            suggestionButton.type = 'button';
+            suggestionButton.className = 'header-course-suggestion';
+            suggestionButton.setAttribute('role', 'option');
+            suggestionButton.textContent = course.title;
+
+            if (course.label) {
+                const label = document.createElement('small');
+                label.textContent = course.label;
+                suggestionButton.appendChild(label);
+            }
+
+            suggestionButton.addEventListener('click', () => openCourse(course.url));
+            suggestionList.appendChild(suggestionButton);
+        });
+
+        suggestionList.hidden = matches.length === 0;
+    }
+
+    searchInput.addEventListener('input', renderSuggestions);
+
+    searchForm.addEventListener('submit', function() {
+        searchInput.value = '';
+        closeSuggestions();
+    });
+
+    document.addEventListener('click', event => {
+        if (!searchForm.contains(event.target)) closeSuggestions();
+    });
+
+    if (searchForm.dataset.clearSearchOnLoad === 'true') {
+        searchInput.value = '';
+    }
+}
 
 // ============================================
 // Public Course Menu (desktop hover + mobile tap)

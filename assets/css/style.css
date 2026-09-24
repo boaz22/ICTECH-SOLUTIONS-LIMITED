@@ -292,6 +292,7 @@ a:hover {
 }
 
 .header-course-search {
+    position: relative;
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -300,6 +301,44 @@ a:hover {
     padding: 0.28rem 0.38rem 0.28rem 0.72rem;
     min-width: 290px;
     background: #fff;
+}
+
+.header-course-suggestion-list {
+    position: absolute;
+    z-index: 1050;
+    top: calc(100% + 0.35rem);
+    left: 0;
+    right: 0;
+    padding: 0.35rem;
+    border: 1px solid #d9dfeb;
+    border-radius: 0.7rem;
+    background: #fff;
+    box-shadow: 0 0.5rem 1.25rem rgba(11, 38, 74, 0.18);
+}
+
+.header-course-suggestion {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-radius: 0.45rem;
+    padding: 0.55rem 0.7rem;
+    background: transparent;
+    color: var(--primary);
+    text-align: left;
+    font-size: 0.82rem;
+}
+
+.header-course-suggestion small {
+    display: block;
+    margin-top: 0.15rem;
+    color: #6b7280;
+    font-size: 0.72rem;
+}
+
+.header-course-suggestion:hover,
+.header-course-suggestion:focus-visible {
+    background: #eef4ff;
+    outline: 0;
 }
 
 .header-course-search i {
@@ -1222,6 +1261,35 @@ a.admin-stat-card:hover, a.admin-stat-card:focus {
 .card-text {
     color: #555;
     margin-bottom: 1rem;
+}
+
+/* Course content strips stay visible while their panels open independently. */
+.course-details-accordion .accordion-item {
+    margin-bottom: 0.7rem;
+    border: 0;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+.course-details-accordion .accordion-button,
+.course-details-accordion .accordion-button:not(.collapsed) {
+    background: linear-gradient(135deg, var(--primary) 0%, #003d99 100%);
+    color: #fff;
+    font-weight: 600;
+    box-shadow: none;
+}
+
+.course-details-accordion .accordion-button::after {
+    display: none;
+}
+
+.course-details-accordion .accordion-button:focus {
+    box-shadow: 0 0 0 0.2rem rgba(255, 153, 0, 0.3);
+}
+
+.course-details-accordion .accordion-body {
+    background: #fff;
 }
 
 /* Course Cards */
