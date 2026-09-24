@@ -7,4 +7,8 @@
   <url><loc>https://ictechsolutions.co.ke/resources.php</loc><priority>0.6</priority></url>
   <url><loc>https://ictechsolutions.co.ke/students.php</loc><priority>0.6</priority></url>
   <url><loc>https://ictechsolutions.co.ke/contact.php</loc><priority>0.6</priority></url>
+  <url><loc>https://ictechsolutions.co.ke/privacy.php</loc><priority>0.3</priority></url>
+  <url><loc>https://ictechsolutions.co.ke/terms.php</loc><priority>0.3</priority></url>
+  <url><loc>https://ictechsolutions.co.ke/refunds.php</loc><priority>0.3</priority></url>
+  <url><loc>https://ictechsolutions.co.ke/cookies.php</loc><priority>0.3</priority></url>
 </urlset>

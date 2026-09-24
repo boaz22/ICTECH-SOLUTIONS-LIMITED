@@ -3,8 +3,9 @@
  * ICTECH Solutions - Students Page
  */
 
-require_once __DIR__ . '/includes/header.php';
 $pageTitle = 'For Students';
+$pageDescription = 'Find learner support, course guidance, and training assistance from ICTECH Solutions Limited.';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Page Header -->

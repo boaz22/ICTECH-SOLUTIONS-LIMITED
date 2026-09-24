@@ -3,10 +3,10 @@
  * ICTECH Solutions - Contact Page
  */
 
+$pageTitle = 'Contact Us';
+$pageDescription = 'Contact ICTECH Solutions Limited about professional ICT training, certification courses, corporate training, and technology services in Kenya.';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
-
-$pageTitle = 'Contact Us';
 
 $successMessage = '';
 $errorMessage = '';

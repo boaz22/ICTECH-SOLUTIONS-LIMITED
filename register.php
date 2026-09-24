@@ -6,9 +6,10 @@
  * agreement has been reached.
  */
 
-require_once __DIR__ . '/includes/header.php';
-
 $pageTitle = 'Student Accounts';
+$pageDescription = 'Learn how to arrange a student account and enrol in professional ICT training with ICTECH Solutions Limited.';
+$pageRobots = 'noindex, follow';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <section class="auth-page-header">

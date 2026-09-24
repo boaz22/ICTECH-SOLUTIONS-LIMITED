@@ -3,8 +3,9 @@
  * ICTECH Solutions - Resources Page
  */
 
-require_once __DIR__ . '/includes/header.php';
 $pageTitle = 'Learning Resources';
+$pageDescription = 'Explore learning resources and practical guidance from ICTECH Solutions Limited to support your technology career.';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Page Header -->

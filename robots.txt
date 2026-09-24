@@ -3,4 +3,7 @@ Allow: /
 Disallow: /includes/
 Disallow: /database/
 Disallow: /student/
+Disallow: /admin/
+Disallow: /trainer/
+Disallow: /uploads/
 Sitemap: https://ictechsolutions.co.ke/sitemap.xml

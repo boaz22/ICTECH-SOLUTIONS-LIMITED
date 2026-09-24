@@ -5,6 +5,8 @@
  */
 
 ob_start();
+$pageTitle = 'Set a New Password';
+$pageRobots = 'noindex, nofollow';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
 require_once __DIR__ . '/includes/helpers.php';
@@ -15,7 +17,6 @@ header('Pragma: no-cache');
 
 Auth::requireLogin();
 
-$pageTitle = 'Set a New Password';
 $userId = Auth::getCurrentUserId();
 $currentUser = Auth::getCurrentUser();
 $db = Database::getInstance();

@@ -4,6 +4,9 @@
  */
 
 ob_start();
+$pageTitle = 'Staff and Student Login';
+$pageDescription = 'Secure login for ICTECH Solutions Limited staff and students.';
+$pageRobots = 'noindex, nofollow';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
 

@@ -3,8 +3,9 @@
  * ICTECH Solutions - About Us Page
  */
 
-require_once __DIR__ . '/includes/header.php';
 $pageTitle = 'About Us';
+$pageDescription = 'Learn about ICTECH Solutions Limited and our mission to deliver practical technology training and development services in Kenya.';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Page Header -->

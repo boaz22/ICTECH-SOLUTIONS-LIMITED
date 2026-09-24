@@ -12,7 +12,29 @@ $isHomePage = in_array($currentPage, ['', 'index.php'], true);
 $seoTitle = isset($pageTitle) ? $pageTitle : SITE_NAME;
 $seoDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $currentPage === 'index.php' ? SITE_URL : SITE_URL . $currentPage;
-$socialImage = SITE_URL . 'assets/images/hero-tech.jpg';
+if ($currentPage === 'course-details.php') {
+    $canonicalCourseId = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    $canonicalUrl = $canonicalCourseId ? SITE_URL . 'course-details.php?id=' . (int) $canonicalCourseId : SITE_URL . 'courses.php';
+}
+$socialImage = $socialImage ?? SITE_URL . 'assets/images/hero-tech.jpg';
+$robotsDirective = $pageRobots ?? 'index, follow';
+$organizationSchema = [
+    '@type' => 'EducationalOrganization',
+    'name' => SITE_NAME,
+    'url' => SITE_URL,
+    'logo' => SITE_URL . 'assets/images/ictech-logo-transparent.png',
+    'description' => $seoDescription,
+    'telephone' => '+254 20 200 4000',
+    'email' => 'info@ictechsolutions.co.ke',
+    'address' => [
+        '@type' => 'PostalAddress',
+        'addressLocality' => 'Nairobi',
+        'addressCountry' => 'KE'
+    ]
+];
+if (!empty($courseSchema)) {
+    $organizationSchema['@graph'] = [$organizationSchema, $courseSchema];
+}
 $publicCourseCategories = getCategories();
 $publicProgramGroups = getProgramGroupMenu();
 $hasProgramGroupItems = false;
@@ -33,7 +55,7 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="<?php echo h($seoDescription); ?>">
     <meta name="keywords" content="ICT training Kenya, technology courses, professional certification, corporate training, IT solutions">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="<?php echo h($robotsDirective); ?>">
     <link rel="icon" type="image/png" sizes="32x32" href="<?php echo SITE_URL; ?>assets/images/favicon-32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="<?php echo SITE_URL; ?>assets/images/favicon-16.png">
     <link rel="apple-touch-icon" href="<?php echo SITE_URL; ?>assets/images/apple-touch-icon.png">
@@ -53,21 +75,10 @@ $isCoursesActive = $currentPage === 'courses.php' || $currentPage === 'course-de
     <title><?php echo h($seoTitle); ?> - <?php echo h(SITE_NAME); ?></title>
 
     <script type="application/ld+json">
-    <?php echo json_encode([
-        '@context' => 'https://schema.org',
-        '@type' => 'EducationalOrganization',
-        'name' => SITE_NAME,
-        'url' => SITE_URL,
-        'logo' => SITE_URL . 'assets/images/ictech-logo-transparent.png',
-        'description' => $seoDescription,
-        'telephone' => '+254 20 200 4000',
-        'email' => 'info@ictechsolutions.co.ke',
-        'address' => [
-            '@type' => 'PostalAddress',
-            'addressLocality' => 'Nairobi',
-            'addressCountry' => 'KE'
-        ]
-    ], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP); ?>
+    <?php echo json_encode(
+        ['@context' => 'https://schema.org'] + (isset($organizationSchema['@graph']) ? ['@graph' => $organizationSchema['@graph']] : $organizationSchema),
+        JSON_UNESCAPED_SLASHES | JSON_HEX_TAG | JSON_HEX_AMP
+    ); ?>
     </script>
 
     <!-- Bootstrap CSS -->

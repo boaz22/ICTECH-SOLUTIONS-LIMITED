@@ -3,12 +3,11 @@
  * ICTECH Solutions - Course Details Page
  */
 
-// Buffer output so redirects (invalid/unpublished course) still work even
-// though includes/header.php has already sent some output.
+// Buffer output so redirects (invalid/unpublished course) still work.
 ob_start();
 
-require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/auth.php';
 
 $courseId = getParam('id', null, FILTER_VALIDATE_INT);
 
@@ -25,7 +24,23 @@ if (!$course || $course['status'] !== 'published') {
     exit;
 }
 
-$pageTitle = h($course['title']);
+$pageTitle = $course['title'];
+$pageDescription = trim(preg_replace('/\s+/', ' ', strip_tags((string) $course['description'])));
+$pageDescription = $pageDescription !== '' ? substr($pageDescription, 0, 155) : 'Explore this professional ICT training course from ICTECH Solutions Limited in Kenya.';
+$socialImage = courseImageUrl($course) ?: SITE_URL . 'assets/images/hero-tech.jpg';
+$courseSchema = [
+    '@type' => 'Course',
+    'name' => $course['title'],
+    'description' => $pageDescription,
+    'provider' => [
+        '@type' => 'Organization',
+        'name' => SITE_NAME,
+        'sameAs' => SITE_URL
+    ],
+    'url' => SITE_URL . 'course-details.php?id=' . (int) $courseId
+];
+
+require_once __DIR__ . '/includes/header.php';
 
 // If the logged-in student is enrolled in this course, show their
 // enrollment status/progress instead of the public enquiry call-to-action.

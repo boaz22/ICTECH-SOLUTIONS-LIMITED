@@ -3,10 +3,11 @@
  * ICTECH Solutions - Course Enquiry Page
  */
 
+$pageTitle = 'Course Enquiry';
+$pageDescription = 'Send an enquiry about ICTECH Solutions Limited professional technology training courses in Kenya.';
+$pageRobots = 'noindex, nofollow';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
-
-$pageTitle = 'Course Enquiry';
 
 $successMessage = '';
 $errorMessage = '';

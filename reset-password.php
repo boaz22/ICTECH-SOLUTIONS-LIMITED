@@ -1,4 +1,6 @@
 <?php
+$pageTitle = 'Reset Password';
+$pageRobots = 'noindex, nofollow';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/auth.php';
 $token = getParam('token', ''); $error = ''; $success = '';

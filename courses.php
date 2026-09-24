@@ -3,10 +3,10 @@
  * ICTECH Solutions - Courses Listing Page
  */
 
+$pageTitle = 'Courses';
+$pageDescription = 'Browse professional ICT training, certification, and technology courses from ICTECH Solutions Limited in Kenya.';
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';
-
-$pageTitle = 'Courses';
 
 // Get filters
 $categoryId = getParam('category', null, FILTER_VALIDATE_INT);

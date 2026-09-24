@@ -11,7 +11,7 @@ define('DB_PASS', '');
 define('DB_NAME', 'ictech_solutions_limited');
 
 // Site Configuration
-define('SITE_URL', 'http://localhost/ICTECH-SOLUTIONS-LIMITED/');
+define('SITE_URL', 'https://ictechsolutions.co.ke/');
 define('SITE_NAME', 'ICTECH Solutions Limited');
 define('SITE_DESCRIPTION', 'Professional Technology Training and Development Platform');
 

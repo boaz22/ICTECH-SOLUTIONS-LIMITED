@@ -1,5 +1,15 @@
 Options -Indexes
 RewriteEngine On
+
+# Keep one HTTPS canonical host for search engines and visitors.
+RewriteCond %{HTTP_HOST} ^(www\.)?ictechsolutions\.co\.ke$ [NC]
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\.ictechsolutions\.co\.ke$ [NC]
+RewriteRule ^ https://ictechsolutions.co.ke%{REQUEST_URI} [R=301,L,NE]
+
+# Generate the sitemap from currently published courses.
+RewriteRule ^sitemap.xml$ sitemap.php [L]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ 404.php [L]

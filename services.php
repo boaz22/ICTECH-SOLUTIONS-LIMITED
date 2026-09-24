@@ -3,8 +3,9 @@
  * ICTECH Solutions - Services Page
  */
 
-require_once __DIR__ . '/includes/header.php';
 $pageTitle = 'Services';
+$pageDescription = 'Discover ICTECH Solutions Limited technology training, corporate learning, and development services in Kenya.';
+require_once __DIR__ . '/includes/header.php';
 ?>
 
 <!-- Page Header -->
