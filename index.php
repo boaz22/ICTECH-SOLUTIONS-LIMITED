@@ -318,7 +318,7 @@ $totalCourses = $db->count('courses', "status = 'published'");
                     <div class="partner-card">
                         <?php if ($partner['logo']): ?>
                             <div class="partner-logo-frame">
-                                <img src="<?php echo h(assetImageUrl($partner['logo'])); ?>" alt="<?php echo h($partner['name']); ?>" class="partner-logo">
+                                <img src="<?php echo h(partnerImageUrl($partner['logo'])); ?>" alt="<?php echo h($partner['name']); ?>" class="partner-logo">
                             </div>
                         <?php else: ?>
                             <div class="partner-logo-frame partner-logo-fallback">

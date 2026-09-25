@@ -11,6 +11,7 @@ require_once __DIR__ . '/includes/helpers.php';
 
 $successMessage = '';
 $errorMessage = '';
+$successMessage = consumeFlashMessage('success');
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -53,7 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($adminEmailSent) {
                 setFlashMessage('success', 'Thank you! Your message has been sent successfully. We\'ll get back to you soon.');
                 ob_end_clean();
-                header('Location: ' . SITE_URL . 'courses.php');
+                header('Location: ' . SITE_URL . 'contact.php');
                 exit;
             } else {
                 $errorMessage = 'Your message was saved, but we could not deliver the notification email. Please contact us by phone.';

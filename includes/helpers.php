@@ -159,6 +159,23 @@ function assetImageUrl($filename, $directory = 'images/') {
     return SITE_URL . 'assets/' . $directory . rawurlencode($filename);
 }
 
+function partnerImageUrl($filename) {
+    $legacyNames = [
+        'airtel.png' => 'partner-airtel-kenya.svg',
+        'amazon-aws.png' => 'partner-amazon-aws.svg',
+        'google-cloud.png' => 'partner-google-cloud.svg',
+        'microsoft-azure.png' => 'partner-microsoft-azure.svg',
+        'safaricom.png' => 'partner-safaricom.png'
+    ];
+
+    $filename = trim((string) $filename);
+    if (isset($legacyNames[$filename])) {
+        return assetImageUrl($filename);
+    }
+
+    return assetImageUrl($filename, 'images/partners/');
+}
+
 function courseImageUrl($course) {
     $defaultImages = [
         'php-web-development' => 'course-web-development.jpg',
