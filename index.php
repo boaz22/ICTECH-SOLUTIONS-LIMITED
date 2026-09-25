@@ -3,8 +3,8 @@
  * ICTECH Solutions - Homepage
  */
 
-$pageTitle = 'Home - Professional Technology Training';
-$pageDescription = 'Professional ICT training, certification courses, corporate training, and technology solutions in Kenya from ICTECH Solutions Limited.';
+$pageTitle = 'ICTECH Solutions Limited | ICT Training and Technology Services in Kenya';
+$pageDescription = 'ICTECH Solutions Limited provides ICT training, professional certification courses, corporate training, and technology services in Nairobi and across Kenya.';
 
 require_once __DIR__ . '/includes/header.php';
 require_once __DIR__ . '/includes/helpers.php';

@@ -433,10 +433,8 @@ class Auth
     public static function requireAdmin()
     {
         if (!self::isAdmin()) {
-            header(
-                'Location: ' .
-                SITE_URL
-            );
+            $redirect = urlencode($_SERVER['REQUEST_URI'] ?? 'admin/index.php');
+            header('Location: ' . SITE_URL . 'login.php?redirect=' . $redirect);
 
             exit;
         }
@@ -451,11 +449,8 @@ class Auth
     public static function requireStudent()
     {
         if (!self::isStudent()) {
-            header(
-                'Location: ' .
-                SITE_URL .
-                'login.php'
-            );
+            $redirect = urlencode($_SERVER['REQUEST_URI'] ?? 'student/dashboard.php');
+            header('Location: ' . SITE_URL . 'login.php?student_access=1&redirect=' . $redirect);
 
             exit;
         }

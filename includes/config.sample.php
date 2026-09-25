@@ -14,6 +14,7 @@ define('DB_NAME', 'ictech_solutions_limited');
 define('SITE_URL', 'https://ictechsolutions.co.ke/');
 define('SITE_NAME', 'ICTECH Solutions Limited');
 define('SITE_DESCRIPTION', 'Professional Technology Training and Development Platform');
+define('MAINTENANCE_MODE', false);
 
 // Security
 define('JWT_SECRET', 'your-secret-key-change-this-in-production');

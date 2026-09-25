@@ -9,6 +9,29 @@ require_once __DIR__ . '/helpers.php';
 
 $currentPage = basename($_SERVER['SCRIPT_NAME'] ?? 'index.php');
 $isHomePage = in_array($currentPage, ['', 'index.php'], true);
+
+if (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE && !in_array($currentPage, ['login.php', 'logout.php', 'force-password-change.php'], true)) {
+    http_response_code(503);
+    header('Retry-After: 3600');
+    ?><!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="robots" content="noindex, nofollow">
+        <title>Temporarily Unavailable | <?php echo h(SITE_NAME); ?></title>
+        <style>
+            body { margin: 0; min-height: 100vh; display: grid; place-items: center; padding: 24px; box-sizing: border-box; font-family: Arial, sans-serif; color: #17324d; background: #f4f7fa; text-align: center; }
+            main { max-width: 560px; padding: 48px 32px; background: #fff; border: 1px solid #d9e2ec; border-radius: 8px; box-shadow: 0 12px 32px rgba(23, 50, 77, .08); }
+            h1 { margin: 0 0 16px; font-size: 2rem; }
+            p { margin: 0; line-height: 1.7; color: #526579; }
+        </style>
+    </head>
+    <body><main><h1>We will be back shortly</h1><p><?php echo h(SITE_NAME); ?> is temporarily unavailable while we complete scheduled updates. Please check again soon.</p></main></body>
+    </html><?php
+    exit;
+}
+
 $seoTitle = isset($pageTitle) ? $pageTitle : SITE_NAME;
 $seoDescription = $pageDescription ?? SITE_DESCRIPTION;
 $canonicalUrl = $currentPage === 'index.php' ? SITE_URL : SITE_URL . $currentPage;
