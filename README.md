@@ -34,7 +34,7 @@ Public registration does not create student accounts. The direct student-login U
 
 1. Create a database named `ictech_solutions_limited`.
 2. Import `database/schema.sql`.
-3. For an existing installation, run every file in `database/migrations/` in numeric order (001 through 006) if they have not already been applied.
+3. For an existing installation, run every file in `database/migrations/` in numeric order (001 through 011) if they have not already been applied.
 4. Copy `includes/config.sample.php` to `includes/config.php`, then configure the database, site URL, and mail credentials.
 5. Start Apache and MySQL and open the configured `SITE_URL`.
 
