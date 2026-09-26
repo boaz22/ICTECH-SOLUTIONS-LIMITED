@@ -160,24 +160,7 @@ function assetImageUrl($filename, $directory = 'images/') {
 }
 
 function partnerImageUrl($filename) {
-    $builtInLogos = [
-        'airtel.png' => 'partner-airtel-kenya.svg',
-        'amazon-aws.png' => 'partner-amazon-aws.svg',
-        'google-cloud.png' => 'partner-google-cloud.svg',
-        'microsoft-azure.png' => 'partner-microsoft-azure.svg',
-        'safaricom.png' => 'partner-safaricom.png',
-        'partner-airtel-kenya.svg' => 'partner-airtel-kenya.svg',
-        'partner-amazon-aws.svg' => 'partner-amazon-aws.svg',
-        'partner-google-cloud.svg' => 'partner-google-cloud.svg',
-        'partner-microsoft-azure.svg' => 'partner-microsoft-azure.svg',
-        'partner-safaricom.png' => 'partner-safaricom.png'
-    ];
-
     $filename = trim((string) $filename);
-    if (isset($builtInLogos[$filename])) {
-        return assetImageUrl($builtInLogos[$filename]);
-    }
-
     return SITE_URL . 'assets/images/partners/' . rawurlencode($filename);
 }
 
