@@ -397,7 +397,7 @@ function getProgramGroups() {
     return [
         'role_based' => 'Role Based Programs',
         'technical' => 'Technical Courses',
-        'business' => 'Business Programs',
+        'business' => 'Technology & Business Courses',
     ];
 }
 

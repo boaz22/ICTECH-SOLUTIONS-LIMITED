@@ -1314,6 +1314,7 @@ a.admin-stat-card:hover, a.admin-stat-card:focus {
     transition: var(--transition);
     display: flex;
     flex-direction: column;
+    height: 100%;
 }
 
 .course-card:hover {
